@@ -5,6 +5,7 @@ services:
     entrypoint: /opt/blockchain/start-snode.sh
     restart: unless-stopped
     environment:
+      PUBLIC_IP: "${PUBLIC_IP}"
       RPC_USER: "${RPC_USER}"
       RPC_PASSWORD: "${RPC_PASSWORD}"
       SN_NAME: "${SN_NAME}"
