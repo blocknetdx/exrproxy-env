@@ -2,47 +2,20 @@ version: "3.8"
 services:
   snode:
     image: blocknetdx/servicenode:latest
-    command: /bin/sh -c "echo \"$BLOCK_CONFIG\" > /opt/blockchain/config/blocknet.conf; echo \"$SN_CONFIG\" > /opt/blockchain/config/servicenode.conf; blocknetd"
+    entrypoint: /opt/blockchain/start-snode.sh
     restart: unless-stopped
     environment:
-      BLOCK_CONFIG: |
-        datadir=/opt/blockchain/data
-
-        maxmempoolxbridge=128
-
-        port=41412
-        rpcport=41414
-
-        listen=1
-        server=1
-        logtimestamps=1
-        logips=1
-        servicenode=1
-        rpcthreads=8
-
-        rpcuser=${RPC_USER}
-        rpcpassword=${RPC_PASSWORD}
-
-        rpcallowip=127.0.0.1
-        rpcbind=0.0.0.0
-        rpctimeout=30
-        rpcclienttimeout=30
-      SN_CONFIG: |
-        # Service Node config
-        # Format: alias tier snodekey address
-        #   - alias can be any name, no spaces
-        #   - tier can be either SPV or OPEN
-        #   - snodekey must be a valid base58 encoded private key
-        #   - address must be a valid base58 encoded public key that contains the service node collateral
-        # SPV tier requires 5000 BLOCK collateral and an associated BLOCK address and can charge fees for services
-        # OPEN tier doesn't require any collateral, can't charge fees, and can only support XCloud plugins
-        # Example: dev OPEN 6BeBjrnd4DP5rEvUtxBQVu1DTPXUn6mCY5kPB2DWiy9CwEB2qh1
-        # Example: xrouter SPV 6B4VvHTn6BbHM3DRsf6M3Sk3jLbgzm1vp5jNe9ZYZocSyRDx69d Bj2w9gHtGp4FbVdR19tJZ9UHwWQhDXxGCM
-
-        ${SN_NAME} SPV ${SN_KEY} ${SN_ADDRESS}
+      RPC_USER: "${RPC_USER}"
+      RPC_PASSWORD: "${RPC_PASSWORD}"
+      SN_NAME: "${SN_NAME}"
+      SN_ADDRESS: "${SN_ADDRESS}"
+      SN_KEY: "${SN_KEY}"
     volumes:
       - snode-config:/opt/blockchain/config
       - snode-data:/opt/blockchain/data
+      - type: bind
+        source: ./scripts
+        target: /opt/blockchain
     ports:
       - "41412"
       - "41414"
@@ -90,6 +63,7 @@ services:
 
   eth_proxy:
     image: aderks/ethereum-proxy:latest
+    restart: unless-stopped
     environment:
       eurl: http://geth:8545
     volumes:
@@ -104,7 +78,7 @@ services:
     entrypoint: /opt/scripts/start-xrproxy.sh
     restart: unless-stopped
     ports: 
-      - "80"
+      - "80:80"
     environment:
       RPC_USER: "${RPC_USER}"
       RPC_PASSWORD: "${RPC_PASSWORD}"
@@ -116,6 +90,7 @@ services:
         source: ./scripts
         target: /opt/scripts
     networks:
+      - frontend
       - backend
 
 networks:
