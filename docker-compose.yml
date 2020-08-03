@@ -16,6 +16,9 @@ services:
       - type: bind
         source: ./scripts
         target: /opt/blockchain
+      - type: bind
+        source: ./plugins
+        target: /opt/blockchain/data/plugins
     ports:
       - "41412"
       - "41414"
