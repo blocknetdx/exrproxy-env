@@ -48,7 +48,7 @@ cat > /opt/blockchain/config/xrouter.conf << EOL
 #! host=mynode.example.com
 #! host=208.67.222.222
 host=${PUBLIC_IP}
-wallets=BLOCK
+wallets=BLOCK,ETH
 plugins=eth_accounts,eth_blockNumber,eth_call,eth_chainId,eth_estimateGas,eth_gasPrice,eth_getBalance,eth_getBlockByHash,eth_getBlockByNumber,eth_getBlockTransactionCountByHash,eth_getBlockTransactionCountByNumber,eth_getCode,eth_getLogs,eth_getStorageAt,eth_getTransactionByBlockHashAndIndex,eth_getTransactionByBlockNumberAndIndex,eth_getTransactionByHash,eth_getTransactionCount,eth_getTransactionReceipt,eth_getUncleByBlockHashAndIndex,eth_getUncleByBlockNumberAndIndex,eth_getUncleCountByBlockHash,eth_getUncleCountByBlockNumber,eth_getWork,eth_hashrate,eth_mining,eth_protocolVersion,eth_sendRawTransaction,eth_submitWork,eth_syncing,eth_uninstallFilter,net_listening,net_peerCount,net_version,web3_clientVersion,web3_sha3,parity_allTransactionHashes,parity_allTransactions,eth_newBlockFilter,eth_newPendingTransactionFilter,eth_getFilterChanges,eth_getFilterLogs,eth_newFilter,eth_unsubscribe,parity_unsubscribe
 
 #! port is the tcpip port on the host that accepts xrouter connections.
@@ -77,7 +77,7 @@ EOL
 
 cat > /opt/blockchain/config/xbridge.conf << EOL
 [Main]
-ExchangeWallets=BLOCK
+ExchangeWallets=BLOCK,ETH
 FullLog=true
 LogPath=
 ExchangeTax=300
@@ -103,6 +103,33 @@ BlockTime=60
 FeePerByte=20
 Confirmations=0
 Address=
+TxWithTimeField=false
+LockCoinsSupported=false
+JSONVersion=
+ContentType=
+CashAddrPrefix=
+
+[ETH]
+Title=Ethereum
+Address=
+Ip=snode
+Port=8545
+Username=
+Password=
+AddressPrefix=0
+ScriptPrefix=0
+SecretPrefix=0
+COIN=1
+MinimumAmount=0
+DustAmount=0
+CreateTxMethod=ETH
+GetNewKeySupported=false
+ImportWithNoScanSupported=true
+FeePerByte=200
+MinTxFee=10000
+TxVersion=1
+BlockTime=15
+Confirmations=0
 TxWithTimeField=false
 LockCoinsSupported=false
 JSONVersion=
