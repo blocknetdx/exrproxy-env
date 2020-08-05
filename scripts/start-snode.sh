@@ -112,7 +112,7 @@ CashAddrPrefix=
 [ETH]
 Title=Ethereum
 Address=
-Ip=snode
+Ip=geth
 Port=8545
 Username=
 Password=
