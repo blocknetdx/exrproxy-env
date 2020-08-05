@@ -26,6 +26,12 @@ set-ph = RPC_BLOCK_USER=${RPC_USER}
 set-ph = RPC_BLOCK_PASS=${RPC_PASSWORD}
 set-ph = RPC_BLOCK_VER=2.0
 
+set-ph = RPC_ETH_HOSTIP=geth
+set-ph = RPC_ETH_PORT=8545
+set-ph = RPC_ETH_USER=''
+set-ph = RPC_ETH_PASS=''
+set-ph = RPC_ETH_VER=2.0
+
 set-ph = URL_eth_accounts_HOSTIP=eth_proxy
 set-ph = URL_eth_accounts_PORT=9090
 
