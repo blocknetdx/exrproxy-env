@@ -64,7 +64,9 @@ services:
       options:
         max-size: "2m"
         max-file: "10"
-
+    networks:
+      - backend
+    
   eth_proxy:
     image: aderks/ethereum-proxy:latest
     restart: unless-stopped
@@ -73,7 +75,7 @@ services:
     volumes:
       - ethproxy-config:/opt/app
     ports:
-      - "80"
+      - "9090:8191"
     networks:
       - backend
 

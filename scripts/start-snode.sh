@@ -26,7 +26,7 @@ rpctimeout=30
 rpcclienttimeout=30
 EOL
 
-cat > /opt/blockchain/config/servicenode.conf << EOL
+cat > /opt/blockchain/data/servicenode.conf << EOL
 # Service Node config
 # Format: alias tier snodekey address
 #   - alias can be any name, no spaces
@@ -41,7 +41,7 @@ cat > /opt/blockchain/config/servicenode.conf << EOL
 ${SN_NAME} SPV ${SN_KEY} ${SN_ADDRESS}
 EOL
 
-cat > /opt/blockchain/config/xrouter.conf << EOL
+cat > /opt/blockchain/data/xrouter.conf << EOL
 [Main]
 #! host is a mandatory field, this tells the XRouter network how to find your node.
 #! DNS and ip addresses are acceptable values.
@@ -73,9 +73,144 @@ fee=0.0001
 
 [xrSendTransaction]
 fee=0.0001
+
+[eth_accounts]
+fee=0.0001
+
+[eth_blockNumber]
+fee=0.0001
+
+[eth_call]
+fee=0.0001
+
+[eth_chainId]
+fee=0.0001
+
+[eth_estimateGas]
+fee=0.0001
+
+[eth_gasPrice]
+fee=0.0001
+
+[eth_getBalance]
+fee=0.0001
+
+[eth_getBlockByHash]
+fee=0.0001
+
+[eth_getBlockByNumber]
+fee=0.0001
+
+[eth_getBlockTransactionCountByHash]
+fee=0.0001
+
+[eth_getBlockTransactionCountByNumber]
+fee=0.0001
+
+[eth_getCode]
+fee=0.0001
+
+[eth_getLogs]
+fee=0.0001
+
+[eth_getStorageAt]
+fee=0.0001
+
+[eth_getTransactionByBlockHashAndIndex]
+fee=0.0001
+
+[eth_getTransactionByBlockNumberAndIndex]
+fee=0.0001
+
+[eth_getTransactionByHash]
+fee=0.0001
+
+[eth_getTransactionCount]
+fee=0.0001
+
+[eth_getTransactionReceipt]
+fee=0.0001
+
+[eth_getUncleByBlockHashAndIndex]
+fee=0.0001
+
+[eth_getUncleByBlockNumberAndIndex]
+fee=0.0001
+
+[eth_getUncleCountByBlockHash]
+fee=0.0001
+
+[eth_getUncleCountByBlockNumber]
+fee=0.0001
+
+[eth_getWork]
+fee=0.0001
+
+[eth_hashrate]
+fee=0.0001
+
+[eth_mining]
+fee=0.0001
+
+[eth_protocolVersion]
+fee=0.0001
+
+[eth_sendRawTransaction]
+fee=0.0001
+
+[eth_submitWork]
+fee=0.0001
+
+[eth_syncing]
+fee=0.0001
+
+[eth_uninstallFilter]
+fee=0.0001
+
+[net_listening]
+fee=0.0001
+
+[net_peerCount]
+fee=0.0001
+
+[net_version]
+fee=0.0001
+
+[web3_clientVersion]
+fee=0.0001
+
+[web3_sha3]
+fee=0.0001
+
+[parity_allTransactionHashes]
+fee=0.0001
+
+[parity_allTransactions]
+fee=0.0001
+
+[eth_newBlockFilter]
+fee=0.0001
+
+[eth_newPendingTransactionFilter]
+fee=0.0001
+
+[eth_getFilterChanges]
+fee=0.0001
+
+[eth_getFilterLogs]
+fee=0.0001
+
+[eth_newFilter]
+fee=0.0001
+
+[eth_unsubscribe]
+fee=0.0001
+
+[parity_unsubscribe]
+fee=0.0001
 EOL
 
-cat > /opt/blockchain/config/xbridge.conf << EOL
+cat > /opt/blockchain/data/xbridge.conf << EOL
 [Main]
 ExchangeWallets=BLOCK
 FullLog=true
