@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+  snode:
+    image: blocknetdx/servicenode:latest
+    entrypoint: /opt/blockchain/start-snode.sh
+    restart: unless-stopped
+    environment:
+      PUBLIC_IP: "${PUBLIC_IP}"
+      RPC_USER: "${RPC_USER}"
+      RPC_PASSWORD: "${RPC_PASSWORD}"
+      SN_NAME: "${SN_NAME}"
+      SN_ADDRESS: "${SN_ADDRESS}"
+      SN_KEY: "${SN_KEY}"
+    volumes:
+      - snode-config:/opt/blockchain/config
+      - snode-data:/opt/blockchain/data
+      - type: bind
+        source: ./scripts
+        target: /opt/blockchain
+      - type: bind
+        source: ./plugins
+        target: /opt/blockchain/data/plugins
+    ports:
+      - "41412"
+      - "41414"
+    networks:
+      - backend
+
+{% for daemon in daemons %}
+  {{ daemon.name }}:
+    image: blocknetdx/{{ daemon.name }}:latest
+    restart: unless-stopped
+    volumes:
+      - /media/atcsecure/satassd4tb/{{ daemon.name }}-compose-test/config:/opt/blockchain/config
+      - /media/atcsecure/satassd4tb/{{ daemon.name }}-compose-test/config:/opt/blockchain/data
+    networks:
+      - backend
+{% endfor %}
+
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+
+
+

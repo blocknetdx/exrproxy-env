@@ -1,0 +1,8 @@
+--- # snode daemon list
+- j2template: dockercompose.j2
+  name: dockercompose
+  daemons:
+    - name: BTC
+      testvalue: 123
+    - name: LTC
+      testvalue: 456

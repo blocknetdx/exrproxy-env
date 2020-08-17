@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  bitcoin:
+    image: blocknetdx/bitcoin:latest
+    restart: unless-stopped
+    volumes:
+      - /media/atcsecure/satassd4tb/bitcoin-compose-test/config:/opt/blockchain/config
+      - /media/atcsecure/satassd4tb/bitcoin-compose-test/config:/opt/blockchain/data
+    networks:
+      - backend
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+
+
