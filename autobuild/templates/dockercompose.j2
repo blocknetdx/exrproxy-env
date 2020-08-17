@@ -13,8 +13,8 @@ services:
       SN_ADDRESS: "${SN_ADDRESS}"
       SN_KEY: "${SN_KEY}"
     volumes:
-      - snode-config:/opt/blockchain/config
-      - snode-data:/opt/blockchain/data
+      - {{ mount_dir }}/snode/config:/opt/blockchain/config
+      - {{ mount_dir }}/snode/data:/opt/blockchain/data
       - type: bind
         source: ./scripts
         target: /opt/blockchain
@@ -25,8 +25,8 @@ services:
         source: ./scripts/config/xbridge.conf
         target: /opt/blockchain/data/xbridge.conf
     ports:
-      - "41412"
-      - "41414"
+      - "41412:41412"
+      - "41414:41414"
     networks:
       - backend
 
@@ -35,8 +35,8 @@ services:
     image: {{ daemon.image }}
     restart: unless-stopped
     ports:
-      - "{{ daemon.p2pPort }}:{{ daemon.p2pPort }}"
       - "{{ daemon.rpcPort }}:{{ daemon.rpcPort }}"
+      - "{{ daemon.p2pPort }}:{{ daemon.p2pPort }}"
     volumes:
       - {{ mount_dir }}/{{ daemon.name }}/config:/opt/blockchain/config
       - {{ mount_dir }}/{{ daemon.name }}/data:/opt/blockchain/data
@@ -44,12 +44,8 @@ services:
       - backend
 {% endfor %}
 
-
 networks:
   frontend:
     driver: bridge
   backend:
     driver: bridge
-
-
-
