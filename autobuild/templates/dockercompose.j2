@@ -34,6 +34,9 @@ services:
   {{ daemon.name }}:
     image: {{ daemon.image }}
     restart: unless-stopped
+    ports:
+      - "{{ daemon.p2pPort }}:{{ daemon.p2pPort }}"
+      - "{{ daemon.rpcPort }}:{{ daemon.rpcPort }}"
     volumes:
       - {{ mount_dir }}/{{ daemon.name }}/config:/opt/blockchain/config
       - {{ mount_dir }}/{{ daemon.name }}/data:/opt/blockchain/data

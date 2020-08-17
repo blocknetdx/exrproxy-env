@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
+import os
+import json
 import yaml
 import argparse
-import os
 #import logging
-from jinja2 import Environment
-from jinja2 import FileSystemLoader
+from jinja2 import Environment, FileSystemLoader, Template
 from utils.loggerinit import *
 from utils import autoconfig
 
@@ -42,6 +42,19 @@ def processcustom(customlist):
     customlist[0]['mount_dir'] = os.environ.get("MOUNT_DIR", "/blockchain")
 
     for c in customlist:
+        for i in range(len(c['daemons'])):
+            name = c['daemons'][i]['name']
+            try:
+                xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(name))
+                xtemplate = Template(xbridge_text)
+                xresult = xtemplate.render()
+                xbridge_json = json.loads(xresult)
+                c['daemons'][i]['p2pPort'] = xbridge_json[name]['p2pPort']
+                c['daemons'][i]['rpcPort'] = xbridge_json[name]['rpcPort']
+            except Exception as e:
+                print("Config for currency {} not found".format(name))
+                return ""
+
         custom_template_fname = 'templates/{}'.format(c['j2template'])
         custom_template = J2_ENV.get_template(custom_template_fname)
 
@@ -69,7 +82,6 @@ def processconfigs(datalist):
             password = os.environ.get("RPC_PASSWORD", "pass")
             XBRIDGE_CONF += "{}\n\n".format(autoconfig.generate_confs(name, p2pport, rpcport, username, password))
 
-    print(XBRIDGE_CONF)
     autoconfig.save_config(XBRIDGE_CONF, os.path.join('../scripts/config', 'xbridge.conf'))
             
 
