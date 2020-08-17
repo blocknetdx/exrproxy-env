@@ -39,10 +39,10 @@ def write_file(filename, rendered_data):
 def processcustom(customlist):
     # expects data in yaml, renders j2
     logging.info('processing custom:'.format(customlist))
-    #print(customlist)
+    customlist[0]['mount_dir'] = os.environ.get("MOUNT_DIR", "/blockchain")
+
     for c in customlist:
         custom_template_fname = 'templates/{}'.format(c['j2template'])
-        print(custom_template_fname)
         custom_template = J2_ENV.get_template(custom_template_fname)
 
         rendered_data = custom_template.render(c)
@@ -51,22 +51,26 @@ def processcustom(customlist):
 
 
 def processconfigs(datalist):
-    COIN_LIST = []
+    XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets=BLOCK"
+
     for data in datalist:
         for daemon in data['daemons']:
-            print(daemon['name'])
-            COIN_LIST.append(daemon['name'])
+            name = daemon['name']
+            XBRIDGE_CONF += ",{}".format(name)
+
+    XBRIDGE_CONF += "\n\n{}\n\n".format(autoconfig.generate_confs("BLOCK", 41412, 41414, os.environ.get("RPC_USER", "user"), os.environ.get("RPC_PASSWORD", "pass")))
+
+    for data in datalist:
+        for daemon in data['daemons']:
+            name = daemon['name']
             p2pport = ''
             rpcport = ''
-            configname = ''
-            username = '${RPC_USER}'
-            password = '${RPC_PASSWORD}'
-            chaindir = ''
-            blocknetdir = ''
-            blockdxdir = ''
-            daemon = ''        
-            autoconfig.generate_confs(COIN_LIST, p2pport, rpcport, configname, username, password,
-                       chaindir, blocknetdir, blockdxdir, daemon)
+            username = os.environ.get("RPC_USER", "user")
+            password = os.environ.get("RPC_PASSWORD", "pass")
+            XBRIDGE_CONF += "{}\n\n".format(autoconfig.generate_confs(name, p2pport, rpcport, username, password))
+
+    print(XBRIDGE_CONF)
+    autoconfig.save_config(XBRIDGE_CONF, os.path.join('../scripts/config', 'xbridge.conf'))
             
 
 if __name__ == "__main__":

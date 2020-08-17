@@ -21,6 +21,9 @@ services:
       - type: bind
         source: ./plugins
         target: /opt/blockchain/data/plugins
+      - type: bind
+        source: ./scripts/config/xbridge.conf
+        target: /opt/blockchain/data/xbridge.conf
     ports:
       - "41412"
       - "41414"
@@ -29,11 +32,11 @@ services:
 
 {% for daemon in daemons %}
   {{ daemon.name }}:
-    image: blocknetdx/{{ daemon.name }}:latest
+    image: {{ daemon.image }}
     restart: unless-stopped
     volumes:
-      - /media/atcsecure/satassd4tb/{{ daemon.name }}-compose-test/config:/opt/blockchain/config
-      - /media/atcsecure/satassd4tb/{{ daemon.name }}-compose-test/config:/opt/blockchain/data
+      - {{ mount_dir }}/{{ daemon.name }}/config:/opt/blockchain/config
+      - {{ mount_dir }}/{{ daemon.name }}/data:/opt/blockchain/data
     networks:
       - backend
 {% endfor %}

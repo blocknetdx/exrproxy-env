@@ -20,8 +20,8 @@ def initialize_logger(output_dir):
     logger.addHandler(handler)
  
     # create debug file handler and set level to debug
-    handler = logging.FileHandler(os.path.join(output_dir, "debug.log"),"w")
-    handler.setLevel(logging.DEBUG)
-    formatter = logging.Formatter("%(asctime)s %(levelname)s - %(message)s", datefmt='%m/%d/%Y %I:%M:%S %p')
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
+    #handler = logging.FileHandler(os.path.join(output_dir, "debug.log"),"w")
+    #handler.setLevel(logging.DEBUG)
+    #formatter = logging.Formatter("%(asctime)s %(levelname)s - %(message)s", datefmt='%m/%d/%Y %I:%M:%S %p')
+    #handler.setFormatter(formatter)
+    #logger.addHandler(handler)

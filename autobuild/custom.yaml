@@ -3,6 +3,6 @@
   name: dockercompose
   daemons:
     - name: BTC
-      testvalue: 123
+      image: blocknetdx/bitcoin:v0.20.0
     - name: LTC
-      testvalue: 456
+      image: blocknetdx/litecoin:v0.18.1
