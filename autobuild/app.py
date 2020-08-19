@@ -55,6 +55,9 @@ def processcustom(customlist):
                 print("Config for currency {} not found".format(name))
                 return ""
 
+        deploy_eth = os.environ.get("DEPLOY_ETH", "true")
+        customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
+
         custom_template_fname = 'templates/{}'.format(c['j2template'])
         custom_template = J2_ENV.get_template(custom_template_fname)
 
