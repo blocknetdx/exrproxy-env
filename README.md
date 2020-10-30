@@ -1,10 +1,15 @@
-# xrouter-proxy-auto-deploy
+# xrouter-proxy-auto-deploy for use with hydra
 
 # Requirements
 - `Docker`
 - `Docker-Compose`
 - `Servicenode Private Key`
 - `Port 80 must be opened on the host`
+
+# Supports external GETH host using gethexternal w/ deployscript (for use with archival node), otherwise a non geth-instance will be spun up
+```
+./deploy.sh gethexternal
+```
 
 # Recommended Usage
 ```
