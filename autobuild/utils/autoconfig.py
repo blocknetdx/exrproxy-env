@@ -9,22 +9,20 @@ import urllib.request
 import argparse
 import configparser
 
-# MANIFEST_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/manifest.json'
+MANIFEST_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/manifest.json'
 
-# from autobuild-generatetemplates branch (cleaned manifest)
-MANIFEST_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/autobuild-generatetemplates/manifest.json'
 XBRIDGE_CONF_BASE_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/xbridge-confs/'
 
 walletconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/autobuild-generatetemplates/autobuild/templates/wallet.conf.j2"
 xbridgeconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/autobuild-generatetemplates/autobuild/templates/xbridge.conf.j2"
 
-def load_manifest():
-  with urllib.request.urlopen(MANIFEST_URL) as response:
-    data = json.loads(response.read())
+# def load_manifest():
+#   with urllib.request.urlopen(MANIFEST_URL) as response:
+#     data = json.loads(response.read())
     
-  return data
+#   return data
 
-manifest = load_manifest()
+# manifest = load_manifest()
 
 def load_template(template_url):
   # load_template - downloads from url provided and returns the data
@@ -96,23 +94,12 @@ def generate_confs(blockchain, p2pport, rpcport, username, password):
             
             xbridge_json[sym]['Ip'] = blockchain
 
-        chain = next((c for c in manifest if c['ticker'] == blockchain), None)
-        
-        merged_dict = (Merge(chain,xbridge_json[chain['ticker']]))
-
-        coin_title, p, this_coin_version = chain['ver_id'].partition('--')
-
-        try:
-            version_data = merged_dict['versions'][this_coin_version]
-        except Exception as e:
-            print('error, check manifest: {}'.format(chain['ticker']))
-            print(merged_dict['versions'])
-            raise Exception
-
-        updated_dict = Merge(version_data,merged_dict) 
         # generate xbridge config
         xbridge_config = load_template(xbridgeconfj2_url)
         # f = open("xbridge.conf.j2", "r")
         # xbridge_config = f.read()
         xbridge_template = Template(xbridge_config)
-        return xbridge_template.render(updated_dict)
+        
+        chain = list(xbridge_json.keys())[0]
+        xbridge_json[chain]['ticker'] = chain
+        return xbridge_template.render(list(xbridge_json.values())[0])
