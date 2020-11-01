@@ -16,13 +16,6 @@ XBRIDGE_CONF_BASE_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain
 walletconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/autobuild-generatetemplates/autobuild/templates/wallet.conf.j2"
 xbridgeconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/autobuild-generatetemplates/autobuild/templates/xbridge.conf.j2"
 
-# def load_manifest():
-#   with urllib.request.urlopen(MANIFEST_URL) as response:
-#     data = json.loads(response.read())
-    
-#   return data
-
-# manifest = load_manifest()
 
 def load_template(template_url):
   # load_template - downloads from url provided and returns the data
