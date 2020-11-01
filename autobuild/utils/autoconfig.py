@@ -51,10 +51,6 @@ def load_url(load_url):
 def parse_config(config_string):
     return config_string.splitlines()
 
-def Merge(dict1, dict2):
-    res = {**dict1, **dict2}
-    return res
-
 def generate_confs(blockchain, p2pport, rpcport, username, password):
     if blockchain:
         if username is None:
