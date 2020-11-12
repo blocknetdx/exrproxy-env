@@ -69,6 +69,8 @@ services:
       POSTGRES_PASSWORD: password
     volumes:
       - pgdata:/var/lib/postgresql/data
+    expose:
+      - 5432      
     networks:
       - backend
 
