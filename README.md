@@ -38,3 +38,8 @@ export RPC_USER="user"
 export RPC_PASSWORD="password"
 docker-compose -f "docker-compose.yml" up -d --build
 ```
+
+# bring down environment
+```
+docker-compose down
+```
