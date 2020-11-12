@@ -10,6 +10,7 @@ buffer-size = 32768
 set-ph = SERVICENODE_PRIVKEY=${SN_KEY}
 
 set-ph = BLOCKNET_CHAIN=mainnet
+set-ph = PLUGINS=eth_passthrough
 
 set-ph = HANDLE_PAYMENTS=true
 set-ph = HANDLE_PAYMENTS_ENFORCE=true
@@ -159,4 +160,5 @@ set-ph = URL_parity_unsubscribe_HOSTIP=eth_proxy
 set-ph = URL_parity_unsubscribe_PORT=9090
 EOL
 
-supervisord -c /etc/supervisord.conf
+# ensure supervisord runs at pid1
+exec supervisord -c /etc/supervisord.conf
