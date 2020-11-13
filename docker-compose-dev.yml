@@ -1,0 +1,126 @@
+# This dev environment will hookup to a private geth chain to allow
+# local testing.
+version: "3.8"
+services:
+  snode:
+    image: blocknetdx/servicenode:latest
+    entrypoint: /opt/blockchain/start-snode.sh
+    restart: unless-stopped
+    environment:
+      PUBLIC_IP: "${PUBLIC_IP}"
+      RPC_USER: "${RPC_USER}"
+      RPC_PASSWORD: "${RPC_PASSWORD}"
+      SN_NAME: "${SN_NAME}"
+      SN_ADDRESS: "${SN_ADDRESS}"
+      SN_KEY: "${SN_KEY}"
+    volumes:
+      - snode-config:/opt/blockchain/config
+      - snode-data:/opt/blockchain/data
+      - type: bind
+        source: ./scripts
+        target: /opt/blockchain
+      - type: bind
+        source: ./plugins
+        target: /opt/blockchain/data/plugins
+    ports:
+      - "41412"
+      - "41414"
+    networks:
+      - backend
+
+  geth:
+    image: blocknetdx/client-go:dev
+    restart: unless-stopped
+    ports:
+      - "30303:30303"
+      - "30303:30303/udp"
+      - "8545:8545"
+      - "8546:8546"
+      - "8547:8547"
+    volumes:
+      - eth-data:/opt/blockchain
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command: "--datadir /opt/blockchain/data --nousb --allow-insecure-unlock --networkid 41412 --netrestrict 172.17.0.0/24 --netrestrict 172.18.0.0/24 --netrestrict 192.168.1.0/24 --http --http.api personal,eth,net,web3 --http.addr 0.0.0.0 --ws --ws.api personal,eth,net,web3 --ws.addr 0.0.0.0 --nodiscover"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
+    networks:
+      - backend
+
+  postgresql:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: eth
+      POSTGRES_USER: ethproxy
+      POSTGRES_PASSWORD: password
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    expose:
+      - 5432
+    networks:
+      - backend
+
+  eth_payment_api:
+    image: blocknetdx/eth-payment-processor:dev-1
+    restart: unless-stopped
+    environment:
+      ETH_HOST: geth
+      ETH_PORT: 8546
+      PAYMENT_AMOUNT_TIER1: 35
+      PAYMENT_AMOUNT_TIER2: 200
+      DB_HOST: postgresql
+      DB_USERNAME: ethproxy
+      DB_PASSWORD: password
+      DB_DATABASE: eth
+    ports:
+      - "8080"
+    networks:
+      - backend
+
+  xr_proxy:
+    image: blocknetdx/exrproxy:0.7.3-dev
+    entrypoint: /opt/scripts/start-xrproxy.sh
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      RPC_USER: "${RPC_USER}"
+      RPC_PASSWORD: "${RPC_PASSWORD}"
+      SN_KEY: "${SN_KEY}"
+      PAYMENT_PROCESSOR_HOST: eth_payment_api:8080
+      ETH_HOST: http://geth:8545
+      ETH_HOST_USER:
+      ETH_HOST_PASS:
+      ETH_HOST_DISALLOWED_METHODS: eth_accounts,db_putString,db_getString,db_putHex,db_getHex
+      DB_HOST: postgresql
+      DB_USERNAME: ethproxy
+      DB_PASSWORD: password
+      DB_DATABASE: eth
+    volumes:
+      - xrproxy-config:/opt/uwsgi/conf
+      - xrproxy-nginx:/etc/nginx
+      - type: bind
+        source: ./scripts
+        target: /opt/scripts
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+
+volumes:
+  snode-config:
+  snode-data:
+  eth-data:
+  pgdata:
+  xrproxy-config:
+  xrproxy-nginx:
+  scripts:
