@@ -103,7 +103,7 @@ services:
       SN_KEY: "${SN_KEY}"
       GETH_HOST: "${GETH_HOST}"
       PAYMENT_PROCESSOR_HOST: eth_payment_api:8080
-      ETH_HOST: http://geth:8545
+      ETH_HOST: http://${GETH_HOST}:8545
       ETH_HOST_USER:
       ETH_HOST_PASS:
       ETH_HOST_DISALLOWED_METHODS: eth_accounts,db_putString,db_getString,db_putHex,db_getHex
