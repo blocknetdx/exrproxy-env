@@ -43,3 +43,8 @@ docker-compose -f "docker-compose.yml" up -d --build
 ```
 docker-compose down
 ```
+
+# Check geth accounts via console
+```
+function checkAllBalances() { var i =0; eth.accounts.forEach( function(e){ console.log("  eth.accounts["+i+"]: " +  e + " \tbalance: " + web3.fromWei(eth.getBalance(e), "ether") + " ether"); i++; })}; checkAllBalances();
+```
