@@ -92,7 +92,7 @@ services:
       - backend
 
   xr_proxy:
-    image: blocknetdx/exrproxy:0.7.2-dev
+    image: blocknetdx/exrproxy:0.7.3-dev
     entrypoint: /opt/scripts/start-xrproxy.sh
     restart: unless-stopped
     ports:
