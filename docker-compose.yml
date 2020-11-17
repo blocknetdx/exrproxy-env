@@ -75,7 +75,7 @@ services:
       - backend
 
   eth_payment_api:
-    image: blocknetdx/eth-payment-processor:dev-1
+    image: blocknetdx/eth-payment-processor:dev-2
     restart: unless-stopped
     environment:
       ETH_HOST: geth
