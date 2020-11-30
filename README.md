@@ -61,3 +61,11 @@ Creates Hydra Project"
     results: "error":0,"result":{"api_key":"uiF_scQgopWWhgDFT7AMbM2Vf2b66xlfnVrJe6e1gUE","expiry_time":"2020-11-19 22:17:53 EST","payment_address":"0x0x0xxx","payment_amount_tier1":0.073597,"payment_amount_tier2":0.420557,"project_id":"85f1641d-f8ab-4acb-aa00-5d19601a9dd7"}}
 
 ```
+
+# Pricing
+```
+Set these values in USD:
+  - tier1: normal access
+  - tier2: archival access
+https://github.com/blocknetdx/exrproxy-env/blob/master/docker-compose.yml#L83
+```
