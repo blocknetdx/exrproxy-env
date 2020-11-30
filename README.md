@@ -65,7 +65,7 @@ Creates Hydra Project"
 # Pricing
 ```
 Set these values in USD:
-  - tier1: normal access
-  - tier2: archival access
+      PAYMENT_AMOUNT_TIER1: 35
+      PAYMENT_AMOUNT_TIER2: 200
 https://github.com/blocknetdx/exrproxy-env/blob/master/docker-compose.yml#L83
 ```
