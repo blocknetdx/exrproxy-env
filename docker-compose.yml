@@ -91,12 +91,15 @@ services:
       DB_DATABASE: eth
     expose:
       - 8080
+    depends_on:
+      - geth
+      - postgresql
     networks:
       backend:
         ipv4_address: 172.31.0.5
 
   xr_proxy:
-    image: blocknetdx/exrproxy:0.7.4-dev
+    image: blocknetdx/exrproxy:0.7.5
     entrypoint: /opt/scripts/start-xrproxy.sh
     restart: unless-stopped
     ports:
@@ -120,6 +123,9 @@ services:
       - type: bind
         source: ./scripts
         target: /opt/scripts
+    depends_on:
+      - geth
+      - postgresql
     networks:
       frontend:
       backend:
