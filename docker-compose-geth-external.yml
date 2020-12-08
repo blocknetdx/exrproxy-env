@@ -79,7 +79,7 @@ services:
         ipv4_address: 172.31.0.4
 
   eth_payment_api:
-    image: blocknetdx/eth-payment-processor:dev-3
+    image: blocknetdx/eth-payment-processor:dev-4
     restart: unless-stopped
     environment:
       ETH_HOST: "${GETH_HOST}" 
