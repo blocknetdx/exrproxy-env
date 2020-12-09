@@ -66,7 +66,7 @@ services:
         ipv4_address: 172.30.0.4
 
   eth_payment_api:
-    image: blocknetdx/eth-payment-processor:0.5.1
+    image: blocknetdx/eth-payment-processor:0.5.2
     restart: unless-stopped
     environment:
       ETH_HOST: 172.30.0.3
@@ -87,7 +87,7 @@ services:
         ipv4_address: 172.30.0.5
 
   xr_proxy:
-    image: blocknetdx/exrproxy:0.7.7
+    image: blocknetdx/exrproxy:0.7.8
     entrypoint: /opt/scripts/start-xrproxy.sh
     restart: unless-stopped
     ports:
