@@ -87,7 +87,7 @@ services:
         ipv4_address: 172.30.0.5
 
   xr_proxy:
-    image: blocknetdx/exrproxy:0.7.9-dev
+    image: blocknetdx/exrproxy:0.7.9
     entrypoint: /opt/scripts/start-xrproxy.sh
     restart: unless-stopped
     ports:
