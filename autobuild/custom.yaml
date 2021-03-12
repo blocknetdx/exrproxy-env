@@ -4,5 +4,16 @@
   daemons:
     - name: BTC
       image: blocknetdx/bitcoin:v0.20.0
+      config_mount_dir: /test/path1
+      data_mount_dir: /test/path2
     - name: LTC
       image: blocknetdx/litecoin:v0.18.1
+      config_mount_dir: /test/path3
+      data_mount_dir: /test/path4
+
+- volumes:
+  - name: snode
+    config_mount_dir: /test/path5
+    data_mount_dir: /test/path6
+  - name: eth
+    data_mount_dir: /test/path7

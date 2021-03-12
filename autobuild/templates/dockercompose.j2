@@ -13,8 +13,8 @@ services:
       SN_ADDRESS: "${SN_ADDRESS}"
       SN_KEY: "${SN_KEY}"
     volumes:
-      - {{ mount_dir }}/snode/config:/opt/blockchain/config
-      - {{ mount_dir }}/snode/data:/opt/blockchain/data
+      - {{ snode_config_mount_dir }}/snode/config:/opt/blockchain/config
+      - {{ snode_data_mount_dir }}/snode/data:/opt/blockchain/data
       - type: bind
         source: ./scripts
         target: /opt/blockchain
@@ -38,8 +38,8 @@ services:
       - "{{ daemon.rpcPort }}:{{ daemon.rpcPort }}"
       - "{{ daemon.p2pPort }}:{{ daemon.p2pPort }}"
     volumes:
-      - {{ mount_dir }}/{{ daemon.name }}/config:/opt/blockchain/config
-      - {{ mount_dir }}/{{ daemon.name }}/data:/opt/blockchain/data
+      - {{ daemon.config_mount_dir }}/{{ daemon.name }}/config:/opt/blockchain/config
+      - {{ daemon.data_mount_dir }}/{{ daemon.name }}/data:/opt/blockchain/data
     networks:
       - backend
 {% endfor %}
@@ -55,7 +55,7 @@ services:
       - "8546:8546"
       - "8547:8547"
     volumes:
-      - {{ mount_dir }}//ETH:/chaindata
+      - {{ eth_data_mount_dir }}/ETH:/chaindata
     stop_signal: SIGINT
     stop_grace_period: 2m
     command:
@@ -126,6 +126,9 @@ networks:
     driver: bridge
 
 volumes:
+{% if deploy_eth %}
+  eth-data:
   ethproxy-config:
+{% endif %}
   xrproxy-config:
   xrproxy-nginx:
