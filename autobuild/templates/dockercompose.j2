@@ -55,7 +55,7 @@ services:
       - "8546:8546"
       - "8547:8547"
     volumes:
-      - {{ eth_data_mount_dir }}/ETH:/chaindata
+      - {{ geth_data_mount_dir }}/ETH:/chaindata
     stop_signal: SIGINT
     stop_grace_period: 2m
     command:
@@ -92,7 +92,7 @@ services:
     environment:
       eurl: http://geth:8545
     volumes:
-      - ethproxy-config:/opt/app
+      - {{ eth_proxy_config_mount_dir }}:/opt/app
     ports:
       - "9090:8191"
     networks:
@@ -110,8 +110,8 @@ services:
       RPC_PASSWORD: "${RPC_PASSWORD}"
       SN_KEY: "${SN_KEY}"
     volumes:
-      - xrproxy-config:/opt/uwsgi/conf
-      - xrproxy-nginx:/etc/nginx
+      - {{ xrproxy_config_mount_dir }}:/opt/uwsgi/conf
+      - {{ xrproxy_nginx_mount_dir }}:/etc/nginx
       - type: bind
         source: ./scripts
         target: /opt/scripts
@@ -124,11 +124,3 @@ networks:
     driver: bridge
   backend:
     driver: bridge
-
-volumes:
-{% if deploy_eth %}
-  eth-data:
-  ethproxy-config:
-{% endif %}
-  xrproxy-config:
-  xrproxy-nginx:
