@@ -2,6 +2,18 @@
 - j2template: dockercompose.j2
   name: dockercompose
   daemons:
+    - name: SNODE
+      image: blocknetdx/servicenode:latest
+      config_mount_dir: /test/path5
+      data_mount_dir: /test/path6
+    - name: XR_PROXY
+      image: blocknetdx/exrproxy:latest
+      config_mount_dir: /test/path9
+      nginx_mount_dir: /test/path10
+    - name: ETH
+      image: 
+      proxy_config_mount_dir: /test/path8
+      geth_data_mount_dir: /test/path7
     - name: BTC
       image: blocknetdx/bitcoin:v0.20.0
       config_mount_dir: /test/path1
@@ -10,14 +22,3 @@
       image: blocknetdx/litecoin:v0.18.1
       config_mount_dir: /test/path3
       data_mount_dir: /test/path4
-
-- volumes:
-  - name: snode
-    config_mount_dir: /test/path5
-    data_mount_dir: /test/path6
-  - name: eth
-    geth_data_mount_dir: /test/path7
-    eth_proxy_config_mount_dir: /test/path8
-  - name: xrproxy
-    config_mount_dir: /test/path9
-    nginx_mount_dir: /test/path10

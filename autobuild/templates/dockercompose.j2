@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   snode:
-    image: blocknetdx/servicenode:latest
+    image: {{ snode_image }}
     entrypoint: /opt/blockchain/start-snode.sh
     restart: unless-stopped
     environment:
@@ -92,7 +92,7 @@ services:
     environment:
       eurl: http://geth:8545
     volumes:
-      - {{ eth_eth_proxy_config_mount_dir }}:/opt/app
+      - {{ eth_proxy_config_mount_dir }}:/opt/app
     ports:
       - "9090:8191"
     networks:
@@ -100,7 +100,7 @@ services:
 {% endif %}
 
   xr_proxy:
-    image: blocknetdx/exrproxy:latest
+    image: {{ xr_proxy_image }}
     entrypoint: /opt/scripts/start-xrproxy.sh
     restart: unless-stopped
     ports: 
@@ -110,8 +110,8 @@ services:
       RPC_PASSWORD: "${RPC_PASSWORD}"
       SN_KEY: "${SN_KEY}"
     volumes:
-      - {{ xrproxy_config_mount_dir }}:/opt/uwsgi/conf
-      - {{ xrproxy_nginx_mount_dir }}:/etc/nginx
+      - {{ xr_proxy_config_mount_dir }}:/opt/uwsgi/conf
+      - {{ xr_proxy_nginx_mount_dir }}:/etc/nginx
       - type: bind
         source: ./scripts
         target: /opt/scripts

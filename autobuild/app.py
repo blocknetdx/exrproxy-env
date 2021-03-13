@@ -44,24 +44,24 @@ def processcustom(customlist):
     logging.info('processing custom:')
     #customlist[0]['mount_dir'] = os.environ.get("MOUNT_DIR", "/blockchain")
 
-    # volumes from custom.yaml
-    for c in customlist:
-        if 'volumes' in list(c):
-            for i in range(len(c['volumes'])):
-                name = c['volumes'][i]['name']
-                if name == 'eth':
-                    deploy_eth = os.environ.get("DEPLOY_ETH", "true")
-                    customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
-                for j in list(c['volumes'][i]):
-                    if j!='name':
-                        mount_dir = f'{name}_{j}'
-                        customlist[0][mount_dir] = os.environ.get(mount_dir.upper(),c['volumes'][i][j])
+    # # volumes from custom.yaml
+    # for c in customlist:
+    #     if 'volumes' in list(c):
+    #         for i in range(len(c['volumes'])):
+    #             name = c['volumes'][i]['name']
+    #             if name == 'eth':
+    #                 deploy_eth = os.environ.get("DEPLOY_ETH", "true")
+    #                 customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
+    #             for j in list(c['volumes'][i]):
+    #                 if j!='name':
+    #                     mount_dir = f'{name}_{j}'
+    #                     customlist[0][mount_dir] = os.environ.get(mount_dir.upper(),c['volumes'][i][j])
 
-
+    to_del_index = []
     for c in customlist:
-        if 'volumes' not in list(c):
-            for i in range(len(c['daemons'])):
-                name = c['daemons'][i]['name']
+        for i in range(len(c['daemons'])):
+            name = c['daemons'][i]['name']
+            if name.upper() not in ['SNODE','ETH','XR_PROXY']:
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
                     xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(name))
@@ -73,32 +73,44 @@ def processcustom(customlist):
                 except Exception as e:
                     print("Config for currency {} not found".format(name))
                     return ""
-
-            
-
-            custom_template_fname = 'templates/{}'.format(c['j2template'])
-            custom_template = J2_ENV.get_template(custom_template_fname)
-            rendered_data = custom_template.render(c)
-            rendered_filename = '{}{}-custom.yaml'.format(OUTPUT_PATH, c['name'])
-            write_file(rendered_filename, rendered_data)
+            else:
+                to_del_index.append(i)
+                if name.upper() in ['XR_PROXY','SNODE']:
+                    customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
+                if name.upper() == 'ETH':
+                    deploy_eth = os.environ.get("DEPLOY_ETH", "true")
+                    customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
+                for j in list(c['daemons'][i]):
+                    if j not in ['name','image']:
+                        mount_dir = f'{name.lower()}_{j}'
+                        customlist[0][mount_dir] = os.environ.get(mount_dir.upper(),c['daemons'][i][j])
+        to_del_index.sort(reverse=True)
+        for i in to_del_index:
+            del c['daemons'][i]
+        
+        custom_template_fname = 'templates/{}'.format(c['j2template'])
+        custom_template = J2_ENV.get_template(custom_template_fname)
+        rendered_data = custom_template.render(c)
+        rendered_filename = '{}{}-custom.yaml'.format(OUTPUT_PATH, c['name'])
+        write_file(rendered_filename, rendered_data)
 
 
 def processconfigs(datalist):
     XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets=BLOCK"
 
     # print(datalist)
-    for data in datalist:
-        if 'volumes' not in list(data):
-            for daemon in data['daemons']:
-                name = daemon['name']
+    for data in datalist:    
+        for daemon in data['daemons']:
+            name = daemon['name']
+            if name.upper() not in ['SNODE','ETH','XR_PROXY']:
                 XBRIDGE_CONF += ",{}".format(name)
 
     XBRIDGE_CONF += "\n\n{}\n\n".format(autoconfig.generate_confs("BLOCK", 41412, 41414, os.environ.get("RPC_USER", "user"), os.environ.get("RPC_PASSWORD", "pass")))
 
     for data in datalist:
-        if 'volumes' not in list(data):
-            for daemon in data['daemons']:
-                name = daemon['name']
+        for daemon in data['daemons']:
+            name = daemon['name']
+            if name.upper() not in ['SNODE','ETH','XR_PROXY']:
                 p2pport = ''
                 rpcport = ''
                 username = os.environ.get("RPC_USER", "user")
