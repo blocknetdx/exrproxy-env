@@ -49,6 +49,9 @@ def processcustom(customlist):
         if 'volumes' in list(c):
             for i in range(len(c['volumes'])):
                 name = c['volumes'][i]['name']
+                if name == 'eth':
+                    deploy_eth = os.environ.get("DEPLOY_ETH", "true")
+                    customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
                 for j in list(c['volumes'][i]):
                     if j!='name':
                         mount_dir = f'{name}_{j}'
@@ -60,7 +63,7 @@ def processcustom(customlist):
             for i in range(len(c['daemons'])):
                 name = c['daemons'][i]['name']
                 try:
-                    logging.info('fetch template from raw.git')
+                    logging.info(f'fetch template for {name} from raw.git')
                     xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(name))
                     xtemplate = Template(xbridge_text)
                     xresult = xtemplate.render()
@@ -71,8 +74,7 @@ def processcustom(customlist):
                     print("Config for currency {} not found".format(name))
                     return ""
 
-            deploy_eth = os.environ.get("DEPLOY_ETH", "true")
-            customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
+            
 
             custom_template_fname = 'templates/{}'.format(c['j2template'])
             custom_template = J2_ENV.get_template(custom_template_fname)

@@ -15,10 +15,9 @@
   - name: snode
     config_mount_dir: /test/path5
     data_mount_dir: /test/path6
-  - name: geth
-    data_mount_dir: /test/path7
-  - name: eth_proxy
-    config_mount_dir: /test/path8
+  - name: eth
+    geth_data_mount_dir: /test/path7
+    eth_proxy_config_mount_dir: /test/path8
   - name: xrproxy
     config_mount_dir: /test/path9
     nginx_mount_dir: /test/path10

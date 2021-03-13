@@ -55,7 +55,7 @@ services:
       - "8546:8546"
       - "8547:8547"
     volumes:
-      - {{ geth_data_mount_dir }}/ETH:/chaindata
+      - {{ eth_geth_data_mount_dir }}/ETH:/chaindata
     stop_signal: SIGINT
     stop_grace_period: 2m
     command:
@@ -92,7 +92,7 @@ services:
     environment:
       eurl: http://geth:8545
     volumes:
-      - {{ eth_proxy_config_mount_dir }}:/opt/app
+      - {{ eth_eth_proxy_config_mount_dir }}:/opt/app
     ports:
       - "9090:8191"
     networks:
