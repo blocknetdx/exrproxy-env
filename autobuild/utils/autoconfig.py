@@ -20,13 +20,11 @@ xbridgeconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-con
 
 def load_template(template_url):
   # load_template - downloads from url provided and returns the data
-	status = 500
-	while status != 200:
+	while True:
 		response = urllib.request.urlopen(template_url)
 		if response.getcode() == 200:
 			data = response.read()
 			result = data.decode('utf-8')
-			status = 200
 			return result
 		time.sleep(10)
 		
