@@ -9,6 +9,7 @@ import urllib.request
 import argparse
 import configparser
 import time
+import ipcalc
 
 MANIFEST_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/manifest.json'
 
@@ -17,6 +18,10 @@ XBRIDGE_CONF_BASE_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain
 walletconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/autobuild-generatetemplates/autobuild/templates/wallet.conf.j2"
 xbridgeconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/autobuild-generatetemplates/autobuild/templates/xbridge.conf.j2"
 
+
+def random_ip():
+	all_ips = [str(x) for x in ipcalc.Network("172.31.0.0/20")]
+	return(random.choice(all_ips))
 
 def load_template(template_url):
   # load_template - downloads from url provided and returns the data
@@ -54,7 +59,7 @@ def load_url(load_url):
 def parse_config(config_string):
 	return config_string.splitlines()
 
-def generate_confs(blockchain, p2pport, rpcport, username, password):
+def generate_confs(blockchain, p2pport, rpcport, username, password, ip):
 	if blockchain:
 		if username is None:
 			rpcuser = random_gen()
@@ -81,10 +86,10 @@ def generate_confs(blockchain, p2pport, rpcport, username, password):
 		xbridge_json = json.loads(xresult)
 		
 		for sym in xbridge_json:
-			if sym == 'BLOCK':
-				continue
+			# if sym == 'BLOCK':
+			# 	continue
 			
-			xbridge_json[sym]['Ip'] = blockchain
+			xbridge_json[sym]['Ip'] = ip
 
 		# generate xbridge config
 		xbridge_config = load_template(xbridgeconfj2_url)

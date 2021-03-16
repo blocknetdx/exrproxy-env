@@ -1,6 +1,21 @@
 version: "3.8"
 
 services:
+{% for daemon in daemons %}
+  {{ daemon.name }}:
+    image: {{ daemon.image }}
+    restart: unless-stopped
+    ports:
+      - "{{ daemon.rpcPort }}:{{ daemon.rpcPort }}"
+      - "{{ daemon.p2pPort }}:{{ daemon.p2pPort }}"
+    volumes:
+      - {{ daemon.config_mount_dir }}/{{ daemon.name }}/config:/opt/blockchain/config
+      - {{ daemon.data_mount_dir }}/{{ daemon.name }}/data:/opt/blockchain/data
+    networks:
+      backend:
+        ipv4_address: {{ daemon.ip }}
+{% endfor %}
+
   snode:
     image: {{ snode_image }}
     entrypoint: /opt/blockchain/start-snode.sh
@@ -28,21 +43,8 @@ services:
       - "41412:41412"
       - "41414:41414"
     networks:
-      - backend
-
-{% for daemon in daemons %}
-  {{ daemon.name }}:
-    image: {{ daemon.image }}
-    restart: unless-stopped
-    ports:
-      - "{{ daemon.rpcPort }}:{{ daemon.rpcPort }}"
-      - "{{ daemon.p2pPort }}:{{ daemon.p2pPort }}"
-    volumes:
-      - {{ daemon.config_mount_dir }}/{{ daemon.name }}/config:/opt/blockchain/config
-      - {{ daemon.data_mount_dir }}/{{ daemon.name }}/data:/opt/blockchain/data
-    networks:
-      - backend
-{% endfor %}
+      backend:
+        ipv4_address: {{ snode_ip }}
 
 {% if deploy_eth %}
   geth:
@@ -84,19 +86,44 @@ services:
         max-size: "2m"
         max-file: "10"
     networks:
-      - backend
+      backend:
+        ipv4_address: {{ geth_ip }}
 
-  eth_proxy:
-    image: aderks/ethereum-proxy:latest
+  eth_payment_api:
+    image: {{ eth_image }}
     restart: unless-stopped
     environment:
-      eurl: http://geth:8545
-    volumes:
-      - {{ eth_proxy_config_mount_dir }}:/opt/app
-    ports:
-      - "9090:8191"
+      ETH_HOST: {{ geth_ip }}
+      ETH_PORT: 8546
+      PAYMENT_AMOUNT_TIER1: 35
+      PAYMENT_AMOUNT_TIER2: 200
+      DB_HOST: {{ pg_ip }}
+      DB_USERNAME: ethproxy
+      DB_PASSWORD: password
+      DB_DATABASE: eth
+    expose:
+      - 8080
+    depends_on:
+      - geth
+      - postgresql
     networks:
-      - backend
+      backend:
+        ipv4_address: {{ eth_ip }}
+
+  postgresql:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: eth
+      POSTGRES_USER: ethproxy
+      POSTGRES_PASSWORD: password
+    expose:
+      - 5432
+    volumes:
+      - {{ eth_postgresql_data_mount_dir }}:/var/lib/postgresql/data
+    networks:
+      backend:
+        ipv4_address: {{ pg_ip }}
 {% endif %}
 
   xr_proxy:
@@ -109,6 +136,16 @@ services:
       RPC_USER: "${RPC_USER}"
       RPC_PASSWORD: "${RPC_PASSWORD}"
       SN_KEY: "${SN_KEY}"
+      GETH_HOST: {{ geth_ip }}
+      PAYMENT_PROCESSOR_HOST: {{ eth_ip }}:8080
+      ETH_HOST: http://{{ geth_ip }}:8545
+      ETH_HOST_USER:
+      ETH_HOST_PASS:
+      ETH_HOST_DISALLOWED_METHODS: eth_accounts,db_putString,db_getString,db_putHex,db_getHex
+      DB_HOST: {{ pg_ip }}
+      DB_USERNAME: ethproxy
+      DB_PASSWORD: password
+      DB_DATABASE: eth
     volumes:
       - {{ xr_proxy_config_mount_dir }}:/opt/uwsgi/conf
       - {{ xr_proxy_nginx_mount_dir }}:/etc/nginx
@@ -116,11 +153,25 @@ services:
         source: ./scripts
         target: /opt/scripts
     networks:
-      - frontend
-      - backend
+      frontend:
+      backend:
+        ipv4_address: {{ xr_proxy_ip }}
 
 networks:
   frontend:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.41.0.0/24
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "true"
+      com.docker.network.bridge.enable_ip_masquerade: "true"
   backend:
     driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.31.0.0/20
+    driver_opts:
+      com.docker.network.bridge.enable_icc: "true"

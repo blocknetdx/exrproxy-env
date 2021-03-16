@@ -56,7 +56,7 @@ def processcustom(customlist):
     #                 if j!='name':
     #                     mount_dir = f'{name}_{j}'
     #                     customlist[0][mount_dir] = os.environ.get(mount_dir.upper(),c['volumes'][i][j])
-
+    used_ip = {}
     to_del_index = []
     for c in customlist:
         for i in range(len(c['daemons'])):
@@ -70,6 +70,12 @@ def processcustom(customlist):
                     xbridge_json = json.loads(xresult)
                     c['daemons'][i]['p2pPort'] = xbridge_json[name]['p2pPort']
                     c['daemons'][i]['rpcPort'] = xbridge_json[name]['rpcPort']
+                    while True:
+                        custom_ip = autoconfig.random_ip()
+                        if custom_ip not in used_ip.values():
+                            c['daemons'][i]['ip'] = custom_ip
+                            used_ip[name]=custom_ip
+                            break
                 except Exception as e:
                     print("Config for currency {} not found".format(name))
                     return ""
@@ -77,13 +83,27 @@ def processcustom(customlist):
                 to_del_index.append(i)
                 if name.upper() in ['XR_PROXY','SNODE']:
                     customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
+                    while True:
+                        custom_ip = autoconfig.random_ip()
+                        if custom_ip not in used_ip.values():
+                            customlist[0][f'{name.lower()}_ip'] = custom_ip
+                            used_ip[f'{name.lower()}_ip'] = custom_ip
+                            break
                 if name.upper() == 'ETH':
                     deploy_eth = os.environ.get("DEPLOY_ETH", "true")
                     customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
+                    for k in ['PG','ETH','GETH']:
+                        while True:
+                            custom_ip = autoconfig.random_ip()
+                            if custom_ip not in used_ip.values():
+                                customlist[0][f'{k.lower()}_ip'] = custom_ip
+                                used_ip[f'{k.lower()}_ip'] = custom_ip
+                                break
                 for j in list(c['daemons'][i]):
                     if j not in ['name','image']:
                         mount_dir = f'{name.lower()}_{j}'
                         customlist[0][mount_dir] = os.environ.get(mount_dir.upper(),c['daemons'][i][j])
+        
         to_del_index.sort(reverse=True)
         for i in to_del_index:
             del c['daemons'][i]
@@ -94,28 +114,34 @@ def processcustom(customlist):
         rendered_filename = '{}{}-custom.yaml'.format(OUTPUT_PATH, c['name'])
         write_file(rendered_filename, rendered_data)
 
+        return([c])
+
 
 def processconfigs(datalist):
-    XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets=BLOCK"
+    # XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets=BLOCK"
+    XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets="
 
     # print(datalist)
     for data in datalist:    
         for daemon in data['daemons']:
             name = daemon['name']
             if name.upper() not in ['SNODE','ETH','XR_PROXY']:
-                XBRIDGE_CONF += ",{}".format(name)
+                XBRIDGE_CONF += "{},".format(name)
+    XBRIDGE_CONF = XBRIDGE_CONF[:-1]
+    XBRIDGE_CONF += '\n\n'
 
-    XBRIDGE_CONF += "\n\n{}\n\n".format(autoconfig.generate_confs("BLOCK", 41412, 41414, os.environ.get("RPC_USER", "user"), os.environ.get("RPC_PASSWORD", "pass")))
+    # XBRIDGE_CONF += "\n\n{}\n\n".format(autoconfig.generate_confs("BLOCK", 41412, 41414, os.environ.get("RPC_USER", "user"), os.environ.get("RPC_PASSWORD", "pass")))
 
     for data in datalist:
         for daemon in data['daemons']:
             name = daemon['name']
+            ip = daemon['ip']
             if name.upper() not in ['SNODE','ETH','XR_PROXY']:
                 p2pport = ''
                 rpcport = ''
                 username = os.environ.get("RPC_USER", "user")
                 password = os.environ.get("RPC_PASSWORD", "pass")
-                XBRIDGE_CONF += "{}\n\n".format(autoconfig.generate_confs(name, p2pport, rpcport, username, password))
+                XBRIDGE_CONF += "{}\n\n".format(autoconfig.generate_confs(name, p2pport, rpcport, username, password, ip))
 
     autoconfig.save_config(XBRIDGE_CONF, os.path.join('../scripts/config', 'xbridge.conf'))
             
@@ -125,9 +151,11 @@ if __name__ == "__main__":
     if datalist == 'ERROR':
         logging.info('YAML LOAD FAILURE, check yaml format/file')
     else:
-        processcustom(datalist)  # render dockercompose file
+        # print(datalist)
+        data_with_ips = processcustom(datalist)  # render dockercompose file
         # now we need xbridge files
-        processconfigs(datalist)
+        # processconfigs(datalist)
+        processconfigs(data_with_ips)
 
 
 
