@@ -1,4 +1,4 @@
---- # snode daemon list
+--- # snode daemon LIST
 - j2template: dockercompose.j2
   name: dockercompose
   daemons:
