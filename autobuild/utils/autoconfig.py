@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from jinja2 import Template
+import jinja2schema
 import json
 import os, sys, os.path
 import random
@@ -19,7 +20,21 @@ walletconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-conf
 xbridgeconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/autobuild-generatetemplates/autobuild/templates/xbridge.conf.j2"
 
 
+def template_vars(template_path):
+    #jinja2 all variables
+    with open(template_path) as file:
+        contents = file.read()
+        variables = jinja2schema.infer(contents)
+        variables = jinja2schema.to_json_schema(variables)
+        #parse schema
+        d = {}
+        for req in variables['required']:
+        	d[req] = True
+        d['daemons'] = {x:True for x in variables['properties']['daemons']['items']['required']}
+        return(d)
+
 def random_ip():
+	#generate raandom ip from subnet
 	all_ips = [str(x) for x in ipcalc.Network("172.31.0.0/20")]
 	return(random.choice(all_ips))
 
@@ -59,6 +74,7 @@ def load_url(load_url):
 def parse_config(config_string):
 	return config_string.splitlines()
 
+#generate confs IP dependent
 def generate_confs(blockchain, p2pport, rpcport, username, password, ip):
 	if blockchain:
 		if username is None:

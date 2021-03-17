@@ -25,4 +25,5 @@
     - name: BLOCK
       image: blocknetdx/TESTIAMGE
       config_mount_dir: /test/path11
-      data_mount_dir: /test/path12
+      #force error for missconfig
+      # data_mount_dir: /test/path12

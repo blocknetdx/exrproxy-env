@@ -42,6 +42,7 @@ def processcustom(customlist):
     # expects data in yaml, renders j2
     # logging.info('processing custom:'.format(customlist))
     logging.info('processing custom:')
+    print(customlist)
     #customlist[0]['mount_dir'] = os.environ.get("MOUNT_DIR", "/blockchain")
 
     # # volumes from custom.yaml
@@ -58,9 +59,11 @@ def processcustom(customlist):
     #                     customlist[0][mount_dir] = os.environ.get(mount_dir.upper(),c['volumes'][i][j])
     used_ip = {}
     to_del_index = []
+    daemons_list = []
     for c in customlist:
         for i in range(len(c['daemons'])):
             name = c['daemons'][i]['name']
+            #daemon configs
             if name.upper() not in ['SNODE','ETH','XR_PROXY']:
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
@@ -76,10 +79,12 @@ def processcustom(customlist):
                             c['daemons'][i]['ip'] = custom_ip
                             used_ip[name]=custom_ip
                             break
+                    daemons_list.append(name.upper())
                 except Exception as e:
                     print("Config for currency {} not found".format(name))
                     return ""
             else:
+                #others configs
                 to_del_index.append(i)
                 if name.upper() in ['XR_PROXY','SNODE']:
                     customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
@@ -89,6 +94,7 @@ def processcustom(customlist):
                             customlist[0][f'{name.lower()}_ip'] = custom_ip
                             used_ip[f'{name.lower()}_ip'] = custom_ip
                             break
+                #deploy eth configs
                 if name.upper() == 'ETH':
                     deploy_eth = os.environ.get("DEPLOY_ETH", "true")
                     customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
@@ -99,11 +105,33 @@ def processcustom(customlist):
                                 customlist[0][f'{k.lower()}_ip'] = custom_ip
                                 used_ip[f'{k.lower()}_ip'] = custom_ip
                                 break
+                #volumes paths configs
                 for j in list(c['daemons'][i]):
                     if j not in ['name','image']:
                         mount_dir = f'{name.lower()}_{j}'
                         customlist[0][mount_dir] = os.environ.get(mount_dir.upper(),c['daemons'][i][j])
         
+        #check for missed configs
+        #loading template vars
+        template_vars = autoconfig.template_vars('templates/{}'.format(c['j2template']))
+        # print(template_vars)
+        # print(c)
+        for index, var in enumerate(c['daemons']):
+            #check if fake daemon or not (SNODE ETH XR_PROXY)
+            if var['name'] in daemons_list:
+                #compare daemons with template
+                tocomp_a = list(var)
+                tocomp_b = list(template_vars['daemons'])
+                tocomp_a.sort()
+                tocomp_b.sort()
+                if tocomp_a != tocomp_b:
+                    #if daemons missing config add to to_del_index
+                    logging.info(f'invalid config in YAML for: {var["name"]}')
+                    to_del_index.append(index)
+            elif var['name'].upper() in ['XR_PROXY','SNODE','ETH']:
+                continue
+
+        #delete fake daemons SNODE ETH XR_PROXY
         to_del_index.sort(reverse=True)
         for i in to_del_index:
             del c['daemons'][i]
