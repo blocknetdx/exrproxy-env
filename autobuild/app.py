@@ -126,7 +126,7 @@ def processcustom(customlist):
                 tocomp_b.sort()
                 if tocomp_a != tocomp_b:
                     #if daemons missing config add to to_del_index
-                    logging.info(f'invalid config in YAML for: {var["name"]}')
+                    logging.info(f'invalid config in YAML for {var["name"]}:\nmissing {list(set(tocomp_a).symmetric_difference(set(tocomp_b)))}')
                     to_del_index.append(index)
             elif var['name'].upper() in ['XR_PROXY','SNODE','ETH']:
                 continue
