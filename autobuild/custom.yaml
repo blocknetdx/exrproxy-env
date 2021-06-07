@@ -1,0 +1,29 @@
+--- # snode daemon LIST
+- j2template: dockercompose.j2
+  name: dockercompose
+  daemons:
+    - name: SNODE
+      image: blocknetdx/servicenode:latest
+      config_mount_dir: /test/path5
+      data_mount_dir: /test/path6
+    - name: XR_PROXY
+      image: blocknetdx/exrproxy:latest
+      config_mount_dir: /test/path9
+      nginx_mount_dir: /test/path10
+    - name: ETH
+      image: blocknetdx/eth-payment-processor:0.5.2
+      postgresql_data_mount_dir: /test/path8
+      geth_data_mount_dir: /test/path7
+    - name: BTC
+      image: blocknetdx/bitcoin:v0.20.0
+      config_mount_dir: /test/path1
+      data_mount_dir: /test/path2
+    - name: LTC
+      image: blocknetdx/litecoin:v0.18.1
+      config_mount_dir: /test/path3
+      data_mount_dir: /test/path4
+    - name: BLOCK
+      image: blocknetdx/TESTIAMGE
+      config_mount_dir: /test/path11
+      #force error for missconfig
+      # data_mount_dir: /test/path12

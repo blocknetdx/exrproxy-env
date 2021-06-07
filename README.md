@@ -39,6 +39,18 @@ export RPC_PASSWORD="password"
 docker-compose -f "docker-compose.yml" up -d --build
 ```
 
+# Docker-Compose Environment Variables
+* PUBLIC_IP - Your Public IP Address
+* SN_NAME - Desired Servicenode Name
+* SN_KEY - Servicenode Private Key 
+* SN_ADDRESS - Servicenode Address
+* RPC_USER - Desired RPC Username for all daemons
+* RPC_PASSWORD - Desired RPC Password for all daemons
+
+# Auto-Build Environment Variables
+* MOUNT_DIR - Mount directory for daemons (defaults to /blockchain)
+* DEPLOY_ETH - Whether GETH and ETH-Webserver should be deployed (defaults to true)
+
 # bring down environment
 ```
 docker-compose down

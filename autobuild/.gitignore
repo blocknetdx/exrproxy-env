@@ -1,0 +1,4 @@
+debug.log
+*.conf
+dockercompose-custom.yaml
+*.pyc
