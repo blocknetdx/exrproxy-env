@@ -1,3 +1,5 @@
+# This dev environment will hookup to a private geth chain to allow
+# local testing.
 version: "3.8"
 services:
   snode:
@@ -24,11 +26,11 @@ services:
       - "41412:41412"
       - "41414:41414"
     networks:
-      backend:
-        ipv4_address: 172.31.0.2
+      backend_dev:
+        ipv4_address: 172.30.0.2
 
   geth:
-    image: ethereum/client-go:latest
+    image: blocknetdx/client-go:dev
     restart: unless-stopped
     ports:
       - "30303:30303"
@@ -36,31 +38,17 @@ services:
       - "8545:8545"
       - "8546:8546"
       - "8547:8547"
-    volumes:
-      - eth-data:/chaindata
     stop_signal: SIGINT
     stop_grace_period: 2m
-    command: "--nousb --rpc --http --http.api --http.addr=0.0.0.0 --http.vhosts=* --http.corsdomain=* --ws --ws.origins=* --ws.addr=0.0.0.0"
+    command: "--datadir /opt/blockchain/data --nousb --allow-insecure-unlock --networkid 41412 --netrestrict 172.17.0.0/24 --netrestrict 172.30.0.0/24 --netrestrict 172.31.0.0/24 --netrestrict 192.168.1.0/24 --http --http.api personal,eth,net,web3 --http.addr 0.0.0.0 --ws --ws.api personal,eth,net,web3 --ws.addr 0.0.0.0 --nodiscover"
     logging:
       driver: "json-file"
       options:
         max-size: "2m"
         max-file: "10"
     networks:
-      backend:
-        ipv4_address: 172.31.0.3
-
-#  eth_proxy:
-#    image: blocknetdx/exr-eth-webserver:latest
-#    restart: unless-stopped
-#    environment:
-#      eurl: http://172.31.0.3:8545
-#    volumes:
-#      - ethproxy-config:/opt/app
-#    ports:
-#      - "9090:8191"
-#    networks:
-#      - backend
+      backend_dev:
+        ipv4_address: 172.30.0.3
 
   postgresql:
     image: postgres
@@ -72,20 +60,20 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     expose:
-      - 5432      
+      - 5432
     networks:
-      backend:
-        ipv4_address: 172.31.0.4
+      backend_dev:
+        ipv4_address: 172.30.0.4
 
   eth_payment_api:
     image: blocknetdx/eth-payment-processor:0.5.2
     restart: unless-stopped
     environment:
-      ETH_HOST: 172.31.0.3
+      ETH_HOST: 172.30.0.3
       ETH_PORT: 8546
       PAYMENT_AMOUNT_TIER1: 35
       PAYMENT_AMOUNT_TIER2: 200
-      DB_HOST: 172.31.0.4
+      DB_HOST: 172.30.0.4
       DB_USERNAME: ethproxy
       DB_PASSWORD: password
       DB_DATABASE: eth
@@ -95,8 +83,8 @@ services:
       - geth
       - postgresql
     networks:
-      backend:
-        ipv4_address: 172.31.0.5
+      backend_dev:
+        ipv4_address: 172.30.0.5
 
   xr_proxy:
     image: blocknetdx/exrproxy:0.7.9
@@ -108,15 +96,16 @@ services:
       RPC_USER: "${RPC_USER}"
       RPC_PASSWORD: "${RPC_PASSWORD}"
       SN_KEY: "${SN_KEY}"
-      PAYMENT_PROCESSOR_HOST: 172.31.0.5:8080
-      ETH_HOST: http://172.31.0.3:8545
-      ETH_HOST_USER:
-      ETH_HOST_PASS:
+      PAYMENT_PROCESSOR_HOST: 172.30.0.5:8080
+      ETH_HOST: http://172.30.0.3:8545
+      ETH_HOST_USER: test
+      ETH_HOST_PASS: testAbc
       ETH_HOST_DISALLOWED_METHODS: eth_accounts,db_putString,db_getString,db_putHex,db_getHex
-      DB_HOST: 172.31.0.4
+      DB_HOST: 172.30.0.4
       DB_USERNAME: ethproxy
       DB_PASSWORD: password
       DB_DATABASE: eth
+      LOGLEVEL: DEBUG
     volumes:
       - xrproxy-config:/opt/uwsgi/conf
       - xrproxy-nginx:/etc/nginx
@@ -127,26 +116,26 @@ services:
       - geth
       - postgresql
     networks:
-      frontend:
-      backend:
-        ipv4_address: 172.31.0.6
+      frontend_dev:
+      backend_dev:
+        ipv4_address: 172.30.0.6
 
 networks:
-  frontend:
+  frontend_dev:
     driver: bridge
     ipam:
       driver: default
       config:
-        - subnet: 172.41.0.0/24
+        - subnet: 172.40.0.0/24
     driver_opts:
       com.docker.network.bridge.enable_icc: "true"
       com.docker.network.bridge.enable_ip_masquerade: "true"
-  backend:
+  backend_dev:
     driver: bridge
     ipam:
       driver: default
       config:
-        - subnet: 172.31.0.0/24
+        - subnet: 172.30.0.0/24
     driver_opts:
       com.docker.network.bridge.enable_icc: "true"
 

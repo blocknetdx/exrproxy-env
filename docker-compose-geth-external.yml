@@ -27,41 +27,6 @@ services:
       backend:
         ipv4_address: 172.31.0.2
 
-  geth:
-    image: ethereum/client-go:latest
-    restart: unless-stopped
-    ports:
-      - "30303:30303"
-      - "30303:30303/udp"
-      - "8545:8545"
-      - "8546:8546"
-      - "8547:8547"
-    volumes:
-      - eth-data:/chaindata
-    stop_signal: SIGINT
-    stop_grace_period: 2m
-    command: "--nousb --rpc --http --http.api --http.addr=0.0.0.0 --http.vhosts=* --http.corsdomain=* --ws --ws.origins=* --ws.addr=0.0.0.0"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "2m"
-        max-file: "10"
-    networks:
-      backend:
-        ipv4_address: 172.31.0.3
-
-#  eth_proxy:
-#    image: blocknetdx/exr-eth-webserver:latest
-#    restart: unless-stopped
-#    environment:
-#      eurl: http://172.31.0.3:8545
-#    volumes:
-#      - ethproxy-config:/opt/app
-#    ports:
-#      - "9090:8191"
-#    networks:
-#      - backend
-
   postgresql:
     image: postgres
     restart: always
@@ -69,10 +34,10 @@ services:
       POSTGRES_DB: eth
       POSTGRES_USER: ethproxy
       POSTGRES_PASSWORD: password
+    expose:
+      - 5432
     volumes:
       - pgdata:/var/lib/postgresql/data
-    expose:
-      - 5432      
     networks:
       backend:
         ipv4_address: 172.31.0.4
@@ -81,7 +46,7 @@ services:
     image: blocknetdx/eth-payment-processor:0.5.2
     restart: unless-stopped
     environment:
-      ETH_HOST: 172.31.0.3
+      ETH_HOST: "${GETH_HOST}" 
       ETH_PORT: 8546
       PAYMENT_AMOUNT_TIER1: 35
       PAYMENT_AMOUNT_TIER2: 200
@@ -92,7 +57,6 @@ services:
     expose:
       - 8080
     depends_on:
-      - geth
       - postgresql
     networks:
       backend:
@@ -100,7 +64,7 @@ services:
 
   xr_proxy:
     image: blocknetdx/exrproxy:0.7.9
-    entrypoint: /opt/scripts/start-xrproxy.sh
+    entrypoint: /opt/scripts/start-xrproxy-gethext.sh
     restart: unless-stopped
     ports:
       - "80:80"
@@ -108,8 +72,9 @@ services:
       RPC_USER: "${RPC_USER}"
       RPC_PASSWORD: "${RPC_PASSWORD}"
       SN_KEY: "${SN_KEY}"
+      GETH_HOST: "${GETH_HOST}"
       PAYMENT_PROCESSOR_HOST: 172.31.0.5:8080
-      ETH_HOST: http://172.31.0.3:8545
+      ETH_HOST: http://${GETH_HOST}:8545
       ETH_HOST_USER:
       ETH_HOST_PASS:
       ETH_HOST_DISALLOWED_METHODS: eth_accounts,db_putString,db_getString,db_putHex,db_getHex
@@ -124,7 +89,6 @@ services:
         source: ./scripts
         target: /opt/scripts
     depends_on:
-      - geth
       - postgresql
     networks:
       frontend:
@@ -153,7 +117,6 @@ networks:
 volumes:
   snode-config:
   snode-data:
-  eth-data:
   pgdata:
   xrproxy-config:
   xrproxy-nginx:
