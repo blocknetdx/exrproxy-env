@@ -1,0 +1,8 @@
+{"methods":["dxgetlocaltokens",
+            "dxgettokenbalances",
+            "dxgetnetworktokens",
+            "servicenodestatus",
+            "servicenodelist",
+            "getnetworkinfo",
+            "getstakingstatus"]
+  }

@@ -75,40 +75,40 @@ clientrequestlimit=50
 fee=0.0001
 EOL
 
-cat > /opt/blockchain/data/xbridge.conf << EOL
-[Main]
-ExchangeWallets=BLOCK
-FullLog=true
-LogPath=
-ExchangeTax=300
-
-[BLOCK]
-Title=Blocknet
-Ip=snode
-Username=${RPC_USER}
-Password=${RPC_PASSWORD}
-Port=41414
-AddressPrefix=26
-ScriptPrefix=28
-SecretPrefix=154
-COIN=100000000
-MinimumAmount=0
-TxVersion=1
-DustAmount=0
-CreateTxMethod=BTC
-GetNewKeySupported=true
-ImportWithNoScanSupported=true
-MinTxFee=10000
-BlockTime=60
-FeePerByte=20
-Confirmations=0
-Address=
-TxWithTimeField=false
-LockCoinsSupported=false
-JSONVersion=
-ContentType=
-CashAddrPrefix=
-EOL
+#cat > /opt/blockchain/data/xbridge.conf << EOL
+#[Main]
+#ExchangeWallets=BLOCK
+#FullLog=true
+#LogPath=
+#ExchangeTax=300
+#
+#[BLOCK]
+#Title=Blocknet
+#Ip=snode
+#Username=${RPC_USER}
+#Password=${RPC_PASSWORD}
+#Port=41414
+#AddressPrefix=26
+#ScriptPrefix=28
+#SecretPrefix=154
+#COIN=100000000
+#MinimumAmount=0
+#TxVersion=1
+#DustAmount=0
+#CreateTxMethod=BTC
+#GetNewKeySupported=true
+#ImportWithNoScanSupported=true
+#MinTxFee=10000
+#BlockTime=60
+#FeePerByte=20
+#Confirmations=0
+#Address=
+#TxWithTimeField=false
+#LockCoinsSupported=false
+#JSONVersion=
+#ContentType=
+#CashAddrPrefix=
+#EOL
 
 # ensure docker runs daemon as pid1
 exec blocknetd

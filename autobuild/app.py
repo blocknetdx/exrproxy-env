@@ -97,6 +97,7 @@ def processcustom(customlist):
                 #deploy eth configs
                 if name.upper() == 'ETH':
                     deploy_eth = os.environ.get("DEPLOY_ETH", "true")
+                    customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
                     customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
                     for k in ['PG','ETH','GETH']:
                         while True:
