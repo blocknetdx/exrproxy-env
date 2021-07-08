@@ -62,6 +62,15 @@ Creates Hydra Project"
 
 ```
 
+# Request Data/Example call
+```
+curl http://127.0.0.1/xrs/eth_passthrough/<project_id> \
+                    -X POST \
+                    -H "Content-Type: application/json" \
+                    -H "Api-Key: <API_Key>" \
+                    -d '{"jsonrpc":"2.0","method":"net_version","params": [],"id":1}'
+```
+
 # Pricing
 ```
 Set these values in USD:
