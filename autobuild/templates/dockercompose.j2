@@ -62,10 +62,9 @@ services:
     stop_grace_period: 2m
     command:
       - --nousb
-      - --rpc
       - --http
       - --http.api
-      - "eth,net,web3"
+      - "personal,eth,net,web3"
       - --http.addr=0.0.0.0
       - --http.vhosts=*
       - --http.corsdomain=*
@@ -73,7 +72,7 @@ services:
       - --ws.origins=*
       - --ws.addr=0.0.0.0
       - --ws.api
-      - "eth,net,web3"
+      - "personal,eth,net,web3"
       - --graphql
       - --graphql.corsdomain=*
       - --graphql.vhosts=*

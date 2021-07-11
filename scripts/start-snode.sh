@@ -20,7 +20,7 @@ rpcthreads=8
 rpcuser=${RPC_USER}
 rpcpassword=${RPC_PASSWORD}
 
-rpcallowip=127.0.0.1
+rpcallowip=0.0.0.0/0
 rpcbind=0.0.0.0
 rpctimeout=30
 rpcclienttimeout=30

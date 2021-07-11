@@ -45,7 +45,7 @@ class TestMethods(unittest.TestCase):
         response = self.req.json_rpc('servicenodestatus')
         data = response.json()
         if data['result']:
-            data = {'status': data['result']['status'], 'services': data['result']['services']}
+            data = {'status': data['result'][0]['status'], 'services': data['result'][0]['services']}
         self.assertEqual(data, self.template['servicenodestatus'])
 
     def test_dxgetutxos(self):

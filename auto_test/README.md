@@ -1,5 +1,5 @@
 ###Auto tests
-Scripts are used to test the basic functionality of SNODE. 
+Scripts are used to test the basic functionality of SNODE, XROUTER and EXRproxy 
 
 Libs: Unittest, requests, json
 
@@ -8,7 +8,7 @@ Libs: Unittest, requests, json
 unit_test.py - Scripts tests 4 RPC methods.
 The methods are stored in the file template.json.
 
-Exmaple
+Example
 ```bash
 $ python3 unit_test.py
 
@@ -36,7 +36,7 @@ FAILED (failures=1)
 
 ```
 
-testmethods.py - Script sends requests to SNODE using RPC methods. 
+snode_methods.py - Script sends requests to SNODE using RPC methods. 
 The list of methods is located in the file xbridge_methods.json
 It requires 4 arguments: HTTP socket, RPC username, RPC password, file with RPC methods.
 
@@ -55,5 +55,90 @@ Method dxgettokenbalances HTTP status code 200
 
 ```
 
+exr_methods.py - Script sends JSON-RPC requests to EXRpoxy. 
+The list of methods is located in the file exr_methods.json
+It case of the creating a new project it takes 3 arguments:
+
+- command (new_project or project)
+- socket
+- file with RPC methods
+
+```bash
+$ python3 exr_methods.py new_project http://127.0.0.1 exr_methods.json 
+---------------------------------------
+Method request_project HTTP status code 200
+api_key : YR54ZEGcqyCvXcAn0Cj_eYFFzynrPDFpaREo2fa4lH4
+expiry_time : 2021-07-12 00:04:26 EST
+payment_address : 0x811D44BCBC689D50B90F3c391d7E0dB6A7BcDD69
+payment_amount_tier1 : 0.016389
+payment_amount_tier2 : 0.093652
+project_id : 18e05f7a-4445-40de-9b6b-bb24b9a56e5c
+
+```
+
+In case of the getting project data 5 arguments
 
 
+```bash
+$ python3 exr_methods.py project --api-key N8Zk0-hBRqD81dmBDEQP5qUpf9-XKz5eVPcstPkr8C0 --project-id 6228e1ed-1c78-40ca-9813-421d0fdfbfcf  http://127.0.0.1 exr_methods.json
+---------------------------------------
+Method net_version HTTP status code 200
+3
+---------------------------------------
+Method net_peerCount HTTP status code 200
+0x1
+---------------------------------------
+Method eth_accounts HTTP status code 200
+error : Unauthorized User Access
+---------------------------------------
+Method eth_blockNumber HTTP status code 200
+0xa2028a
+---------------------------------------
+Method eth_chainId HTTP status code 200
+0x3
+---------------------------------------
+Method eth_protocolVersion HTTP status code 200
+jsonrpc : 2.0
+id : exr
+error : {'code': -32601, 'message': 'the method eth_protocolVersion does not exist/is not available'}
+---------------------------------------
+Method eth_getBalance HTTP status code 200
+0x4563918244f40000
+```
+
+xrouter_methods.py - Script sends JSON-RPC requests to xrouter.
+
+It takes 3 arguments
+
+- token
+- socket
+- file with RPC methods
+```bash
+$ python3 xrouter_methods.py BLOCK http://127.0.0.1 xrouter_methods.json 
+----------------------------------------
+Method xrGetBlockCount HTTP status code 200
+2058360
+
+----------------------------------------
+Method xrGetBlock HTTP status code 200
+{'hash': '1769e76f5eae6adc7e9d560eacbd8f9860b952b87ff2148ee27127fa3265aa67',
+ 'confirmations': 42, 'strippedsize': 574, 'size': 610, 'weight': 2332, 'height': 2058319, 'version': 536870912,
+  'versionHex': '20000000', 'merkleroot': 'ff8a97aaa6cec24a12b5e2dc659499b4abdbf1961076f5e18c6335a85d0f02ac', 
+  'tx': ['bef2d6a2ab0de2ac2965e6a990c8a7602122dc9a9a0887870c7ca85e7367c895', 
+  '329f014d9d2740a1420c38de17250f146421ce771056855c92eecdec6c338c93'],
+   'time': 1626034093, 'mediantime': 1626033797, 'nonce': 1626034100, 'bits': '1b07cf70',
+    'difficulty': 8390.839923728548, 'chainwork': '0000000000000000000000000000000000000000000000069fa98d424a9ed5ed', 
+    'nTx': 2, 'previousblockhash': 'fdadd2aa4020b21a8906e9c061281681394db3810ef59b2b413ada42cae85670', 
+    'nextblockhash': '7f5c8a57a845df626fa4e4795bb063969f4649f9bef0bf2f1b05c7ca92f462b5'}
+
+---------------------------------------
+Method xrGetTransaction HTTP status code 200
+{'txid': 'bef2d6a2ab0de2ac2965e6a990c8a7602122dc9a9a0887870c7ca85e7367c895', 
+'hash': '4570e372ca87dd137f1f2a4e3e2353fb91b18dd4982d16011156c555c879e2b3', 'version': 1, 'size': 148, 'vsize': 121,
+ 'weight': 484, 'locktime': 0, 'vin': [{'coinbase': '034f681f00', 'sequence': 4294967295}], 
+ 'vout': [{'value': 0.0, 'n': 0, 'scriptPubKey': {'asm': '', 'hex': '', 'type': 'nonstandard'}},
+  {'value': 0.0, 'n': 1, 'scriptPubKey': {'asm': 'OP_RETURN aa21a9edf656f243d45aafd94a02e0051cad8067562583438c90f61ae3a03ce8222523d7',
+   'hex': '6a24aa21a9edf656f243d45aafd94a02e0051cad8067562583438c90f61ae3a03ce8222523d7', 'type': 'nulldata'}}], 
+   'hex': '010000000001010000000000000000000000000000000000000000000000000000000000000000ffffffff05034f681f00ffffffff020000000000000000000000000000000000266a24aa21a9edf656f243d45aafd94a02e0051cad8067562583438c90f61ae3a03ce8222523d70120000000000000000000000000000000000000000000000000000000000000000000000000', 
+   'blockhash': '1769e76f5eae6adc7e9d560eacbd8f9860b952b87ff2148ee27127fa3265aa67', 'confirmations': 42, 'time': 1626034093, 'blocktime': 1626034093}
+```

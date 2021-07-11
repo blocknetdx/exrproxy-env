@@ -7,9 +7,9 @@
       config_mount_dir: /test/path5
       data_mount_dir: /test/path6
     - name: XR_PROXY
-      image: blocknetdx/exrproxy:latest
+      image: blocknetdx/exrproxy:0.7.9
       config_mount_dir: /test/path9
-      nginx_mount_dir: /test/path10
+#      nginx_mount_dir: /test/path10
     - name: ETH
       image: blocknetdx/eth-payment-processor:0.5.2
       postgresql_data_mount_dir: /test/path8
