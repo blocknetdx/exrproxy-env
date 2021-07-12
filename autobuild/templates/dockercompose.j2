@@ -146,7 +146,7 @@ services:
       DB_DATABASE: eth
     volumes:
       - {{ xr_proxy_config_mount_dir }}:/opt/uwsgi/conf
-      - {{ xr_proxy_nginx_mount_dir }}:/etc/nginx
+      - {{ xr_proxy_nginx_mount_dir }}:/etc/nginx/conf.d
       - type: bind
         source: ./scripts
         target: /opt/scripts
