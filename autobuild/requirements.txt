@@ -3,3 +3,4 @@ pyyaml
 jinja2schema
 ipcalc
 six
+markupsafe
