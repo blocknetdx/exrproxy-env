@@ -81,3 +81,44 @@ Set these values in USD:
       PAYMENT_AMOUNT_TIER2: 200
 https://github.com/blocknetdx/exrproxy-env/blob/master/docker-compose.yml#L83
 ```
+
+# Checking stack
+
+There are three python scripts to check API in auto_test directory:
+
+- exr_methods.py - RPC calls to exr
+- xrouter_methods.py - RCP calls to xrouter
+- snode_methods.py - RPC calls to snode 
+
+RPC methods are stored in json files. You are free to add/remove them. 
+
+_More details in auto_test/README.md_
+
+Examples: 
+
+Retrieving the current block height of the longest chain for the specified blockchain.
+_Make sure your xrouter config supports specified blockchain._ 
+```bash 
+python3 xrouter_methods.py LTC http://127.0.0.1 xrouter_methods.json 
+----------------------------------------
+Method xrGetBlockCount HTTP status code 200
+1966098
+
+python3 xrouter_methods.py BTC http://127.0.0.1 xrouter_methods.json 
+----------------------------------------
+Method xrGetBlockCount HTTP status code 200
+2034177
+
+python3 xrouter_methods.py BTC http://127.0.0.1 xrouter_methods.json 
+----------------------------------------
+Method xrGetBlockCount HTTP status code 200
+2034177
+
+python3 exr_methods.py project --api-key N8Zk0-hBRqD81dmBDEQP5qUpf9-XKz5eVPcstPkr8C0 --project-id 6228e1ed-1c78-40ca-9813-421d0fdfbfcf  http://127.0.0.1 exr_methods.json
+---------------------------------------
+Method eth_blockNumber HTTP status code 200
+0xa2028a
+---------------------------------------
+Method eth_chainId HTTP status code 200
+0x3
+```
