@@ -27,18 +27,14 @@ set-ph = RPC_BLOCK_USER=${RPC_USER}
 set-ph = RPC_BLOCK_PASS=${RPC_PASSWORD}
 set-ph = RPC_BLOCK_VER=2.0
 
-set-ph = RPC_BTC_HOSTIP=BTC
-set-ph = RPC_BTC_PORT=8332
-set-ph = RPC_BTC_USER=${RPC_USER}
-set-ph = RPC_BTC_PASS=${RPC_PASSWORD}
-set-ph = RPC_BTC_VER=2.0
+{% for daemon in daemons %}
+set-ph = RPC_{{ daemon.name }}_HOSTIP={{ daemon.name }}
+set-ph = RPC_{{ daemon.name }}_PORT={{ daemon.rpcPort }}
+set-ph = RPC_{{ daemon.name }}_USER=${RPC_USER}
+set-ph = RPC_{{ daemon.name }}_PASS=${RPC_PASSWORD}
+set-ph = RPC_{{ daemon.name }}_VER=2.0
 
-set-ph = RPC_LTC_HOSTIP=LTC
-set-ph = RPC_LTC_PORT=9332
-set-ph = RPC_LTC_USER=${RPC_USER}
-set-ph = RPC_LTC_PASS=${RPC_PASSWORD}
-set-ph = RPC_LTC_VER=2.0
-
+{% endfor %}
 EOL
 # ensure supervisord runs at pid1
 exec supervisord -c /etc/supervisord.conf

@@ -1,5 +1,6 @@
 --- # snode daemon LIST
 - j2template: dockercompose.j2
+  xrproxy_j2template: xrproxy.j2
   name: dockercompose
   daemons:
     - name: XR_PROXY

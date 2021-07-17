@@ -3,7 +3,7 @@ import os
 import json
 import yaml
 import argparse
-#import logging
+import logging
 from jinja2 import Environment, FileSystemLoader, Template
 from utils.loggerinit import *
 from utils import autoconfig
@@ -43,20 +43,6 @@ def processcustom(customlist):
     # logging.info('processing custom:'.format(customlist))
     logging.info('processing custom:')
     print(customlist)
-    #customlist[0]['mount_dir'] = os.environ.get("MOUNT_DIR", "/blockchain")
-
-    # # volumes from custom.yaml
-    # for c in customlist:
-    #     if 'volumes' in list(c):
-    #         for i in range(len(c['volumes'])):
-    #             name = c['volumes'][i]['name']
-    #             if name == 'eth':
-    #                 deploy_eth = os.environ.get("DEPLOY_ETH", "true")
-    #                 customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
-    #             for j in list(c['volumes'][i]):
-    #                 if j!='name':
-    #                     mount_dir = f'{name}_{j}'
-    #                     customlist[0][mount_dir] = os.environ.get(mount_dir.upper(),c['volumes'][i][j])
     used_ip = {}
     to_del_index = []
     daemons_list = []
@@ -115,8 +101,7 @@ def processcustom(customlist):
         #check for missed configs
         #loading template vars
         template_vars = autoconfig.template_vars('templates/{}'.format(c['j2template']))
-        # print(template_vars)
-        # print(c)
+
         for index, var in enumerate(c['daemons']):
             #check if fake daemon or not (SNODE ETH XR_PROXY)
             if var['name'] in daemons_list:
@@ -136,12 +121,18 @@ def processcustom(customlist):
         to_del_index.sort(reverse=True)
         for i in to_del_index:
             del c['daemons'][i]
-        
+
         custom_template_fname = 'templates/{}'.format(c['j2template'])
         custom_template = J2_ENV.get_template(custom_template_fname)
         rendered_data = custom_template.render(c)
         rendered_filename = '{}{}-custom.yaml'.format(OUTPUT_PATH, c['name'])
         write_file(rendered_filename, rendered_data)
+
+        custom_template_uw = J2_ENV.get_template('templates/{}'.format(c['xrproxy_j2template']))
+        rendered_data_uw = custom_template_uw.render(c)
+        rendered_filename_uw = os.path.join('../scripts', 'start-xrproxy.sh')
+        write_file(rendered_filename_uw, rendered_data_uw)
+
 
         return([c])
 
@@ -151,7 +142,7 @@ def processconfigs(datalist):
     XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets="
 
     # print(datalist)
-    for data in datalist:    
+    for data in datalist:
         for daemon in data['daemons']:
             name = daemon['name']
             if name.upper() not in ['SNODE','ETH','XR_PROXY']:

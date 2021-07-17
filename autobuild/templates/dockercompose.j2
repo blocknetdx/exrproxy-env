@@ -5,9 +5,9 @@ services:
   {{ daemon.name }}:
     image: {{ daemon.image }}
     restart: unless-stopped
-    ports:
-      - "{{ daemon.rpcPort }}:{{ daemon.rpcPort }}"
-      - "{{ daemon.p2pPort }}:{{ daemon.p2pPort }}"
+    expose:
+      - {{ daemon.rpcPort }}
+      - {{ daemon.p2pPort }}
     volumes:
       - {{ daemon.config_mount_dir }}/{{ daemon.name }}/config:/opt/blockchain/config
       - {{ daemon.data_mount_dir }}/{{ daemon.name }}/data:/opt/blockchain/data
@@ -39,9 +39,6 @@ services:
       - type: bind
         source: ./scripts/config/xbridge.conf
         target: /opt/blockchain/data/xbridge.conf
-    ports:
-      - "41412:41412"
-      - "41414:41414"
     networks:
       backend:
         ipv4_address: {{ snode_ip }}
@@ -50,12 +47,6 @@ services:
   geth:
     image: ethereum/client-go:latest
     restart: unless-stopped
-    ports:
-      - "30303:30303"
-      - "30303:30303/udp"
-      - "8545:8545"
-      - "8546:8546"
-      - "8547:8547"
     volumes:
       - {{ eth_geth_data_mount_dir }}/ETH:/chaindata
     stop_signal: SIGINT
@@ -115,8 +106,6 @@ services:
       POSTGRES_DB: eth
       POSTGRES_USER: ethproxy
       POSTGRES_PASSWORD: password
-    expose:
-      - 5432
     volumes:
       - {{ eth_postgresql_data_mount_dir }}:/var/lib/postgresql/data
     networks:

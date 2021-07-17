@@ -1,5 +1,6 @@
 --- # snode daemon LIST
 - j2template: dockercompose.j2
+  xrproxy_j2template: xrproxy.j2
   name: dockercompose
   daemons:
     - name: SNODE
@@ -26,4 +27,4 @@
       image: blocknetdx/TESTIAMGE
       config_mount_dir: /test/path11
       #force error for missconfig
-      # data_mount_dir: /test/path12
+      #data_mount_dir: /test/path12
