@@ -128,11 +128,6 @@ def processcustom(customlist):
         rendered_filename = '{}{}-custom.yaml'.format(OUTPUT_PATH, c['name'])
         write_file(rendered_filename, rendered_data)
 
-        custom_template_uw = J2_ENV.get_template('templates/{}'.format(c['xrproxy_j2template']))
-        rendered_data_uw = custom_template_uw.render(c)
-        rendered_filename_uw = os.path.join('../scripts', 'start-xrproxy.sh')
-        write_file(rendered_filename_uw, rendered_data_uw)
-
 
         return([c])
 
@@ -151,20 +146,33 @@ def processconfigs(datalist):
     XBRIDGE_CONF += '\n\n'
 
     # XBRIDGE_CONF += "\n\n{}\n\n".format(autoconfig.generate_confs("BLOCK", 41412, 41414, os.environ.get("RPC_USER", "user"), os.environ.get("RPC_PASSWORD", "pass")))
-
+    XR_TOKENS = ''
     for data in datalist:
         for daemon in data['daemons']:
             name = daemon['name']
             ip = daemon['ip']
             if name.upper() not in ['SNODE','ETH','XR_PROXY']:
+                XR_TOKENS += ','+name
                 p2pport = ''
                 rpcport = ''
-                username = os.environ.get("RPC_USER", "user")
-                password = os.environ.get("RPC_PASSWORD", "pass")
+                username = os.environ.get("RPC_USER", "${RPC_USER}")
+                password = os.environ.get("RPC_PASSWORD", "${RPC_PASSWORD}")
                 XBRIDGE_CONF += "{}\n\n".format(autoconfig.generate_confs(name, p2pport, rpcport, username, password, ip))
 
     autoconfig.save_config(XBRIDGE_CONF, os.path.join('../scripts/config', 'xbridge.conf'))
-            
+
+    custom_template_xr = J2_ENV.get_template('templates/xrouter.j2')
+    XROUTER_CONF = custom_template_xr.render({'XR_TOKENS': XR_TOKENS})
+
+    custom_template_snode = J2_ENV.get_template('templates/snode.j2')
+    rendered_data_snode = custom_template_snode.render({'XROUTER_CONF': XROUTER_CONF,
+                                                        'XBRIDGE_CONF': XBRIDGE_CONF})
+
+    autoconfig.save_config(rendered_data_snode, '../scripts/start-snode.sh')
+
+    custom_template_uw = J2_ENV.get_template('templates/xrproxy.j2')
+    rendered_data_uw = custom_template_uw.render(datalist[0])
+    autoconfig.save_config(rendered_data_uw, '../scripts/start-xrproxy.sh')
 
 if __name__ == "__main__":
     datalist = loadyaml(IMPORTYAML)

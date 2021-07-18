@@ -8,6 +8,12 @@ services:
     expose:
       - {{ daemon.rpcPort }}
       - {{ daemon.p2pPort }}
+    environment:
+      RPC_USER: "${RPC_USER}"
+      RPC_PASSWORD: "${RPC_PASSWORD}"
+      RPC_BIND: 0.0.0.0
+      RPC_ALLOWIP: 0.0.0.0/0
+      RPC_PORT: {{ daemon.rpcPort }}
     volumes:
       - {{ daemon.config_mount_dir }}/{{ daemon.name }}/config:/opt/blockchain/config
       - {{ daemon.data_mount_dir }}/{{ daemon.name }}/data:/opt/blockchain/data

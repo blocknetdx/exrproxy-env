@@ -1,0 +1,53 @@
+#!/bin/bash
+
+cat > /opt/blockchain/config/blocknet.conf << EOL
+datadir=/opt/blockchain/data
+
+maxmempoolxbridge=128
+
+port=41412
+rpcport=41414
+
+daemon=0
+listen=1
+server=1
+logtimestamps=1
+logips=1
+servicenode=1
+xrouter=1
+rpcthreads=8
+
+rpcuser=${RPC_USER}
+rpcpassword=${RPC_PASSWORD}
+
+rpcallowip=0.0.0.0/0
+rpcbind=0.0.0.0
+rpctimeout=30
+rpcclienttimeout=30
+EOL
+
+cat > /opt/blockchain/data/servicenode.conf << EOL
+# Service Node config
+# Format: alias tier snodekey address
+#   - alias can be any name, no spaces
+#   - tier can be either SPV or OPEN
+#   - snodekey must be a valid base58 encoded private key
+#   - address must be a valid base58 encoded public key that contains the service node collateral
+# SPV tier requires 5000 BLOCK collateral and an associated BLOCK address and can charge fees for services
+# OPEN tier doesn't require any collateral, can't charge fees, and can only support XCloud plugins
+# Example: dev OPEN 6BeBjrnd4DP5rEvUtxBQVu1DTPXUn6mCY5kPB2DWiy9CwEB2qh1
+# Example: xrouter SPV 6B4VvHTn6BbHM3DRsf6M3Sk3jLbgzm1vp5jNe9ZYZocSyRDx69d Bj2w9gHtGp4FbVdR19tJZ9UHwWQhDXxGCM
+
+${SN_NAME} SPV ${SN_KEY} ${SN_ADDRESS}
+EOL
+
+cat > /opt/blockchain/data/xrouter.conf << EOL
+{{ XROUTER_CONF }}
+EOL
+
+cat > /opt/blockchain/data/xbridge.conf << EOL
+{{ XBRIDGE_CONF }}
+EOL
+
+# ensure docker runs daemon as pid1
+exec blocknetd
