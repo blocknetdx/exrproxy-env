@@ -8,7 +8,7 @@ services:
     expose:
       - {{ daemon.rpcPort }}
       - {{ daemon.p2pPort }}
-    entrypoint:  ["{{ daemon.binFile }}"]
+    entrypoint: ["{{ daemon.binFile }}"]
     command:
       -daemon=0
       -rpcuser=${RPC_USER}

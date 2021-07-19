@@ -46,6 +46,12 @@ def processcustom(customlist):
     used_ip = {}
     to_del_index = []
     daemons_list = []
+    daemonFiles = {}
+    manifest_config = autoconfig.load_template(autoconfig.manifest_content())
+    manifest = json.loads(Template(manifest_config).render())
+    for blockchain in manifest:
+        daemonFiles[blockchain['ticker']] = blockchain['conf_name'].split('.conf')[0]+'d'
+
     for c in customlist:
         for i in range(len(c['daemons'])):
             name = c['daemons'][i]['name']
@@ -59,7 +65,7 @@ def processcustom(customlist):
                     xbridge_json = json.loads(xresult)
                     c['daemons'][i]['p2pPort'] = xbridge_json[name]['p2pPort']
                     c['daemons'][i]['rpcPort'] = xbridge_json[name]['rpcPort']
-                    c['daemons'][i]['binFile'] = xbridge_json[name]['Title'].lower()+'d'
+                    c['daemons'][i]['binFile'] = daemonFiles[name]
                     while True:
                         custom_ip = autoconfig.random_ip()
                         if custom_ip not in used_ip.values():

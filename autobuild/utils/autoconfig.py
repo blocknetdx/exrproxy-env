@@ -12,7 +12,7 @@ import configparser
 import time
 import ipcalc
 
-MANIFEST_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/manifest.json'
+MANIFEST_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/manifest-latest.json'
 
 XBRIDGE_CONF_BASE_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/xbridge-confs/'
 
@@ -51,6 +51,8 @@ def load_template(template_url):
 def chain_lookup(s):
 	return "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/autobuild-generatetemplates/autobuild/configs/{}.base.j2".format(s.lower())
 
+def manifest_content():
+	return MANIFEST_URL
 
 def random_gen(size=32, chars=string.ascii_uppercase + string.digits + string.ascii_lowercase):
 	return ''.join(random.choice(chars) for x in range(size))
