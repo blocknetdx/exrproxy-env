@@ -59,6 +59,7 @@ def processcustom(customlist):
                     xbridge_json = json.loads(xresult)
                     c['daemons'][i]['p2pPort'] = xbridge_json[name]['p2pPort']
                     c['daemons'][i]['rpcPort'] = xbridge_json[name]['rpcPort']
+                    c['daemons'][i]['binFile'] = xbridge_json[name]['Title'].lower()+'d'
                     while True:
                         custom_ip = autoconfig.random_ip()
                         if custom_ip not in used_ip.values():
