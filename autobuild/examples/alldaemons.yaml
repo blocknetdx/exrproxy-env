@@ -15,7 +15,7 @@
       config_mount_dir: /snode
       data_mount_dir: /snode
     - name: BTC
-      image: blocknetdx/bitcoin:latest
+      image: blocknetdx/bitcoin:v0.20.0
       config_mount_dir: /snode
       data_mount_dir: /snode
     - name: LTC
