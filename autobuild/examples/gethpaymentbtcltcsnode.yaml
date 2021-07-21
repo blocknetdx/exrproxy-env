@@ -1,0 +1,25 @@
+--- # snode daemon LIST
+- j2template: dockercompose.j2
+  name: dockercompose
+  daemons:
+    - name: XR_PROXY
+      image: blocknetdx/exrproxy:0.7.9
+      config_mount_dir: /media/atcsecure/data/snode/xr_proxy/config
+      nginx_mount_dir: /media/atcsecure/data/snode/xr_proxy/nginx
+    - name: ETH
+      image: blocknetdx/eth-payment-processor:0.5.2
+      postgresql_data_mount_dir: /snode/eth_pymt_db
+      geth_data_mount_dir: /snode
+    - name: SNODE
+      image: blocknetdx/servicenode:latest
+      config_mount_dir: /media/atcsecure/data/snode
+      data_mount_dir: /media/atcsecure/data/snode
+    - name: BTC
+      image: blocknetdx/bitcoin:latest
+      config_mount_dir: /media/atcsecure/data/snode
+      data_mount_dir: /media/atcsecure/data/snode
+    - name: LTC
+      image: blocknetdx/litecoin:v0.18.1
+      config_mount_dir: /media/atcsecure/data/snode
+      data_mount_dir: /media/atcsecure/data/snode
+
