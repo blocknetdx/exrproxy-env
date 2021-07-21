@@ -15,7 +15,7 @@
       config_mount_dir: /media/atcsecure/data/snode
       data_mount_dir: /media/atcsecure/data/snode
     - name: BTC
-      image: blocknetdx/bitcoin:latest
+      image: blocknetdx/bitcoin:v0.20.0
       config_mount_dir: /media/atcsecure/data/snode
       data_mount_dir: /media/atcsecure/data/snode
     - name: LTC
