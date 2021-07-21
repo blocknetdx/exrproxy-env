@@ -1,0 +1,5 @@
+{"dxgetlocaltokens": ["BLOCK", "BTC", "LTC"],
+ "dxgettokenbalances": {"Wallet": "0.000000", "BLOCK": "0.000000", "BTC": "0.000000", "LTC": "0.000000"},
+ "servicenodestatus": {"status": "running", "services": ["BLOCK", "BTC", "LTC"]},
+ "dxgetutxos": []
+}

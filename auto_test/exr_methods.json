@@ -1,0 +1,8 @@
+{"methods":{"net_version": [],
+            "net_peerCount": [],
+            "eth_accounts": [],
+            "eth_blockNumber": [],
+            "eth_chainId": [],
+            "eth_protocolVersion": [],
+            "eth_getBalance": ["0x724af116B6Bf53875028214c94145Ee5BaE40263", "latest"]}
+  }
