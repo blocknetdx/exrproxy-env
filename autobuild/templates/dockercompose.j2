@@ -8,16 +8,19 @@ services:
     expose:
       - {{ daemon.rpcPort }}
       - {{ daemon.p2pPort }}
-    entrypoint: ["{{ daemon.binFile }}"]
+    entrypoint: /opt/blockchain/start-{{ daemon.configName }}.sh
     command:
-      -daemon=0
-      -rpcuser=${RPC_USER}
-      -rpcpassword=${RPC_PASSWORD}
-      -rpcbind=0.0.0.0
-      -rpcallowip=172.31.0.0/20
+      - {{ daemon.binFile }}
+    environment:
+      RPC_USER: "${RPC_USER}"
+      RPC_PASSWORD: "${RPC_PASSWORD}"
+      RPC_ALLOWIP: 172.31.0.0/20
     volumes:
       - {{ daemon.config_mount_dir }}/{{ daemon.name }}/config:/opt/blockchain/config
       - {{ daemon.data_mount_dir }}/{{ daemon.name }}/data:/opt/blockchain/data
+      - type: bind
+        source: ./scripts/entrypoints/start-{{ daemon.configName }}.sh
+        target: /opt/blockchain/start-{{ daemon.configName }}.sh
     networks:
       backend:
         ipv4_address: {{ daemon.ip }}

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import stat
 import json
 import yaml
 import argparse
@@ -50,7 +51,7 @@ def processcustom(customlist):
     manifest_config = autoconfig.load_template(autoconfig.manifest_content())
     manifest = json.loads(Template(manifest_config).render())
     for blockchain in manifest:
-        daemonFiles[blockchain['ticker']] = blockchain['conf_name'].split('.conf')[0]+'d'
+        daemonFiles[blockchain['ticker']] = blockchain['conf_name']
 
     for c in customlist:
         for i in range(len(c['daemons'])):
@@ -63,9 +64,12 @@ def processcustom(customlist):
                     xtemplate = Template(xbridge_text)
                     xresult = xtemplate.render()
                     xbridge_json = json.loads(xresult)
+
                     c['daemons'][i]['p2pPort'] = xbridge_json[name]['p2pPort']
                     c['daemons'][i]['rpcPort'] = xbridge_json[name]['rpcPort']
-                    c['daemons'][i]['binFile'] = daemonFiles[name]
+                    c['daemons'][i]['binFile'] = daemonFiles[name].split('.conf')[0]+'d'
+                    c['daemons'][i]['configName'] = daemonFiles[name].split('.conf')[0]
+
                     while True:
                         custom_ip = autoconfig.random_ip()
                         if custom_ip not in used_ip.values():
@@ -135,7 +139,6 @@ def processcustom(customlist):
         rendered_filename = '{}{}-custom.yaml'.format(OUTPUT_PATH, c['name'])
         write_file(rendered_filename, rendered_data)
 
-
         return([c])
 
 
@@ -143,16 +146,26 @@ def processconfigs(datalist):
     # XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets=BLOCK"
     XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets="
 
+    custom_template_bc = J2_ENV.get_template('templates/blockchain_config.j2')
     # print(datalist)
+
     for data in datalist:
         for daemon in data['daemons']:
             name = daemon['name']
             if name.upper() not in ['SNODE','ETH','XR_PROXY']:
                 XBRIDGE_CONF += "{},".format(name)
+
+                rendered_data_bc = custom_template_bc.render(daemon)
+                config_name = '../scripts/entrypoints/start-{}.sh'.format(daemon['configName'])
+                logging.info('Creating File: {}'.format(config_name))
+                autoconfig.save_config(rendered_data_bc, config_name)
+                st = os.stat(config_name)
+                os.chmod(config_name, st.st_mode | stat.S_IEXEC)
+
+
     XBRIDGE_CONF = XBRIDGE_CONF[:-1]
     XBRIDGE_CONF += '\n\n'
 
-    # XBRIDGE_CONF += "\n\n{}\n\n".format(autoconfig.generate_confs("BLOCK", 41412, 41414, os.environ.get("RPC_USER", "user"), os.environ.get("RPC_PASSWORD", "pass")))
     XR_TOKENS = ''
     for data in datalist:
         for daemon in data['daemons']:
@@ -165,6 +178,7 @@ def processconfigs(datalist):
                 username = os.environ.get("RPC_USER", "${RPC_USER}")
                 password = os.environ.get("RPC_PASSWORD", "${RPC_PASSWORD}")
                 XBRIDGE_CONF += "{}\n\n".format(autoconfig.generate_confs(name, p2pport, rpcport, username, password, ip))
+                logging.info('Add Xbridge: {}'.format(name))
 
     autoconfig.save_config(XBRIDGE_CONF, os.path.join('../scripts/config', 'xbridge.conf'))
 

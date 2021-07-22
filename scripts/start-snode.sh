@@ -48,7 +48,7 @@ cat > /opt/blockchain/data/xrouter.conf << EOL
 #! host=mynode.example.com
 #! host=208.67.222.222
 host=${PUBLIC_IP}
-wallets=BLOCK
+wallets=BLOCK ,BTC,LTC
 #! plugins=eth_accounts,eth_blockNumber,eth_call,eth_chainId,eth_estimateGas,eth_gasPrice,eth_getBalance,eth_getBlockByHash,eth_getBlockByNumber,eth_getBlockTransactionCountByHash,eth_getBlockTransactionCountByNumber,eth_getCode,eth_getLogs,eth_getStorageAt,eth_getTransactionByBlockHashAndIndex,eth_getTransactionByBlockNumberAndIndex,eth_getTransactionByHash,eth_getTransactionCount,eth_getTransactionReceipt,eth_getUncleByBlockHashAndIndex,eth_getUncleByBlockNumberAndIndex,eth_getUncleCountByBlockHash,eth_getUncleCountByBlockNumber,eth_getWork,eth_hashrate,eth_mining,eth_protocolVersion,eth_sendRawTransaction,eth_submitWork,eth_syncing,eth_uninstallFilter,net_listening,net_peerCount,net_version,web3_clientVersion,web3_sha3,parity_allTransactionHashes,parity_allTransactions,eth_newBlockFilter,eth_newPendingTransactionFilter,eth_getFilterChanges,eth_getFilterLogs,eth_newFilter,eth_unsubscribe,parity_unsubscribe
 plugins=eth_passthrough
 
@@ -75,40 +75,59 @@ clientrequestlimit=50
 fee=0.0001
 EOL
 
-#cat > /opt/blockchain/data/xbridge.conf << EOL
-#[Main]
-#ExchangeWallets=BLOCK
-#FullLog=true
-#LogPath=
-#ExchangeTax=300
-#
-#[BLOCK]
-#Title=Blocknet
-#Ip=snode
-#Username=${RPC_USER}
-#Password=${RPC_PASSWORD}
-#Port=41414
-#AddressPrefix=26
-#ScriptPrefix=28
-#SecretPrefix=154
-#COIN=100000000
-#MinimumAmount=0
-#TxVersion=1
-#DustAmount=0
-#CreateTxMethod=BTC
-#GetNewKeySupported=true
-#ImportWithNoScanSupported=true
-#MinTxFee=10000
-#BlockTime=60
-#FeePerByte=20
-#Confirmations=0
-#Address=
-#TxWithTimeField=false
-#LockCoinsSupported=false
-#JSONVersion=
-#ContentType=
-#CashAddrPrefix=
-#EOL
+cat > /opt/blockchain/data/xbridge.conf << EOL
+[Main]
+FullLog=true
+LogPath=
+ExchangeTax=300
+ExchangeWallets=BTC,LTC
+
+[BTC]
+Title=Bitcoin
+Address=
+Ip=172.31.7.23
+Port=8332
+Username=${RPC_USER}
+Password=${RPC_PASSWORD}
+AddressPrefix=0
+ScriptPrefix=5
+SecretPrefix=128
+COIN=100000000
+MinimumAmount=0
+TxVersion=2
+DustAmount=0
+CreateTxMethod=BTC
+GetNewKeySupported=false
+ImportWithNoScanSupported=false
+MinTxFee=12000
+BlockTime=600
+FeePerByte=60
+Confirmations=0
+
+[LTC]
+Title=Litecoin
+Address=
+Ip=172.31.14.166
+Port=9332
+Username=${RPC_USER}
+Password=${RPC_PASSWORD}
+AddressPrefix=48
+ScriptPrefix=50
+SecretPrefix=176
+COIN=100000000
+MinimumAmount=0
+TxVersion=2
+DustAmount=0
+CreateTxMethod=BTC
+GetNewKeySupported=true
+ImportWithNoScanSupported=true
+MinTxFee=5000
+BlockTime=150
+FeePerByte=10
+Confirmations=0
+
+
+EOL
 
 # ensure docker runs daemon as pid1
 exec blocknetd

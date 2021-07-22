@@ -1,0 +1,31 @@
+#!/bin/bash
+
+cat > /opt/blockchain/config/{{ configName }}.conf << EOL
+datadir=/opt/blockchain/data
+
+dbcache=256
+maxmempool=512
+
+maxmempoolxbridge=128
+
+port={{ p2pPort }}
+rpcport={{ rpcPort }}
+
+daemon=0
+listen=1
+server=1
+maxconnections=16
+logtimestamps=1
+logips=1
+
+rpcuser=${RPC_USER}
+rpcpassword=${RPC_PASSWORD}
+
+rpcallowip=${RPC_ALLOWIP}
+rpcbind=0.0.0.0
+rpctimeout=15
+rpcclienttimeout=15
+EOL
+
+# ensure docker runs daemon as pid1
+exec $1
