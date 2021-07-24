@@ -69,6 +69,17 @@ def processcustom(customlist):
                     c['daemons'][i]['rpcPort'] = xbridge_json[name]['rpcPort']
                     c['daemons'][i]['binFile'] = daemonFiles[name].split('.conf')[0]+'d'
                     c['daemons'][i]['configName'] = daemonFiles[name].split('.conf')[0]
+                    tag = c['daemons'][i]['image'].split(':')[1]
+
+                    if tag != 'latest':
+                        c['daemons'][i]['deprecatedrpc'] = xbridge_json[name]['versions'][tag]['deprecatedrpc']
+                        c['daemons'][i]['legacy'] = xbridge_json[name]['versions'][tag]['legacy']
+                    else:
+                        version_list = list(xbridge_json[name]['versions'])
+                        version_list.sort()
+                        tag = version_list[-1]
+                        c['daemons'][i]['deprecatedrpc'] = xbridge_json[name]['versions'][tag]['deprecatedrpc']
+                        c['daemons'][i]['legacy'] = xbridge_json[name]['versions'][tag]['legacy']
 
                     while True:
                         custom_ip = autoconfig.random_ip()
@@ -77,6 +88,7 @@ def processcustom(customlist):
                             used_ip[name]=custom_ip
                             break
                     daemons_list.append(name.upper())
+
                 except Exception as e:
                     print("Config for currency {} not found".format(name))
                     return ""
@@ -121,7 +133,7 @@ def processcustom(customlist):
                 tocomp_b = list(template_vars['daemons'])
                 tocomp_a.sort()
                 tocomp_b.sort()
-                if tocomp_a != tocomp_b:
+                if set(tocomp_b).issubset(tocomp_a) == False:
                     #if daemons missing config add to to_del_index
                     logging.info(f'invalid config in YAML for {var["name"]}:\nmissing {list(set(tocomp_a).symmetric_difference(set(tocomp_b)))}')
                     to_del_index.append(index)
@@ -146,19 +158,20 @@ def processconfigs(datalist):
     # XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets=BLOCK"
     XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets="
 
-    custom_template_bc = J2_ENV.get_template('templates/blockchain_config.j2')
-    # print(datalist)
+    custom_template_ec = J2_ENV.get_template('templates/entrypoint_config.j2')
 
     for data in datalist:
         for daemon in data['daemons']:
             name = daemon['name']
             if name.upper() not in ['SNODE','ETH','XR_PROXY']:
                 XBRIDGE_CONF += "{},".format(name)
+                template_wc = Template(autoconfig.load_template(autoconfig.wallet_config())).render(daemon)
 
-                rendered_data_bc = custom_template_bc.render(daemon)
+                rendered_data_ec = custom_template_ec.render({'walletConfig': template_wc,
+                                                              'configName': daemon['configName']})
                 config_name = '../scripts/entrypoints/start-{}.sh'.format(daemon['configName'])
                 logging.info('Creating File: {}'.format(config_name))
-                autoconfig.save_config(rendered_data_bc, config_name)
+                autoconfig.save_config(rendered_data_ec, config_name)
                 st = os.stat(config_name)
                 os.chmod(config_name, st.st_mode | stat.S_IEXEC)
 
