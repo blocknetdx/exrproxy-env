@@ -26,20 +26,27 @@ services:
         ipv4_address: {{ daemon.ip }}
 {% endfor %}
 
-  snode:
-    image: {{ snode_image }}
-    entrypoint: /opt/blockchain/start-snode.sh
+  {{ blocknet_node }}:
+    image: {{ blocknet_image }}
+    entrypoint: /opt/blockchain/start-{{ blocknet_node }}.sh
     restart: unless-stopped
     environment:
       PUBLIC_IP: "${PUBLIC_IP}"
       RPC_USER: "${RPC_USER}"
       RPC_PASSWORD: "${RPC_PASSWORD}"
+{% if blocknet_node == 'snode' %}
       SN_NAME: "${SN_NAME}"
       SN_ADDRESS: "${SN_ADDRESS}"
       SN_KEY: "${SN_KEY}"
+{% endif %}
     volumes:
+{% if blocknet_node == 'snode' %}
       - {{ snode_config_mount_dir }}/snode/config:/opt/blockchain/config
       - {{ snode_data_mount_dir }}/snode/data:/opt/blockchain/data
+{% else %}
+      - {{ tnode_config_mount_dir }}/tnode/config:/opt/blockchain/config
+      - {{ tnode_data_mount_dir }}/tnode/data:/opt/blockchain/data
+{% endif %}
       - type: bind
         source: ./scripts
         target: /opt/blockchain
@@ -51,8 +58,11 @@ services:
         target: /opt/blockchain/data/xbridge.conf
     networks:
       backend:
+{% if blocknet_node == 'snode' %}
         ipv4_address: {{ snode_ip }}
-
+{% else %}
+        ipv4_address: {{ tnode_ip }}
+{% endif %}
 {% if deploy_eth %}
   geth:
     image: ethereum/client-go:latest

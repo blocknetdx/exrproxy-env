@@ -57,7 +57,7 @@ def processcustom(customlist):
         for i in range(len(c['daemons'])):
             name = c['daemons'][i]['name']
             #daemon configs
-            if name.upper() not in ['SNODE','ETH','XR_PROXY']:
+            if name.upper() not in ['SNODE','TNODE','ETH','XR_PROXY']:
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
                     xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(name))
@@ -95,8 +95,13 @@ def processcustom(customlist):
             else:
                 #others configs
                 to_del_index.append(i)
-                if name.upper() in ['XR_PROXY','SNODE']:
-                    customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
+                if name.upper() in ['XR_PROXY','SNODE','TNODE']:
+                    if name.upper() != 'XR_PROXY':
+                        customlist[0]['blocknet_image'] = c['daemons'][i]['image']
+                        customlist[0]['blocknet_node'] = name.lower()
+                    else:
+                        customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
+                    print(customlist[0])
                     while True:
                         custom_ip = autoconfig.random_ip()
                         if custom_ip not in used_ip.values():
@@ -163,7 +168,7 @@ def processconfigs(datalist):
     for data in datalist:
         for daemon in data['daemons']:
             name = daemon['name']
-            if name.upper() not in ['SNODE','ETH','XR_PROXY']:
+            if name.upper() not in ['TNODE','SNODE','ETH','XR_PROXY']:
                 XBRIDGE_CONF += "{},".format(name)
                 template_wc = Template(autoconfig.load_template(autoconfig.wallet_config())).render(daemon)
 
@@ -184,7 +189,7 @@ def processconfigs(datalist):
         for daemon in data['daemons']:
             name = daemon['name']
             ip = daemon['ip']
-            if name.upper() not in ['SNODE','ETH','XR_PROXY']:
+            if name.upper() not in ['TNODE','SNODE','ETH','XR_PROXY']:
                 XR_TOKENS += ','+name
                 p2pport = ''
                 rpcport = ''
@@ -198,11 +203,11 @@ def processconfigs(datalist):
     custom_template_xr = J2_ENV.get_template('templates/xrouter.j2')
     XROUTER_CONF = custom_template_xr.render({'XR_TOKENS': XR_TOKENS})
 
-    custom_template_snode = J2_ENV.get_template('templates/snode.j2')
+    custom_template_snode = J2_ENV.get_template(f'templates/{datalist[0]["blocknet_node"]}.j2')
     rendered_data_snode = custom_template_snode.render({'XROUTER_CONF': XROUTER_CONF,
                                                         'XBRIDGE_CONF': XBRIDGE_CONF})
 
-    autoconfig.save_config(rendered_data_snode, '../scripts/start-snode.sh')
+    autoconfig.save_config(rendered_data_snode, f'../scripts/start-{datalist[0]["blocknet_node"]}.sh')
 
     custom_template_uw = J2_ENV.get_template('templates/xrproxy.j2')
     rendered_data_uw = custom_template_uw.render(datalist[0])

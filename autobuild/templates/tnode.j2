@@ -1,0 +1,39 @@
+#!/bin/bash
+
+cat > /opt/blockchain/config/blocknet.conf << EOL
+datadir=/opt/blockchain/data
+
+maxmempoolxbridge=128
+
+port=41412
+rpcport=41414
+
+daemon=0
+listen=1
+server=1
+logtimestamps=1
+logips=1
+servicenode=0
+xrouter=1
+rpcthreads=8
+
+rpcuser=${RPC_USER}
+rpcpassword=${RPC_PASSWORD}
+
+rpcallowip=0.0.0.0/0
+rpcbind=0.0.0.0
+rpctimeout=30
+rpcclienttimeout=30
+EOL
+
+
+cat > /opt/blockchain/data/xrouter.conf << EOL
+{{ XROUTER_CONF }}
+EOL
+
+cat > /opt/blockchain/data/xbridge.conf << EOL
+{{ XBRIDGE_CONF }}
+EOL
+
+# ensure docker runs daemon as pid1
+exec blocknetd
