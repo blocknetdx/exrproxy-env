@@ -57,7 +57,7 @@ def processcustom(customlist):
         for i in range(len(c['daemons'])):
             name = c['daemons'][i]['name']
             #daemon configs
-            if name.upper() not in ['SNODE','TNODE','ETH','XR_PROXY']:
+            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY']:
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
                     xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(name))
@@ -90,15 +90,18 @@ def processcustom(customlist):
                     daemons_list.append(name.upper())
 
                 except Exception as e:
-                    print("Config for currency {} not found".format(name))
-                    return ""
+                    print("Config for currency {} not found. The error is {}".format(name, e))
+                    del c['daemons'][i]
             else:
                 #others configs
                 to_del_index.append(i)
-                if name.upper() in ['XR_PROXY','SNODE','TNODE']:
+                if name.upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE']:
                     if name.upper() != 'XR_PROXY':
                         customlist[0]['blocknet_image'] = c['daemons'][i]['image']
                         customlist[0]['blocknet_node'] = name.lower()
+                        if name.upper() == 'TESTSNODE':
+                            customlist[0]['blocknet_testnet'] = True
+                            customlist[0]['blocknet_node'] = 'snode'
                     else:
                         customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
                     print(customlist[0])
@@ -142,7 +145,7 @@ def processcustom(customlist):
                     #if daemons missing config add to to_del_index
                     logging.info(f'invalid config in YAML for {var["name"]}:\nmissing {list(set(tocomp_a).symmetric_difference(set(tocomp_b)))}')
                     to_del_index.append(index)
-            elif var['name'].upper() in ['XR_PROXY','SNODE','ETH']:
+            elif var['name'].upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'ETH']:
                 continue
 
         #delete fake daemons SNODE ETH XR_PROXY
@@ -161,14 +164,14 @@ def processcustom(customlist):
 
 def processconfigs(datalist):
     # XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets=BLOCK"
-    XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets="
+    XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets=BLOCK,"
 
     custom_template_ec = J2_ENV.get_template('templates/entrypoint_config.j2')
 
     for data in datalist:
         for daemon in data['daemons']:
             name = daemon['name']
-            if name.upper() not in ['TNODE','SNODE','ETH','XR_PROXY']:
+            if name.upper() not in ['TNODE', 'SNODE', 'TESTSNODE', 'ETH', 'XR_PROXY']:
                 XBRIDGE_CONF += "{},".format(name)
                 template_wc = Template(autoconfig.load_template(autoconfig.wallet_config())).render(daemon)
 
@@ -186,27 +189,28 @@ def processconfigs(datalist):
 
     XR_TOKENS = ''
     for data in datalist:
+        p2pport = ''
+        rpcport = ''
+        username = os.environ.get("RPC_USER", "${RPC_USER}")
+        password = os.environ.get("RPC_PASSWORD", "${RPC_PASSWORD}")
         for daemon in data['daemons']:
             name = daemon['name']
             ip = daemon['ip']
-            if name.upper() not in ['TNODE','SNODE','ETH','XR_PROXY']:
+            if name.upper() not in ['TNODE', 'SNODE', 'TESTSNODE', 'ETH', 'XR_PROXY']:
                 XR_TOKENS += ','+name
-                p2pport = ''
-                rpcport = ''
-                username = os.environ.get("RPC_USER", "${RPC_USER}")
-                password = os.environ.get("RPC_PASSWORD", "${RPC_PASSWORD}")
                 XBRIDGE_CONF += "{}\n\n".format(autoconfig.generate_confs(name, p2pport, rpcport, username, password, ip))
                 logging.info('Add Xbridge: {}'.format(name))
+        # ADD BLOCK settings
+        XBRIDGE_CONF += "{}\n\n".format(autoconfig.generate_confs('block', p2pport, rpcport, username, password, '127.0.0.1'))
 
     autoconfig.save_config(XBRIDGE_CONF, os.path.join('../scripts/config', 'xbridge.conf'))
-
     custom_template_xr = J2_ENV.get_template('templates/xrouter.j2')
     XROUTER_CONF = custom_template_xr.render({'XR_TOKENS': XR_TOKENS})
 
     custom_template_snode = J2_ENV.get_template(f'templates/{datalist[0]["blocknet_node"]}.j2')
-    rendered_data_snode = custom_template_snode.render({'XROUTER_CONF': XROUTER_CONF,
-                                                        'XBRIDGE_CONF': XBRIDGE_CONF})
-
+    datalist[0]['XROUTER_CONF'] = XROUTER_CONF
+    datalist[0]['XBRIDGE_CONF'] = XBRIDGE_CONF
+    rendered_data_snode = custom_template_snode.render(datalist[0])
     autoconfig.save_config(rendered_data_snode, f'../scripts/start-{datalist[0]["blocknet_node"]}.sh')
 
     custom_template_uw = J2_ENV.get_template('templates/xrproxy.j2')
@@ -218,7 +222,6 @@ if __name__ == "__main__":
     if datalist == 'ERROR':
         logging.info('YAML LOAD FAILURE, check yaml format/file')
     else:
-        # print(datalist)
         data_with_ips = processcustom(datalist)  # render dockercompose file
         # now we need xbridge files
         # processconfigs(datalist)

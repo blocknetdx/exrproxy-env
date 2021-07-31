@@ -11,6 +11,9 @@ rpcport=41414
 daemon=0
 listen=1
 server=1
+{% if blocknet_testnet is defined and blocknet_testnet is sameas true %}
+testnet=1
+{% endif %}
 logtimestamps=1
 logips=1
 enableexchange=1
@@ -21,7 +24,7 @@ rpcthreads=8
 rpcuser=${RPC_USER}
 rpcpassword=${RPC_PASSWORD}
 
-rpcallowip=0.0.0.0/0
+rpcallowip=172.31.0.0/20
 rpcbind=0.0.0.0
 rpctimeout=30
 rpcclienttimeout=30
