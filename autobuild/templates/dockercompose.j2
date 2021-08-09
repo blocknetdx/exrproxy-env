@@ -34,7 +34,7 @@ services:
       PUBLIC_IP: "${PUBLIC_IP}"
       RPC_USER: "${RPC_USER}"
       RPC_PASSWORD: "${RPC_PASSWORD}"
-{% if blocknet_node == 'snode' %}
+{% if blocknet_node == 'snode' or blocknet_node == 'testsnode' %}
       SN_NAME: "${SN_NAME}"
       SN_ADDRESS: "${SN_ADDRESS}"
       SN_KEY: "${SN_KEY}"
@@ -43,9 +43,12 @@ services:
 {% if blocknet_node == 'snode' %}
       - {{ snode_config_mount_dir }}/snode/config:/opt/blockchain/config
       - {{ snode_data_mount_dir }}/snode/data:/opt/blockchain/data
-{% else %}
+{% elif blocknet_node == 'tnode' %}
       - {{ tnode_config_mount_dir }}/tnode/config:/opt/blockchain/config
       - {{ tnode_data_mount_dir }}/tnode/data:/opt/blockchain/data
+{% elif blocknet_node == 'testsnode' %}
+      - {{ testsnode_config_mount_dir }}/testsnode/config:/opt/blockchain/config
+      - {{ testsnode_data_mount_dir }}/testsnode/data:/opt/blockchain/data
 {% endif %}
       - type: bind
         source: ./scripts
@@ -60,8 +63,10 @@ services:
       backend:
 {% if blocknet_node == 'snode' %}
         ipv4_address: {{ snode_ip }}
-{% else %}
+{% elif blocknet_node == 'tnode' %}
         ipv4_address: {{ tnode_ip }}
+{% elif blocknet_node == 'testsnode' %}
+        ipv4_address: {{ testsnode_ip }}
 {% endif %}
 {% if deploy_eth %}
   geth:

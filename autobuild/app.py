@@ -99,12 +99,9 @@ def processcustom(customlist):
                     if name.upper() != 'XR_PROXY':
                         customlist[0]['blocknet_image'] = c['daemons'][i]['image']
                         customlist[0]['blocknet_node'] = name.lower()
-                        if name.upper() == 'TESTSNODE':
-                            customlist[0]['blocknet_testnet'] = True
-                            customlist[0]['blocknet_node'] = 'snode'
                     else:
                         customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
-                    print(customlist[0])
+
                     while True:
                         custom_ip = autoconfig.random_ip()
                         if custom_ip not in used_ip.values():
