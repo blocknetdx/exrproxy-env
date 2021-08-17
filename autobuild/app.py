@@ -17,8 +17,14 @@ J2_ENV = Environment(loader=FileSystemLoader(''),
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--yaml', help='yaml filename to process', default='custom.yaml')
+parser.add_argument('--deploy_eth', help='Deploy ethereum stack', default=False)
+parser.add_argument('--gethexternal', help='Use remote ethereum node', default=False)
 args = parser.parse_args()
 IMPORTYAML = args.yaml
+DEPLOY_ETH = args.deploy_eth
+GETHEXTERNAL = args.gethexternal
+if GETHEXTERNAL:
+    DEPLOY_ETH = True
 OUTPUT_PATH = './'
 
 def loadyaml(yamlfilename):
@@ -110,13 +116,16 @@ def processcustom(customlist):
                             break
                 #deploy eth configs
                 if name.upper() == 'ETH':
-                    deploy_eth = os.environ.get("DEPLOY_ETH", "true")
+                    # deploy_eth = os.environ.get("DEPLOY_ETH", "true")
                     customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
-                    customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
+                    # customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
                     for k in ['PG','ETH','GETH']:
                         while True:
                             custom_ip = autoconfig.random_ip()
                             if custom_ip not in used_ip.values():
+                                if k == 'GETH' and customlist[0]['gethexternal']:
+                                    customlist[0][f'{k.lower()}_ip'] = customlist[0]['gethexternal']
+                                    break
                                 customlist[0][f'{k.lower()}_ip'] = custom_ip
                                 used_ip[f'{k.lower()}_ip'] = custom_ip
                                 break
@@ -216,6 +225,8 @@ def processconfigs(datalist):
 
 if __name__ == "__main__":
     datalist = loadyaml(IMPORTYAML)
+    datalist[0]['deploy_eth'] = DEPLOY_ETH
+    datalist[0]['gethexternal'] = GETHEXTERNAL
     if datalist == 'ERROR':
         logging.info('YAML LOAD FAILURE, check yaml format/file')
     else:

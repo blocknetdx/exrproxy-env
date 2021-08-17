@@ -5,8 +5,7 @@ datadir=/opt/blockchain/data
 
 maxmempoolxbridge=128
 
-port=41412
-rpcport=41414
+
 
 daemon=0
 listen=1
@@ -19,6 +18,20 @@ servicenode=1
 xrouter=1
 rpcthreads=8
 
+[test]
+port=41412
+rpcport=41414
+addnode=54.158.97.146:41474
+addnode=84.17.46.24:41474
+addnode=207.180.193.54:41474
+addnode=185.246.56.72:41474
+addnode=5.189.189.252:41474
+whitelist=54.158.97.146
+whitelist=84.17.46.24
+whitelist=207.180.193.54
+whitelist=185.246.56.72
+whitelist=5.189.189.252
+
 rpcuser=${RPC_USER}
 rpcpassword=${RPC_PASSWORD}
 
@@ -28,7 +41,7 @@ rpctimeout=30
 rpcclienttimeout=30
 EOL
 
-cat > /opt/blockchain/data/servicenode.conf << EOL
+cat > /opt/blockchain/data/testnet6/servicenode.conf << EOL
 # Service Node config
 # Format: alias tier snodekey address
 #   - alias can be any name, no spaces
@@ -43,11 +56,11 @@ cat > /opt/blockchain/data/servicenode.conf << EOL
 ${SN_NAME} SPV ${SN_KEY} ${SN_ADDRESS}
 EOL
 
-cat > /opt/blockchain/data/xrouter.conf << EOL
+cat > /opt/blockchain/data/testnet6/xrouter.conf << EOL
 {{ XROUTER_CONF }}
 EOL
 
-cat > /opt/blockchain/data/xbridge.conf << EOL
+cat > /opt/blockchain/data/testnet6/xbridge.conf << EOL
 {{ XBRIDGE_CONF }}
 EOL
 

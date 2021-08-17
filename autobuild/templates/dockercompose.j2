@@ -47,8 +47,8 @@ services:
       - {{ tnode_config_mount_dir }}/tnode/config:/opt/blockchain/config
       - {{ tnode_data_mount_dir }}/tnode/data:/opt/blockchain/data
 {% elif blocknet_node == 'testsnode' %}
-      - {{ testsnode_config_mount_dir }}/testsnode/config:/opt/blockchain/config
-      - {{ testsnode_data_mount_dir }}/testsnode/data:/opt/blockchain/data
+      - {{ testsnode_config_mount_dir }}/testsnode/config:/opt/blockchain/config/testnet6
+      - {{ testsnode_data_mount_dir }}/testsnode/data:/opt/blockchain/data/testnet6
 {% endif %}
       - type: bind
         source: ./scripts
@@ -69,6 +69,7 @@ services:
         ipv4_address: {{ testsnode_ip }}
 {% endif %}
 {% if deploy_eth %}
+{% if gethexternal is sameas false %}
   geth:
     image: ethereum/client-go:latest
     restart: unless-stopped
@@ -102,6 +103,7 @@ services:
     networks:
       backend:
         ipv4_address: {{ geth_ip }}
+{% endif %}
 
   eth_payment_api:
     image: {{ eth_image }}
