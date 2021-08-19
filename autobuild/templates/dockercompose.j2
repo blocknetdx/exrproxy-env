@@ -47,7 +47,7 @@ services:
       - {{ tnode_config_mount_dir }}/tnode/config:/opt/blockchain/config
       - {{ tnode_data_mount_dir }}/tnode/data:/opt/blockchain/data
 {% elif blocknet_node == 'testsnode' %}
-      - {{ testsnode_config_mount_dir }}/testsnode/config:/opt/blockchain/config/testnet6
+      - {{ testsnode_config_mount_dir }}/testsnode/config:/opt/blockchain/config
       - {{ testsnode_data_mount_dir }}/testsnode/data:/opt/blockchain/data/testnet6
 {% endif %}
       - type: bind
@@ -120,7 +120,9 @@ services:
     expose:
       - 8080
     depends_on:
+{% if gethexternal is sameas false %}
       - geth
+{% endif %}
       - postgresql
     networks:
       backend:
@@ -150,6 +152,7 @@ services:
       RPC_USER: "${RPC_USER}"
       RPC_PASSWORD: "${RPC_PASSWORD}"
       SN_KEY: "${SN_KEY}"
+{% if deploy_eth %}
       GETH_HOST: {{ geth_ip }}
       PAYMENT_PROCESSOR_HOST: {{ eth_ip }}:8080
       ETH_HOST: http://{{ geth_ip }}:8545
@@ -160,6 +163,7 @@ services:
       DB_USERNAME: ethproxy
       DB_PASSWORD: password
       DB_DATABASE: eth
+{% endif %}
     volumes:
       - {{ xr_proxy_config_mount_dir }}:/opt/uwsgi/conf
       - {{ xr_proxy_nginx_mount_dir }}:/etc/nginx/conf.d
