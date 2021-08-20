@@ -1,0 +1,16 @@
+#!/bin/bash
+
+cat > /opt/blockchain/config/{{ configName }}.conf << EOL
+
+rpcbind=0.0.0.0
+rpcuser=${RPC_USER}
+rpcpassword=${RPC_PASSWORD}
+rpcallowip=172.31.0.0/20
+
+{{ walletConfig }}
+
+
+EOL
+
+# ensure docker runs daemon as pid1
+exec $1

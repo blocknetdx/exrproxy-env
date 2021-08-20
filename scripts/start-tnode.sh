@@ -13,7 +13,7 @@ listen=1
 server=1
 logtimestamps=1
 logips=1
-servicenode=1
+servicenode=0
 xrouter=1
 rpcthreads=8
 
@@ -26,20 +26,6 @@ rpctimeout=30
 rpcclienttimeout=30
 EOL
 
-cat > /opt/blockchain/data/servicenode.conf << EOL
-# Service Node config
-# Format: alias tier snodekey address
-#   - alias can be any name, no spaces
-#   - tier can be either SPV or OPEN
-#   - snodekey must be a valid base58 encoded private key
-#   - address must be a valid base58 encoded public key that contains the service node collateral
-# SPV tier requires 5000 BLOCK collateral and an associated BLOCK address and can charge fees for services
-# OPEN tier doesn't require any collateral, can't charge fees, and can only support XCloud plugins
-# Example: dev OPEN 6BeBjrnd4DP5rEvUtxBQVu1DTPXUn6mCY5kPB2DWiy9CwEB2qh1
-# Example: xrouter SPV 6B4VvHTn6BbHM3DRsf6M3Sk3jLbgzm1vp5jNe9ZYZocSyRDx69d Bj2w9gHtGp4FbVdR19tJZ9UHwWQhDXxGCM
-
-${SN_NAME} SPV ${SN_KEY} ${SN_ADDRESS}
-EOL
 
 cat > /opt/blockchain/data/xrouter.conf << EOL
 [Main]
@@ -85,10 +71,10 @@ ExchangeWallets=BTC,LTC
 [BTC]
 Title=Bitcoin
 Address=
-Ip=172.31.7.23
+Ip=172.31.5.76
 Port=8332
-Username=${RPC_USER}
-Password=${RPC_PASSWORD}
+Username=useruser
+Password=passpass
 AddressPrefix=0
 ScriptPrefix=5
 SecretPrefix=128
@@ -107,10 +93,10 @@ Confirmations=0
 [LTC]
 Title=Litecoin
 Address=
-Ip=172.31.14.166
+Ip=172.31.11.56
 Port=9332
-Username=${RPC_USER}
-Password=${RPC_PASSWORD}
+Username=useruser
+Password=passpass
 AddressPrefix=48
 ScriptPrefix=50
 SecretPrefix=176

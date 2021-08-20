@@ -8,35 +8,48 @@ services:
     expose:
       - {{ daemon.rpcPort }}
       - {{ daemon.p2pPort }}
-    entrypoint: ["{{ daemon.binFile }}"]
+    entrypoint: /opt/blockchain/start-{{ daemon.configName }}.sh
     command:
-      -daemon=0
-      -rpcuser=${RPC_USER}
-      -rpcpassword=${RPC_PASSWORD}
-      -rpcbind=0.0.0.0
-      -rpcallowip=172.31.0.0/20
+      - {{ daemon.binFile }}
+    environment:
+      RPC_USER: "${RPC_USER}"
+      RPC_PASSWORD: "${RPC_PASSWORD}"
+      RPC_ALLOWIP: 172.31.0.0/20
     volumes:
       - {{ daemon.config_mount_dir }}/{{ daemon.name }}/config:/opt/blockchain/config
       - {{ daemon.data_mount_dir }}/{{ daemon.name }}/data:/opt/blockchain/data
+      - type: bind
+        source: ./scripts/entrypoints/start-{{ daemon.configName }}.sh
+        target: /opt/blockchain/start-{{ daemon.configName }}.sh
     networks:
       backend:
         ipv4_address: {{ daemon.ip }}
 {% endfor %}
 
-  snode:
-    image: {{ snode_image }}
-    entrypoint: /opt/blockchain/start-snode.sh
+  {{ blocknet_node }}:
+    image: {{ blocknet_image }}
+    entrypoint: /opt/blockchain/start-{{ blocknet_node }}.sh
     restart: unless-stopped
     environment:
       PUBLIC_IP: "${PUBLIC_IP}"
       RPC_USER: "${RPC_USER}"
       RPC_PASSWORD: "${RPC_PASSWORD}"
+{% if blocknet_node == 'snode' or blocknet_node == 'testsnode' %}
       SN_NAME: "${SN_NAME}"
       SN_ADDRESS: "${SN_ADDRESS}"
       SN_KEY: "${SN_KEY}"
+{% endif %}
     volumes:
+{% if blocknet_node == 'snode' %}
       - {{ snode_config_mount_dir }}/snode/config:/opt/blockchain/config
       - {{ snode_data_mount_dir }}/snode/data:/opt/blockchain/data
+{% elif blocknet_node == 'tnode' %}
+      - {{ tnode_config_mount_dir }}/tnode/config:/opt/blockchain/config
+      - {{ tnode_data_mount_dir }}/tnode/data:/opt/blockchain/data
+{% elif blocknet_node == 'testsnode' %}
+      - {{ testsnode_config_mount_dir }}/testsnode/config:/opt/blockchain/config
+      - {{ testsnode_data_mount_dir }}/testsnode/data:/opt/blockchain/data/testnet6
+{% endif %}
       - type: bind
         source: ./scripts
         target: /opt/blockchain
@@ -48,9 +61,15 @@ services:
         target: /opt/blockchain/data/xbridge.conf
     networks:
       backend:
+{% if blocknet_node == 'snode' %}
         ipv4_address: {{ snode_ip }}
-
+{% elif blocknet_node == 'tnode' %}
+        ipv4_address: {{ tnode_ip }}
+{% elif blocknet_node == 'testsnode' %}
+        ipv4_address: {{ testsnode_ip }}
+{% endif %}
 {% if deploy_eth %}
+{% if gethexternal is sameas false %}
   geth:
     image: ethereum/client-go:latest
     restart: unless-stopped
@@ -84,6 +103,7 @@ services:
     networks:
       backend:
         ipv4_address: {{ geth_ip }}
+{% endif %}
 
   eth_payment_api:
     image: {{ eth_image }}
@@ -100,7 +120,9 @@ services:
     expose:
       - 8080
     depends_on:
+{% if gethexternal is sameas false %}
       - geth
+{% endif %}
       - postgresql
     networks:
       backend:
@@ -130,6 +152,7 @@ services:
       RPC_USER: "${RPC_USER}"
       RPC_PASSWORD: "${RPC_PASSWORD}"
       SN_KEY: "${SN_KEY}"
+{% if deploy_eth %}
       GETH_HOST: {{ geth_ip }}
       PAYMENT_PROCESSOR_HOST: {{ eth_ip }}:8080
       ETH_HOST: http://{{ geth_ip }}:8545
@@ -140,6 +163,7 @@ services:
       DB_USERNAME: ethproxy
       DB_PASSWORD: password
       DB_DATABASE: eth
+{% endif %}
     volumes:
       - {{ xr_proxy_config_mount_dir }}:/opt/uwsgi/conf
       - {{ xr_proxy_nginx_mount_dir }}:/etc/nginx/conf.d

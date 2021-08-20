@@ -11,8 +11,10 @@ rpcport=41414
 daemon=0
 listen=1
 server=1
+testnet=1
 logtimestamps=1
 logips=1
+enableexchange=1
 servicenode=1
 xrouter=1
 rpcthreads=8
@@ -20,7 +22,7 @@ rpcthreads=8
 rpcuser=${RPC_USER}
 rpcpassword=${RPC_PASSWORD}
 
-rpcallowip=0.0.0.0/0
+rpcallowip=172.31.0.0/20
 rpcbind=0.0.0.0
 rpctimeout=30
 rpcclienttimeout=30
@@ -80,15 +82,15 @@ cat > /opt/blockchain/data/xbridge.conf << EOL
 FullLog=true
 LogPath=
 ExchangeTax=300
-ExchangeWallets=BTC,LTC
+ExchangeWallets=BLOCK,BTC,LTC
 
 [BTC]
 Title=Bitcoin
 Address=
-Ip=172.31.7.23
+Ip=172.31.5.236
 Port=8332
-Username=${RPC_USER}
-Password=${RPC_PASSWORD}
+Username=useruser
+Password=passpass
 AddressPrefix=0
 ScriptPrefix=5
 SecretPrefix=128
@@ -107,10 +109,10 @@ Confirmations=0
 [LTC]
 Title=Litecoin
 Address=
-Ip=172.31.14.166
+Ip=172.31.11.102
 Port=9332
-Username=${RPC_USER}
-Password=${RPC_PASSWORD}
+Username=useruser
+Password=passpass
 AddressPrefix=48
 ScriptPrefix=50
 SecretPrefix=176
@@ -124,6 +126,28 @@ ImportWithNoScanSupported=true
 MinTxFee=5000
 BlockTime=150
 FeePerByte=10
+Confirmations=0
+
+[BLOCK]
+Title=Blocknet
+Address=
+Ip=127.0.0.1
+Port=41414
+Username=useruser
+Password=passpass
+AddressPrefix=26
+ScriptPrefix=28
+SecretPrefix=154
+COIN=100000000
+MinimumAmount=0
+TxVersion=1
+DustAmount=0
+CreateTxMethod=BTC
+GetNewKeySupported=true
+ImportWithNoScanSupported=true
+MinTxFee=10000
+BlockTime=60
+FeePerByte=20
 Confirmations=0
 
 

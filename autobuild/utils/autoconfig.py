@@ -54,6 +54,9 @@ def chain_lookup(s):
 def manifest_content():
 	return MANIFEST_URL
 
+def wallet_config():
+	return walletconfj2_url
+
 def random_gen(size=32, chars=string.ascii_uppercase + string.digits + string.ascii_lowercase):
 	return ''.join(random.choice(chars) for x in range(size))
 
