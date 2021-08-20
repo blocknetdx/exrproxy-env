@@ -35,11 +35,6 @@ fi
 
 read -p 'Your Public IP Address: ' PUBLIC_IP
 
-# GETH EXTERNAL
-if [ "$1" = "gethexternal" ]; then
-  read -p 'GETH HOST: ' GETH_HOST
-fi
-
 read -p 'Servicenode Name: ' SN_NAME
 read -sp 'Servicenode Private Key: ' SN_KEY
 echo
@@ -50,11 +45,4 @@ read -p 'RPC Username: ' RPC_USER
 read -sp 'RPC Password: ' RPC_PASSWORD
 echo
 
-if [ "$1" = "dev" ]; then
-  echo "Development mode"
-  PUBLIC_IP=$PUBLIC_IP SN_NAME=$SN_NAME SN_KEY=$SN_KEY SN_ADDRESS=$SN_ADDRESS RPC_USER=$RPC_USER RPC_PASSWORD=$RPC_PASSWORD docker-compose -f "docker-compose-dev.yml" up -d --build
-elif [ "$1" = "gethexternal" ]; then
-  PUBLIC_IP=$PUBLIC_IP SN_NAME=$SN_NAME SN_KEY=$SN_KEY SN_ADDRESS=$SN_ADDRESS RPC_USER=$RPC_USER RPC_PASSWORD=$RPC_PASSWORD GETH_HOST=$GETH_HOST docker-compose -f "docker-compose-geth-external.yml" up -d --build
-else
-  PUBLIC_IP=$PUBLIC_IP SN_NAME=$SN_NAME SN_KEY=$SN_KEY SN_ADDRESS=$SN_ADDRESS RPC_USER=$RPC_USER RPC_PASSWORD=$RPC_PASSWORD docker-compose -f "docker-compose.yml" up -d --build
-fi
+PUBLIC_IP=$PUBLIC_IP SN_NAME=$SN_NAME SN_KEY=$SN_KEY SN_ADDRESS=$SN_ADDRESS RPC_USER=$RPC_USER RPC_PASSWORD=$RPC_PASSWORD docker-compose -f "docker-compose.yml" up -d --build
