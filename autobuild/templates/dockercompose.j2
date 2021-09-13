@@ -59,6 +59,10 @@ services:
       - type: bind
         source: ./scripts/config/xbridge.conf
         target: /opt/blockchain/data/xbridge.conf
+    expose:
+      - 41412
+    ports:
+      - "41412:41412"
     networks:
       backend:
 {% if blocknet_node == 'snode' %}

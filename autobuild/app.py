@@ -76,7 +76,8 @@ def processcustom(customlist):
                     c['daemons'][i]['binFile'] = daemonFiles[name].split('.conf')[0]+'d'
                     c['daemons'][i]['configName'] = daemonFiles[name].split('.conf')[0]
                     tag = c['daemons'][i]['image'].split(':')[1]
-
+                    if '-staging' in tag:
+                        tag = tag.split('-staging')[0]
                     if tag != 'latest':
                         c['daemons'][i]['deprecatedrpc'] = xbridge_json[name]['versions'][tag]['deprecatedrpc']
                         c['daemons'][i]['legacy'] = xbridge_json[name]['versions'][tag]['legacy']
