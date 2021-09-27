@@ -26,3 +26,7 @@
       image: blocknetdx/digibyte:v7.17.2
       config_mount_dir: /snode
       data_mount_dir: /snode
+    - name: SYS
+      image: blocknetdx/syscoin4:v4.3
+      config_mount_dir: /snode
+      data_mount_dir: /snode
