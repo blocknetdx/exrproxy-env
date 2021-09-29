@@ -17,7 +17,7 @@ J2_ENV = Environment(loader=FileSystemLoader(''),
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--yaml', help='yaml filename to process', default='custom.yaml')
-parser.add_argument('--deploy_eth', help='Deploy ethereum stack', default=False)
+parser.add_argument('--deploy_eth', help='Deploy ethereum stack', action='store_true')
 parser.add_argument('--gethexternal', help='Use remote ethereum node', default=False)
 args = parser.parse_args()
 IMPORTYAML = args.yaml
@@ -212,7 +212,7 @@ def processconfigs(datalist):
 
     autoconfig.save_config(XBRIDGE_CONF, os.path.join('../scripts/config', 'xbridge.conf'))
     custom_template_xr = J2_ENV.get_template('templates/xrouter.j2')
-    XROUTER_CONF = custom_template_xr.render({'XR_TOKENS': XR_TOKENS})
+    XROUTER_CONF = custom_template_xr.render({'XR_TOKENS': XR_TOKENS, 'deploy_eth': datalist[0]['deploy_eth']})
 
     custom_template_snode = J2_ENV.get_template(f'templates/{datalist[0]["blocknet_node"]}.j2')
     datalist[0]['XROUTER_CONF'] = XROUTER_CONF
