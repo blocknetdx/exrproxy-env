@@ -27,6 +27,7 @@ if GETHEXTERNAL:
     DEPLOY_ETH = True
 OUTPUT_PATH = './'
 
+
 def loadyaml(yamlfilename):
     logging.info('Loading File: {}'.format(yamlfilename))
     try:
@@ -54,6 +55,7 @@ def processcustom(customlist):
     to_del_index = []
     daemons_list = []
     daemonFiles = {}
+    rpc_threads = 0
     manifest_config = autoconfig.load_template(autoconfig.manifest_content())
     manifest = json.loads(Template(manifest_config).render())
     for blockchain in manifest:
@@ -95,7 +97,7 @@ def processcustom(customlist):
                             used_ip[name]=custom_ip
                             break
                     daemons_list.append(name.upper())
-
+                    rpc_threads += 1
                 except Exception as e:
                     print("Config for currency {} not found. The error is {}".format(name, e))
                     del c['daemons'][i]
@@ -159,6 +161,11 @@ def processcustom(customlist):
         to_del_index.sort(reverse=True)
         for i in to_del_index:
             del c['daemons'][i]
+
+        if rpc_threads > 8:
+            c['rpcthreads'] = rpc_threads
+        else:
+            c['rpcthreads'] = 8
 
         custom_template_fname = 'templates/{}'.format(c['j2template'])
         custom_template = J2_ENV.get_template(custom_template_fname)
