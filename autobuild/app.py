@@ -17,7 +17,7 @@ J2_ENV = Environment(loader=FileSystemLoader(''),
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--yaml', help='yaml filename to process', default='custom.yaml')
-parser.add_argument('--deploy_eth', help='Deploy ethereum stack', default=False)
+parser.add_argument('--deploy_eth', help='Deploy ethereum stack', action='store_true')
 parser.add_argument('--gethexternal', help='Use remote ethereum node', default=False)
 args = parser.parse_args()
 IMPORTYAML = args.yaml
@@ -26,6 +26,7 @@ GETHEXTERNAL = args.gethexternal
 if GETHEXTERNAL:
     DEPLOY_ETH = True
 OUTPUT_PATH = './'
+
 
 def loadyaml(yamlfilename):
     logging.info('Loading File: {}'.format(yamlfilename))
@@ -54,6 +55,7 @@ def processcustom(customlist):
     to_del_index = []
     daemons_list = []
     daemonFiles = {}
+    rpc_threads = 0
     manifest_config = autoconfig.load_template(autoconfig.manifest_content())
     manifest = json.loads(Template(manifest_config).render())
     for blockchain in manifest:
@@ -95,7 +97,7 @@ def processcustom(customlist):
                             used_ip[name]=custom_ip
                             break
                     daemons_list.append(name.upper())
-
+                    rpc_threads += 1
                 except Exception as e:
                     print("Config for currency {} not found. The error is {}".format(name, e))
                     del c['daemons'][i]
@@ -160,6 +162,11 @@ def processcustom(customlist):
         for i in to_del_index:
             del c['daemons'][i]
 
+        if rpc_threads > 8:
+            c['rpcthreads'] = rpc_threads
+        else:
+            c['rpcthreads'] = 8
+
         custom_template_fname = 'templates/{}'.format(c['j2template'])
         custom_template = J2_ENV.get_template(custom_template_fname)
         rendered_data = custom_template.render(c)
@@ -212,7 +219,7 @@ def processconfigs(datalist):
 
     autoconfig.save_config(XBRIDGE_CONF, os.path.join('../scripts/config', 'xbridge.conf'))
     custom_template_xr = J2_ENV.get_template('templates/xrouter.j2')
-    XROUTER_CONF = custom_template_xr.render({'XR_TOKENS': XR_TOKENS})
+    XROUTER_CONF = custom_template_xr.render({'XR_TOKENS': XR_TOKENS, 'deploy_eth': datalist[0]['deploy_eth']})
 
     custom_template_snode = J2_ENV.get_template(f'templates/{datalist[0]["blocknet_node"]}.j2')
     datalist[0]['XROUTER_CONF'] = XROUTER_CONF
