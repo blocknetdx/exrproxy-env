@@ -70,6 +70,31 @@ services:
 {% elif blocknet_node == 'testsnode' %}
         ipv4_address: {{ testsnode_ip }}
 {% endif %}
+
+{% if deploy_xquery %}
+  xquery:
+    image: {{ xquery_image }}
+    restart: unless-stopped
+    expose:
+      - 9650
+      - 9651
+    entrypoint: /avalanchego/build/avalanchego
+    command:
+      - --http-host=0.0.0.0
+      - --index-enabled
+      - --db-dir=/data
+    volumes:
+      - {{ xquery_data_mount_dir }}/XQUERY:/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
+    networks:
+      backend:
+        ipv4_address: {{ xquery_ip }}
+{% endif %}
+
 {% if deploy_eth %}
 {% if gethexternal is sameas false %}
   geth:

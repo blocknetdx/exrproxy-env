@@ -70,7 +70,7 @@ def processcustom(customlist):
         for i in range(len(c['daemons'])):
             name = c['daemons'][i]['name']
             #daemon configs
-            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY']:
+            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'XQUERY']:
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
                     xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(name))
@@ -109,13 +109,13 @@ def processcustom(customlist):
             else:
                 #others configs
                 to_del_index.append(i)
-                if name.upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE']:
-                    if name.upper() != 'XR_PROXY':
+                if name.upper() in ['XR_PROXY','XQUERY', 'SNODE', 'TNODE', 'TESTSNODE']:
+                    if name.upper() not in ['XR_PROXY', 'XQUERY']:
                         customlist[0]['blocknet_image'] = c['daemons'][i]['image']
                         customlist[0]['blocknet_node'] = name.lower()
                     else:
                         customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
-
+                        print(customlist[0][f'{name.lower()}_image'])
                     while True:
                         custom_ip = autoconfig.random_ip()
                         if custom_ip not in used_ip.values():
@@ -137,12 +137,14 @@ def processcustom(customlist):
                                 customlist[0][f'{k.lower()}_ip'] = custom_ip
                                 used_ip[f'{k.lower()}_ip'] = custom_ip
                                 break
+                if name.upper() == 'XQUERY':
+                    customlist[0]['deploy_xquery'] = True
                 #volumes paths configs
                 for j in list(c['daemons'][i]):
                     if j not in ['name','image']:
                         mount_dir = f'{name.lower()}_{j}'
                         customlist[0][mount_dir] = os.environ.get(mount_dir.upper(),c['daemons'][i][j])
-        
+                        print(customlist[0][mount_dir])
         #check for missed configs
         #loading template vars
         template_vars = autoconfig.template_vars('templates/{}'.format(c['j2template']))
@@ -159,7 +161,7 @@ def processcustom(customlist):
                     #if daemons missing config add to to_del_index
                     logging.info(f'invalid config in YAML for {var["name"]}:\nmissing {list(set(tocomp_a).symmetric_difference(set(tocomp_b)))}')
                     to_del_index.append(index)
-            elif var['name'].upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'ETH']:
+            elif var['name'].upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XQUERY']:
                 continue
 
         #delete fake daemons SNODE ETH XR_PROXY
