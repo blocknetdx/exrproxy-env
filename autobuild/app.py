@@ -18,12 +18,17 @@ J2_ENV = Environment(loader=FileSystemLoader(''),
 parser = argparse.ArgumentParser()
 parser.add_argument('--yaml', help='yaml filename to process', default='custom.yaml')
 parser.add_argument('--deploy_eth', help='Deploy ethereum stack', action='store_true')
+parser.add_argument('--testnet', help='Use testnet', default=False)
+parser.add_argument('--syncmode', help='sync mode', default='light')
 parser.add_argument('--gethexternal', help='Use remote ethereum node', default=False)
 args = parser.parse_args()
 IMPORTYAML = args.yaml
 DEPLOY_ETH = args.deploy_eth
 GETHEXTERNAL = args.gethexternal
-if GETHEXTERNAL:
+ETH_TESTNET = args.testnet
+SYNCMODE = args.syncmode
+
+if GETHEXTERNAL or ETH_TESTNET:
     DEPLOY_ETH = True
 OUTPUT_PATH = './'
 
@@ -235,6 +240,8 @@ if __name__ == "__main__":
     datalist = loadyaml(IMPORTYAML)
     datalist[0]['deploy_eth'] = DEPLOY_ETH
     datalist[0]['gethexternal'] = GETHEXTERNAL
+    datalist[0]['eth_testnet'] = ETH_TESTNET
+    datalist[0]['syncmode'] = SYNCMODE
     if datalist == 'ERROR':
         logging.info('YAML LOAD FAILURE, check yaml format/file')
     else:
