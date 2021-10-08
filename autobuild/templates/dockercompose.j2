@@ -80,6 +80,10 @@ services:
     stop_signal: SIGINT
     stop_grace_period: 2m
     command:
+{% if eth_testnet %}
+      - --{{ eth_testnet }}
+      - --syncmode={{ syncmode }}
+{% endif %}
       - --nousb
       - --http
       - --http.api
