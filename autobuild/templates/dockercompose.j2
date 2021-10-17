@@ -195,6 +195,9 @@ services:
       DB_PASSWORD: password
       DB_DATABASE: eth
 {% endif %}
+{% if deploy_xquery %}
+      XQUERY_HOST: http://{{ xquery_ip }}:9650
+{% endif %}
     volumes:
       - {{ xr_proxy_config_mount_dir }}:/opt/uwsgi/conf
       - {{ xr_proxy_nginx_mount_dir }}:/etc/nginx/conf.d
