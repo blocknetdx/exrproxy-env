@@ -70,7 +70,7 @@ def processcustom(customlist):
         for i in range(len(c['daemons'])):
             name = c['daemons'][i]['name']
             #daemon configs
-            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY']:
+            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'XQUERY']:
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
                     xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(name))
@@ -109,13 +109,12 @@ def processcustom(customlist):
             else:
                 #others configs
                 to_del_index.append(i)
-                if name.upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE']:
-                    if name.upper() != 'XR_PROXY':
+                if name.upper() in ['XR_PROXY','XQUERY', 'SNODE', 'TNODE', 'TESTSNODE']:
+                    if name.upper() not in ['XR_PROXY', 'XQUERY']:
                         customlist[0]['blocknet_image'] = c['daemons'][i]['image']
                         customlist[0]['blocknet_node'] = name.lower()
                     else:
                         customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
-
                     while True:
                         custom_ip = autoconfig.random_ip()
                         if custom_ip not in used_ip.values():
@@ -137,12 +136,14 @@ def processcustom(customlist):
                                 customlist[0][f'{k.lower()}_ip'] = custom_ip
                                 used_ip[f'{k.lower()}_ip'] = custom_ip
                                 break
+                if name.upper() == 'XQUERY':
+                    customlist[0]['deploy_xquery'] = True
+                    customlist[0]['plugins'].append('xquery')
                 #volumes paths configs
                 for j in list(c['daemons'][i]):
                     if j not in ['name','image']:
                         mount_dir = f'{name.lower()}_{j}'
                         customlist[0][mount_dir] = os.environ.get(mount_dir.upper(),c['daemons'][i][j])
-        
         #check for missed configs
         #loading template vars
         template_vars = autoconfig.template_vars('templates/{}'.format(c['j2template']))
@@ -159,7 +160,7 @@ def processcustom(customlist):
                     #if daemons missing config add to to_del_index
                     logging.info(f'invalid config in YAML for {var["name"]}:\nmissing {list(set(tocomp_a).symmetric_difference(set(tocomp_b)))}')
                     to_del_index.append(index)
-            elif var['name'].upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'ETH']:
+            elif var['name'].upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XQUERY']:
                 continue
 
         #delete fake daemons SNODE ETH XR_PROXY
@@ -177,6 +178,14 @@ def processcustom(customlist):
         rendered_data = custom_template.render(c)
         rendered_filename = '{}{}-custom.yaml'.format(OUTPUT_PATH, c['name'])
         write_file(rendered_filename, rendered_data)
+
+        plugins = ''
+        if len(customlist[0]['plugins']) >= 1:
+            for i in customlist[0]['plugins']:
+                plugins = plugins + i +','
+            plugins = plugins[:-1]
+
+        customlist[0]['xrouter_plugins'] = plugins
 
         return([c])
 
@@ -224,7 +233,7 @@ def processconfigs(datalist):
 
     autoconfig.save_config(XBRIDGE_CONF, os.path.join('../scripts/config', 'xbridge.conf'))
     custom_template_xr = J2_ENV.get_template('templates/xrouter.j2')
-    XROUTER_CONF = custom_template_xr.render({'XR_TOKENS': XR_TOKENS, 'deploy_eth': datalist[0]['deploy_eth']})
+    XROUTER_CONF = custom_template_xr.render({'XR_TOKENS': XR_TOKENS, 'xrouter_plugins': datalist[0]['xrouter_plugins']})
 
     custom_template_snode = J2_ENV.get_template(f'templates/{datalist[0]["blocknet_node"]}.j2')
     datalist[0]['XROUTER_CONF'] = XROUTER_CONF
@@ -238,7 +247,10 @@ def processconfigs(datalist):
 
 if __name__ == "__main__":
     datalist = loadyaml(IMPORTYAML)
+    datalist[0]['plugins'] = []
     datalist[0]['deploy_eth'] = DEPLOY_ETH
+    if datalist[0]['deploy_eth'] == True:
+        datalist[0]['plugins'].append('eth_passthrough')
     datalist[0]['gethexternal'] = GETHEXTERNAL
     datalist[0]['eth_testnet'] = ETH_TESTNET
     datalist[0]['syncmode'] = SYNCMODE

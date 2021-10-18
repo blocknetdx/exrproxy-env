@@ -2,18 +2,24 @@
 - j2template: dockercompose.j2
   name: dockercompose
   daemons:
-    - name: XR_PROXY
-      image: blocknetdx/exrproxy:0.7.9
-      config_mount_dir: /snode/xr_proxy/config
-      nginx_mount_dir: /snode/xr_proxy/nginx
-    - name: ETH
-      image: blocknetdx/eth-payment-processor:0.5.2
-      postgresql_data_mount_dir: /snode/eth_pymt_db
-      geth_data_mount_dir: /snode
-    - name: SNODE
-      image: blocknetdx/servicenode:latest
-      config_mount_dir: /snode
-      data_mount_dir: /snode
+    # DO NOT DELETE XR_PROXY ENTRY
+    - name: XR_PROXY # DO NOT DELETE
+      image: blocknetdx/exrproxy:0.7.9 # DO NOT DELETE
+      config_mount_dir: /snode/xr_proxy/config # DO NOT DELETE
+      nginx_mount_dir: /snode/xr_proxy/nginx # DO NOT DELETE
+    # DO NOT DELETE ETH ENTRY
+    - name: ETH # DO NOT DELETE
+      image: blocknetdx/eth-payment-processor:0.5.2 # DO NOT DELETE
+      postgresql_data_mount_dir: /snode/eth_pymt_db # DO NOT DELETE
+      geth_data_mount_dir: /snode # DO NOT DELETE
+    # DO NOT DELETE SNODE ENTRY
+    - name: SNODE # DO NOT DELETE
+      image: blocknetdx/servicenode:latest # DO NOT DELETE
+      config_mount_dir: /snode # DO NOT DELETE
+      data_mount_dir: /snode # DO NOT DELETE
+    - name: XQUERY 
+      image: avaplatform/avalanchego:v1.6.1
+      data_mount_dir: /media/arcsecure/data/snode
     - name: BTC
       image: blocknetdx/bitcoin:v0.20.0
       config_mount_dir: /snode
@@ -27,7 +33,7 @@
       config_mount_dir: /snode
       data_mount_dir: /snode
     - name: SYS
-      image: blocknetdx/syscoin4:v4.3
+      image: blocknetdx/syscoin4:v4.2.2
       config_mount_dir: /snode
       data_mount_dir: /snode
     - name: PIVX

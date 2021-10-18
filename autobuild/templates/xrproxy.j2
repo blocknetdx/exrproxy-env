@@ -14,9 +14,7 @@ set-ph = BLOCKNET_CHAIN=testnet
 {% else %}
 set-ph = BLOCKNET_CHAIN=mainnet
 {% endif %}
-{% if deploy_eth %}
-set-ph = PLUGINS=eth_passthrough
-{% endif %}
+set-ph = PLUGINS={{ xrouter_plugins }}
 set-ph = HANDLE_PAYMENTS=true
 set-ph = HANDLE_PAYMENTS_ENFORCE=true
 set-ph = HANDLE_PAYMENTS_RPC_INCLUDE_HEADERS=true
