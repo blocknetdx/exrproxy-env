@@ -7,6 +7,12 @@ Libs: Unittest, requests, json
 
 unit_test.py - Scripts tests 4 RPC methods.
 The methods are stored in the file template.json.
+Before running unit_test.py, these 3 lines must be modified according to your environment:
+    target = 'http://127.0.0.1:41414'
+    user = 'user'
+    password = 'pass'
+If the snode is running in a docker container, the target IP needs to be changed from 127.0.0.1 to the ipv4_address of the container (found in docker-compose.yml).
+user and password are the RPC user and RPC password of the snode.
 
 Example
 ```bash
@@ -42,8 +48,8 @@ It requires 4 arguments: HTTP socket, RPC username, RPC password, file with RPC 
 
 Example:
 ```bash
-$ python3 testmethods http://127.0.0.1:41414 user pass xbridge_methods.json
-
+$ python3 snode_methods http://127.0.0.1:41414 user pass xbridge_methods.json
+Note: If the snode is running in a docker container, the target IP needs to be changed from 127.0.0.1 to the ipv4_address of the container (found in docker-compose.yml).
 
 Method dxgetlocaltokens HTTP status code 200
 ['BLOCK', 'BTC', 'LTC'] 
@@ -78,7 +84,6 @@ project_id : 18e05f7a-4445-40de-9b6b-bb24b9a56e5c
 
 In case of the getting project data 5 arguments
 
-
 ```bash
 $ python3 exr_methods.py project --api-key N8Zk0-hBRqD81dmBDEQP5qUpf9-XKz5eVPcstPkr8C0 --project-id 6228e1ed-1c78-40ca-9813-421d0fdfbfcf  http://127.0.0.1 exr_methods.json
 ---------------------------------------
@@ -105,6 +110,7 @@ error : {'code': -32601, 'message': 'the method eth_protocolVersion does not exi
 Method eth_getBalance HTTP status code 200
 0x4563918244f40000
 ```
+Note: eth_accounts method is expected to fail with "Unauthorized User Access" That is as expected.
 
 xrouter_methods.py - Script sends JSON-RPC requests to xrouter.
 
