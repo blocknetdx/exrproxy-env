@@ -148,3 +148,30 @@ Method xrGetTransaction HTTP status code 200
    'hex': '010000000001010000000000000000000000000000000000000000000000000000000000000000ffffffff05034f681f00ffffffff020000000000000000000000000000000000266a24aa21a9edf656f243d45aafd94a02e0051cad8067562583438c90f61ae3a03ce8222523d70120000000000000000000000000000000000000000000000000000000000000000000000000', 
    'blockhash': '1769e76f5eae6adc7e9d560eacbd8f9860b952b87ff2148ee27127fa3265aa67', 'confirmations': 42, 'time': 1626034093, 'blocktime': 1626034093}
 ```
+----------------------------
+xquery_units.py - Script sends JSON-RPC requests to xquery container
+
+The XQuery service is activated by plugin in Snode and Xrouter config. It is available through XRPoxy endpoints (/xrs/xquery)
+
+example of request:
+```bash 
+curl http://127.0.0.1/xrs/xquery/ext/info
+            -X POST                     
+            -H "Content-Type: application/json"
+            -d  '{"jsonrpc":"2.0", "id":1, "method" :"info.getBlockchainID",
+                "params": { "alias":"X" }}'
+```
+```bash
+python3 xquery_unit_test.py 
+Chain X, blockchain id = 2oYMBNV4eNHyqk2fjjV5nVQLDbtmNJzq5s3qs3Lo6ftnC6FByM
+Chain P, blockchain id = 11111111111111111111111111111111LpoYY
+Chain C, blockchain id = 2q9e4r6Mu3U68nU1fYjgbR6JvwrRx36CohpAX5UQxse55x1Q5
+.Chain X/tx,index 0, container id = qysTYUMCWdsR3MctzyfXiSvoSf6evbeFGRLLzA4j2BjNXTknh
+Chain P/block,index 0, container id = 4AqeFPxtTW4B5D6oR8gRZTvRKnnqkUWiV6mUNZxjUMbQKYWpi
+.
+----------------------------------------------------------------------
+Ran 2 tests in 0.071s
+
+OK
+
+```
