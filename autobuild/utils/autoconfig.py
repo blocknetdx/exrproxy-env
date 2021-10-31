@@ -16,8 +16,8 @@ MANIFEST_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configur
 
 XBRIDGE_CONF_BASE_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/xbridge-confs/'
 
-walletconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/autobuild-generatetemplates/autobuild/templates/wallet.conf.j2"
-xbridgeconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/autobuild-generatetemplates/autobuild/templates/xbridge.conf.j2"
+walletconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/autobuild/templates/wallet.conf.j2"
+xbridgeconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/autobuild/templates/xbridge.conf.j2"
 
 
 def template_vars(template_path):
@@ -49,7 +49,7 @@ def load_template(template_url):
 		time.sleep(10)
 		
 def chain_lookup(s):
-	return "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/autobuild-generatetemplates/autobuild/configs/{}.base.j2".format(s.lower())
+	return "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/autobuild/configs/{}.base.j2".format(s.lower())
 
 def manifest_content():
 	return MANIFEST_URL

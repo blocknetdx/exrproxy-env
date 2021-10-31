@@ -99,7 +99,7 @@ def processcustom(customlist):
                         custom_ip = autoconfig.random_ip()
                         if custom_ip not in used_ip.values():
                             c['daemons'][i]['ip'] = custom_ip
-                            used_ip[name]=custom_ip
+                            used_ip[name] = custom_ip
                             break
                     daemons_list.append(name.upper())
                     rpc_threads += 1
