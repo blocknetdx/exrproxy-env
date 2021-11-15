@@ -21,12 +21,14 @@ parser.add_argument('--deploy_eth', help='Deploy ethereum stack', action='store_
 parser.add_argument('--testnet', help='Use testnet', default=False)
 parser.add_argument('--syncmode', help='sync mode', default='light')
 parser.add_argument('--gethexternal', help='Use remote ethereum node', default=False)
+parser.add_argument('--custom_manifest', help='URL to custom manifest files and configs', default=False)
 args = parser.parse_args()
 IMPORTYAML = args.yaml
 DEPLOY_ETH = args.deploy_eth
 GETHEXTERNAL = args.gethexternal
 ETH_TESTNET = args.testnet
 SYNCMODE = args.syncmode
+CUSTOM_MANIFEST_URL = args.custom_manifest
 
 if GETHEXTERNAL or ETH_TESTNET:
     DEPLOY_ETH = True
@@ -61,7 +63,10 @@ def processcustom(customlist):
     daemons_list = []
     daemonFiles = {}
     rpc_threads = 0
-    manifest_config = autoconfig.load_template(autoconfig.manifest_content())
+    if customlist[0]['custom_manifest']:
+        manifest_config = autoconfig.load_template(customlist[0]['custom_manifest']+'manifest-latest.json')
+    else:
+        manifest_config = autoconfig.load_template(autoconfig.manifest_content())
     manifest = json.loads(Template(manifest_config).render())
     for blockchain in manifest:
         daemonFiles[blockchain['ticker']] = blockchain['conf_name']
@@ -73,7 +78,10 @@ def processcustom(customlist):
             if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'XQUERY']:
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
-                    xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(name))
+                    if customlist[0]['custom_manifest']:
+                        xbridge_text = autoconfig.load_template(customlist[0]['custom_manifest']+'{}.base.j2'.format(name.lower()))
+                    else:
+                        xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(name))
                     xtemplate = Template(xbridge_text)
                     xresult = xtemplate.render()
                     xbridge_json = json.loads(xresult)
@@ -254,6 +262,7 @@ if __name__ == "__main__":
     datalist[0]['gethexternal'] = GETHEXTERNAL
     datalist[0]['eth_testnet'] = ETH_TESTNET
     datalist[0]['syncmode'] = SYNCMODE
+    datalist[0]['custom_manifest'] = CUSTOM_MANIFEST_URL
     if datalist == 'ERROR':
         logging.info('YAML LOAD FAILURE, check yaml format/file')
     else:
