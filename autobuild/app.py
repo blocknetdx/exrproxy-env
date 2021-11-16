@@ -79,7 +79,7 @@ def processcustom(customlist):
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
                     if customlist[0]['custom_manifest']:
-                        xbridge_text = autoconfig.load_template(customlist[0]['custom_manifest']+'{}.base.j2'.format(name.lower()))
+                        xbridge_text = autoconfig.load_template(customlist[0]['custom_manifest']+'autobuild/configs/{}.base.j2'.format(name.lower()))
                     else:
                         xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(name))
                     xtemplate = Template(xbridge_text)
@@ -210,7 +210,6 @@ def processconfigs(datalist):
             if name.upper() not in ['TNODE', 'SNODE', 'TESTSNODE', 'ETH', 'XR_PROXY']:
                 XBRIDGE_CONF += "{},".format(name)
                 template_wc = Template(autoconfig.load_template(autoconfig.wallet_config())).render(daemon)
-
                 rendered_data_ec = custom_template_ec.render({'walletConfig': template_wc,
                                                               'configName': daemon['configName']})
                 config_name = '../scripts/entrypoints/start-{}.sh'.format(daemon['configName'])
