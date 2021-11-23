@@ -2,6 +2,7 @@
 import os
 import stat
 import json
+import re
 import yaml
 import argparse
 import logging
@@ -64,7 +65,7 @@ def processcustom(customlist):
     daemonFiles = {}
     rpc_threads = 0
     if customlist[0]['custom_manifest']:
-        manifest_config = autoconfig.load_template(customlist[0]['custom_manifest']+'manifest-latest.json')
+        manifest_config = autoconfig.load_template(re.sub(r'(^(?!.*/$).*)',r'\1/',customlist[0]['custom_manifest'])+'manifest-latest.json')
     else:
         manifest_config = autoconfig.load_template(autoconfig.manifest_content())
     manifest = json.loads(Template(manifest_config).render())
@@ -79,7 +80,7 @@ def processcustom(customlist):
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
                     if customlist[0]['custom_manifest']:
-                        xbridge_text = autoconfig.load_template(customlist[0]['custom_manifest']+'autobuild/configs/{}.base.j2'.format(name.lower()))
+                        xbridge_text = autoconfig.load_template(re.sub(r'(^(?!.*/$).*)',r'\1/',customlist[0]['custom_manifest'])+'autobuild/configs/{}.base.j2'.format(name.lower()))
                     else:
                         xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(name))
                     xtemplate = Template(xbridge_text)
