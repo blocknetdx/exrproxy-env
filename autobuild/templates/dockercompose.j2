@@ -108,6 +108,9 @@ services:
 {% if eth_testnet %}
       - --{{ eth_testnet }}
       - --syncmode={{ syncmode }}
+{% else %}
+      - --gcmode=archive
+      - --syncmode=full
 {% endif %}
       - --nousb
       - --http
