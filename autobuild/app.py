@@ -146,8 +146,9 @@ def processcustom(customlist):
                                 used_ip[f'{k.lower()}_ip'] = custom_ip
                                 break
                 if name.upper() == 'XQUERY':
-                    customlist[0]['deploy_xquery'] = True
-                    customlist[0]['plugins'].append('xquery')
+                    print("XQUERY exists")
+                    # customlist[0]['deploy_xquery'] = True
+                    # customlist[0]['plugins'].append('xquery')
                 #volumes paths configs
                 for j in list(c['daemons'][i]):
                     if j not in ['name','image']:
