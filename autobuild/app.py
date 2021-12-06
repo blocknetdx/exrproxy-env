@@ -76,7 +76,7 @@ def processcustom(customlist):
         for i in range(len(c['daemons'])):
             name = c['daemons'][i]['name']
             #daemon configs
-            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'XQUERY']:
+            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'AVAX']:
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
                     if customlist[0]['custom_manifest']:
@@ -118,8 +118,8 @@ def processcustom(customlist):
             else:
                 #others configs
                 to_del_index.append(i)
-                if name.upper() in ['XR_PROXY','XQUERY', 'SNODE', 'TNODE', 'TESTSNODE']:
-                    if name.upper() not in ['XR_PROXY', 'XQUERY']:
+                if name.upper() in ['XR_PROXY','AVAX', 'SNODE', 'TNODE', 'TESTSNODE']:
+                    if name.upper() not in ['XR_PROXY', 'AVAX']:
                         customlist[0]['blocknet_image'] = c['daemons'][i]['image']
                         customlist[0]['blocknet_node'] = name.lower()
                     else:
@@ -145,7 +145,7 @@ def processcustom(customlist):
                                 customlist[0][f'{k.lower()}_ip'] = custom_ip
                                 used_ip[f'{k.lower()}_ip'] = custom_ip
                                 break
-                if name.upper() == 'XQUERY':
+                if name.upper() == 'AVAX':
                     customlist[0]['deploy_xquery'] = True
                     customlist[0]['plugins'].append('xquery')
                 #volumes paths configs
@@ -169,7 +169,7 @@ def processcustom(customlist):
                     #if daemons missing config add to to_del_index
                     logging.info(f'invalid config in YAML for {var["name"]}:\nmissing {list(set(tocomp_a).symmetric_difference(set(tocomp_b)))}')
                     to_del_index.append(index)
-            elif var['name'].upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XQUERY']:
+            elif var['name'].upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'AVAX']:
                 continue
 
         #delete fake daemons SNODE ETH XR_PROXY
