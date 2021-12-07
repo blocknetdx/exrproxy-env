@@ -22,7 +22,7 @@ parser.add_argument('--deploy_eth', help='Deploy ethereum stack', action='store_
 parser.add_argument('--testnet', help='Use testnet', default=False)
 parser.add_argument('--syncmode', help='sync mode', default='light')
 parser.add_argument('--gethexternal', help='Use remote ethereum node', default=False)
-parser.add_argument('--custom_manifest', help='URL to custom manifest files and configs', default=False)
+parser.add_argument('--custom_manifest', help='raw URL to custom manifest file and configs; e.g. https://raw.githubusercontent.com/ConanMishler/blockchain-configuration-files/bump-SYS-v4.2.2/', default=False)
 args = parser.parse_args()
 IMPORTYAML = args.yaml
 DEPLOY_ETH = args.deploy_eth
