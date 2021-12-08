@@ -18,7 +18,10 @@ services:
     volumes:
       - {{ daemon.config_mount_dir }}/{{ daemon.name }}/config:/opt/blockchain/config
       - {{ daemon.data_mount_dir }}/{{ daemon.name }}/data:/opt/blockchain/data
-      - type: bind
+    {% if daemon.chainstate_mount_dir is defined  %}
+  - {{ daemon.chainstate_mount_dir }}/{{ daemon.name }}/data/chainstate:/opt/blockchain/data/chainstate
+    {% endif %}
+  - type: bind
         source: ./scripts/entrypoints/start-{{ daemon.configName }}.sh
         target: /opt/blockchain/start-{{ daemon.configName }}.sh
     networks:
