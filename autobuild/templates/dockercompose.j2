@@ -74,9 +74,9 @@ services:
         ipv4_address: {{ testsnode_ip }}
 {% endif %}
 
-{% if deploy_xquery %}
-  xquery:
-    image: {{ xquery_image }}
+{% if deploy_avax %}
+  avax:
+    image: {{ avax_image }}
     restart: unless-stopped
     expose:
       - 9650
@@ -87,7 +87,7 @@ services:
       - --index-enabled
       - --db-dir=/data
     volumes:
-      - {{ xquery_data_mount_dir }}/XQUERY:/data
+      - {{ avax_data_mount_dir }}/AVAX:/data
     logging:
       driver: "json-file"
       options:
@@ -95,7 +95,7 @@ services:
         max-file: "10"
     networks:
       backend:
-        ipv4_address: {{ xquery_ip }}
+        ipv4_address: {{ avax_ip }}
 {% endif %}
 
 {% if deploy_eth %}
@@ -201,8 +201,8 @@ services:
       DB_PASSWORD: password
       DB_DATABASE: eth
 {% endif %}
-{% if deploy_xquery %}
-      XQUERY_HOST: http://{{ xquery_ip }}:9650
+{% if deploy_avax %}
+      XQUERY_HOST: http://{{ avax_ip }}:9650
 {% endif %}
     volumes:
       - {{ xr_proxy_config_mount_dir }}:/opt/uwsgi/conf
