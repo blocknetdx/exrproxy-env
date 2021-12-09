@@ -19,7 +19,7 @@
       config_mount_dir: /snode # DO NOT DELETE
       data_mount_dir: /snode # DO NOT DELETE
     - name: AVAX # Requires 200 GB of disk, 16 GB RAM & 6 vCPUs (23 Nov, 2021)
-      image: avaplatform/avalanchego:v1.7.1
+      image: avaplatform/avalanchego:v1.7.2
       data_mount_dir: /snode
     - name: BTC # Requires 415.5 GB of disk (7 June, 2021)
       image: blocknetdx/bitcoin:v0.20.0
