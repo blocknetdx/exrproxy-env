@@ -1,0 +1,12 @@
+chains:
+- abi: avax_abi.json
+  address:
+  - address: '0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106'
+    name: Pangolin_Router
+  historical:
+  - fromBlock: '6800000'
+  name: AVAX
+  query:
+  - name: Swap
+endpoint: /xquery
+graph: AVAX

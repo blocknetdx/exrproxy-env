@@ -17,9 +17,9 @@
       image: blocknetdx/servicenode:latest # DO NOT DELETE
       config_mount_dir: /snode # DO NOT DELETE
       data_mount_dir: /snode # DO NOT DELETE
-    - name: XQUERY 
+    - name: AVAX 
       image: avaplatform/avalanchego:v1.6.1
-      data_mount_dir: /media/arcsecure/data/snode
+      data_mount_dir: /exr/data/snode
     - name: BTC
       image: blocknetdx/bitcoin:v0.20.0
       config_mount_dir: /snode

@@ -1,0 +1,132 @@
+{% for chain in chains %}
+####{{ chain.name.lower() }} STACK START
+  xquery-event-processor-{{ chain.name.lower() }}:
+    build: https://github.com/blocknetdx/XQuery.git#main:event-processor
+    depends_on:
+      - "xquery-graphql-engine"
+      - "xquery-gateway-processor"
+      - "xquery-db-processor"
+    restart: always
+    environment:
+      NAME: {{ chain.name }}
+      WORKER_THREADS: 30
+      CHAIN_HOST: {{ chain.rpc_host }}
+      DB_HOST: {{ postgres_ip }}
+      DB_PORT: {{ postgres_port }}
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgrespassword
+      DB_DATABASE: postgres
+      ZMQ_GATEWAY_HOST: {{ gateway_processor_ip }}
+      ZMQ_GATEWAY_PORT1: {{ gateway_processor_port1 }}
+      ZMQ_GATEWAY_PORT2: {{ gateway_processor_port2 }}
+    volumes:
+      - https://raw.githubusercontent.com/blocknetdx/XQuery/main/abi/{{ chain.abi }}:/app/manager/abi.json
+      - ${PWD}/{{ query_config }}:/app/manager/query.yaml
+    networks:
+      backend:
+        ipv4_address: {{ chain.ip }}
+####{{ chain.name.lower() }} STACK END
+{% endfor %}
+
+  xquery-gateway-processor:
+    build: https://github.com/blocknetdx/XQuery.git#main:gateway-processor
+    depends_on:
+      - "postgres"
+    restart: always
+    environment:
+      DB_HOST: {{ postgres_ip }}
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgrespassword
+      DB_DATABASE: postgres
+      ZMQ_GATEWAY_PORT1: {{ gateway_processor_port1 }}
+      ZMQ_GATEWAY_PORT2: {{ gateway_processor_port2 }}
+    ports:
+      - "{{ gateway_processor_port1 }}:{{ gateway_processor_port1 }}"
+      - "{{ gateway_processor_port2 }}:{{ gateway_processor_port2 }}"
+    networks:
+      backend:
+        ipv4_address: {{ gateway_processor_ip }}
+  xquery-db-processor:
+    build: https://github.com/blocknetdx/XQuery.git#main:db-processor
+    depends_on:
+      - "xquery-postgres"
+    restart: always
+    environment:
+      ZMQ_GATEWAY_HOST: {{ gateway_processor_ip }}
+      ZMQ_GATEWAT_PORT1: {{ gateway_processor_port1 }}
+      ZMQ_GATEWAT_PORT2: {{ gateway_processor_port2 }}
+      DB_HOST: {{ postgres_ip }}
+      DB_PORT: {{ postgres_port }}
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgrespassword
+      DB_DATABASE: postgres
+      HASURA_HOST: {{ graphql_engine_ip }}
+      HASURA_PORT: {{ graphql_engine_port }}
+{% for chain in chains %}
+      CHAIN_ABI_{{ chain.name }}: {{ chain.abi }}
+{% endfor %}
+    volumes:
+{% for chain in chains %}
+      - https://raw.githubusercontent.com/blocknetdx/XQuery/main/abi/{{ chain.abi }}:/app/manager/{{ chain.abi }}
+{% endfor %}
+    networks:
+      backend:
+        ipv4_address: {{ db_processor_ip }}
+  xquery-postgres:
+    image: postgres:12
+    restart: always
+    volumes:
+      - {{ graph.lower() }}:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgrespassword
+    ports:
+      - "{{ postgres_port }}:{{ postgres_port }}"
+    command: -p {{ postgres_port }}
+    networks:
+      backend:
+        ipv4_address: {{ postgres_ip }}
+  xquery-graphql-engine:
+    image: hasura/graphql-engine:v2.0.10
+    hostname: graphql-engine
+    ports:
+      - "{{ graphql_engine_port }}:{{ graphql_engine_port }}"
+    depends_on:
+      - "xquery-postgres"
+    restart: always
+    environment:
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@{{ postgres_ip }}:{{ postgres_port }}/postgres
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_SERVER_PORT: {{ graphql_engine_port }}
+    networks:
+      backend:
+        ipv4_address: {{ graphql_engine_ip }}
+  xquery-reverse-proxy:
+    build: https://github.com/blocknetdx/XQuery.git#main:reverse-proxy
+    ports:
+      - "{{ reverse_proxy_port }}:80"
+    restart: always
+    environment:
+      PORT: {{ reverse_proxy_port }}
+      CHAIN_ENDPOINT: {{ endpoint }}
+      CHAIN_HASURA: {{ graphql_engine_ip}}
+      CHAIN_HASURA_PORT: {{ graphql_engine_port }}
+      QUERY_CONFIG: {{ query_config }}
+{% for chain in chains %}
+      CHAIN_ABI_{{ chain.name }}: {{ chain.name }}.json
+{% endfor %}
+    depends_on:
+{% for chain in chains %}
+      - "xquery-event-processor-{{ chain.name.lower() }}"
+{% endfor %}
+    volumes:
+      - ${PWD}/{{ query_config }}:/app/manager/{{ query_config }}
+{% for chain in chains %}
+      - https://raw.githubusercontent.com/blocknetdx/XQuery/main/abi/{{ chain.abi }}:/app/manager/{{ chain.name }}.json
+{% endfor %}
+    networks:
+      backend:
+        ipv4_address: {{ reverse_proxy_ip }}
+volumes:
+  {{ graph.lower() }}:
