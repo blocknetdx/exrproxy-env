@@ -118,7 +118,7 @@ def processcustom(customlist):
                     daemons_list.append(name.upper())
                     rpc_threads += 1
                 except Exception as e:
-                    loggin.info("Config for currency {} not found. The error is {}".format(name, e))
+                    logging.info("Config for currency {} not found. The error is {}".format(name, e))
                     del c['daemons'][i]
             else:
                 #others configs
