@@ -24,7 +24,7 @@ xbridgeconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-con
 def write_yaml_file(data):
   with open('xquery.yaml', 'w') as file:
     yaml.dump(data, file, allow_unicode=True)
-    print(f'Wrote xquery.yaml')
+    return('Wrote xquery.yaml')
 
 def template_vars(template_path):
     #jinja2 all variables

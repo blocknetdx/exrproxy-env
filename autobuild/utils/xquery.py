@@ -19,6 +19,8 @@ def xq_template(query, data):
 				name = item['name']
 				if name == 'AVAX':
 					item['rpc_host'] = f"http://{data[f'{name.lower()}_ip']}:9650/ext/bc/C/rpc"
+				if name == 'ETH':
+					item['rpc_host'] = f"http://{data[f'g{name.lower()}_ip']}:8545"
 				item['ip'] = ips.pop(0)
 				final_data['chains'].append(item)
 		elif key0 == 'graph':

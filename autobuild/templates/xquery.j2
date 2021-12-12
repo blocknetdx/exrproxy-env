@@ -104,8 +104,8 @@
         ipv4_address: {{ graphql_engine_ip }}
   xquery-reverse-proxy:
     build: https://github.com/blocknetdx/XQuery.git#main:reverse-proxy
-    ports:
-      - "{{ reverse_proxy_port }}:80"
+    #ports:
+    #  - "{{ reverse_proxy_port }}:{{ reverse_proxy_port }}"
     restart: always
     environment:
       PORT: {{ reverse_proxy_port }}

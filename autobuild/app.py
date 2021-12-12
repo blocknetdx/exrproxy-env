@@ -6,6 +6,7 @@ import re
 import yaml
 import argparse
 import logging
+import ipaddress
 from jinja2 import Environment, FileSystemLoader, Template, BaseLoader
 from utils.loggerinit import *
 from utils import autoconfig
@@ -117,7 +118,7 @@ def processcustom(customlist):
                     daemons_list.append(name.upper())
                     rpc_threads += 1
                 except Exception as e:
-                    print("Config for currency {} not found. The error is {}".format(name, e))
+                    loggin.info("Config for currency {} not found. The error is {}".format(name, e))
                     del c['daemons'][i]
             else:
                 #others configs
@@ -138,6 +139,14 @@ def processcustom(customlist):
                 if name.upper() == 'ETH':
                     # deploy_eth = os.environ.get("DEPLOY_ETH", "true")
                     customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
+                    customlist[0]['deploy_eth'] = True
+                    if 'host' in list(c['daemons'][i]):
+                        try:
+                            ip = ipaddress.ip_address(c['daemons'][i]['host'])
+                            customlist[0]['gethexternal'] = ip
+                        except Exception as e:
+                            logging.info("Using local geth")
+                    customlist[0]['plugins'].append('eth_passthrough')
                     # customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
                     for k in ['PG','ETH','GETH']:
                         while True:
@@ -154,12 +163,12 @@ def processcustom(customlist):
                     # customlist[0]['plugins'].append('avax')
                 if name.upper() == 'XQUERY':
                     logging.info('XQUERY exists')
+                    customlist[0]['plugins'].append('xquery')
                     customlist[0]['deploy_xquery'] = True
                     query = dict(c['daemons'][i])
                     del query['name']
-                    autoconfig.write_yaml_file(query)
+                    logging.info(autoconfig.write_yaml_file(query))
                     qtemplate = xq_template(query, customlist[0])
-                    print(qtemplate)
                     for key, item in qtemplate.items():
                         c[key] = item
                 #volumes paths configs

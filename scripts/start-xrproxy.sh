@@ -10,7 +10,7 @@ buffer-size = 32768
 set-ph = SERVICENODE_PRIVKEY=${SN_KEY}
 
 set-ph = BLOCKNET_CHAIN=mainnet
-set-ph = PLUGINS=
+set-ph = PLUGINS=eth_passthrough,xquery
 set-ph = HANDLE_PAYMENTS=true
 set-ph = HANDLE_PAYMENTS_ENFORCE=true
 set-ph = HANDLE_PAYMENTS_RPC_INCLUDE_HEADERS=true
@@ -25,6 +25,10 @@ set-ph = RPC_BLOCK_PORT=41414
 set-ph = RPC_BLOCK_USER=${RPC_USER}
 set-ph = RPC_BLOCK_PASS=${RPC_PASSWORD}
 set-ph = RPC_BLOCK_VER=2.0
+
+
+set-ph = URL_XQUERY_HOSTIP=172.31.0.8
+set-ph = URL_XQUERY_PORT=81
 
 EOL
 # ensure supervisord runs at pid1
