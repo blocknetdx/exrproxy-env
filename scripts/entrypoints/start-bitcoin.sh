@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 
 cat > /opt/blockchain/config/bitcoin.conf << EOL
-
+datadir=/opt/blockchain/data
 rpcbind=0.0.0.0
 rpcuser=${RPC_USER}
 rpcpassword=${RPC_PASSWORD}
-rpcallow=172.31.0.0/20
+rpcallowip=172.31.0.0/20
 
 server=1
 listen=1
@@ -29,4 +29,4 @@ changetype=legacy
 EOL
 
 # ensure docker runs daemon as pid1
-exec $1
+exec $1 -conf=/opt/blockchain/config/bitcoin.conf

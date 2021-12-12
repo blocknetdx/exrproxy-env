@@ -19,26 +19,26 @@
       image: blocknetdx/servicenode:latest # DO NOT DELETE
       config_mount_dir: /exr/data/snode # DO NOT DELETE
       data_mount_dir: /exr/data/snode # DO NOT DELETE
-    # - name: BTC
-    #   image: blocknetdx/bitcoin:v0.20.0
-    #   config_mount_dir: /snode
-    #   data_mount_dir: /snode
-    # - name: LTC
-    #   image: blocknetdx/litecoin:v0.18.1
-    #   config_mount_dir: /snode
-    #   data_mount_dir: /snode
-    # - name: DGB
-    #   image: blocknetdx/digibyte:v7.17.2
-    #   config_mount_dir: /snode
-    #   data_mount_dir: /snode
-    # - name: SYS
-    #   image: blocknetdx/syscoin4:v4.2.2
-    #   config_mount_dir: /snode
-    #   data_mount_dir: /snode
-    # - name: PIVX
-    #   image: blocknetdx/pivx:v5.3.2
-    #   config_mount_dir: /snode
-    #   data_mount_dir: /snode      
+    - name: BTC
+      image: blocknetdx/bitcoin:v0.20.0
+      config_mount_dir: /snode
+      data_mount_dir: /snode
+    - name: LTC
+      image: blocknetdx/litecoin:v0.18.1
+      config_mount_dir: /snode
+      data_mount_dir: /snode
+    - name: DGB
+      image: blocknetdx/digibyte:v7.17.2
+      config_mount_dir: /snode
+      data_mount_dir: /snode
+    - name: SYS
+      image: blocknetdx/syscoin4:v4.3.0
+      config_mount_dir: /snode
+      data_mount_dir: /snode
+    - name: PIVX
+      image: blocknetdx/pivx:v5.3.2
+      config_mount_dir: /snode
+      data_mount_dir: /snode      
     - name: AVAX 
       image: avaplatform/avalanchego:v1.6.1
       data_mount_dir: /exr/data/snode
