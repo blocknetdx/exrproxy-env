@@ -20,7 +20,8 @@
       ZMQ_GATEWAY_PORT1: {{ gateway_processor_port1 }}
       ZMQ_GATEWAY_PORT2: {{ gateway_processor_port2 }}
     volumes:
-      - https://raw.githubusercontent.com/blocknetdx/XQuery/main/abi/{{ chain.abi }}:/app/manager/abi.json
+      #- https://raw.githubusercontent.com/blocknetdx/XQuery/main/abi/{{ chain.abi }}:/app/manager/abi.json
+      - ${PWD}/indexer/abi/{{ chain.abi }}:/app/manager/abi.json
       - ${PWD}/{{ query_config }}:/app/manager/query.yaml
     networks:
       backend:
@@ -67,7 +68,8 @@
 {% endfor %}
     volumes:
 {% for chain in chains %}
-      - https://raw.githubusercontent.com/blocknetdx/XQuery/main/abi/{{ chain.abi }}:/app/manager/{{ chain.abi }}
+      #- https://raw.githubusercontent.com/blocknetdx/XQuery/main/abi/{{ chain.abi }}:/app/manager/{{ chain.abi }}
+      - ${PWD}/indexer/abi/{{ chain.abi }}:/app/manager/{{ chain.abi }}
 {% endfor %}
     networks:
       backend:
@@ -123,7 +125,8 @@
     volumes:
       - ${PWD}/{{ query_config }}:/app/manager/{{ query_config }}
 {% for chain in chains %}
-      - https://raw.githubusercontent.com/blocknetdx/XQuery/main/abi/{{ chain.abi }}:/app/manager/{{ chain.name }}.json
+      #- https://raw.githubusercontent.com/blocknetdx/XQuery/main/abi/{{ chain.abi }}:/app/manager/{{ chain.name }}.json
+      - ${PWD}/indexer/abi/{{ chain.abi }}:/app/manager/{{ chain.name }}.json
 {% endfor %}
     networks:
       backend:
