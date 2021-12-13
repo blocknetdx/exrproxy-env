@@ -1,7 +1,8 @@
 {% for chain in chains %}
 ####{{ chain.name.lower() }} STACK START
   xquery-event-processor-{{ chain.name.lower() }}:
-    build: https://github.com/blocknetdx/XQuery.git#main:event-processor
+    #build: https://github.com/blocknetdx/XQuery.git#main:event-processor
+    build: ./indexer/event-processor
     depends_on:
       - "xquery-graphql-engine"
       - "xquery-gateway-processor"
@@ -30,7 +31,8 @@
 {% endfor %}
 
   xquery-gateway-processor:
-    build: https://github.com/blocknetdx/XQuery.git#main:gateway-processor
+    #build: https://github.com/blocknetdx/XQuery.git#main:gateway-processor
+    build: ./indexer/gateway-processor
     depends_on:
       - "xquery-postgres"
     restart: always
@@ -48,7 +50,8 @@
       backend:
         ipv4_address: {{ gateway_processor_ip }}
   xquery-db-processor:
-    build: https://github.com/blocknetdx/XQuery.git#main:db-processor
+    #build: https://github.com/blocknetdx/XQuery.git#main:db-processor
+    build: ./indexer/db-processor
     depends_on:
       - "xquery-postgres"
     restart: always
@@ -105,7 +108,8 @@
       backend:
         ipv4_address: {{ graphql_engine_ip }}
   xquery-reverse-proxy:
-    build: https://github.com/blocknetdx/XQuery.git#main:reverse-proxy
+    #build: https://github.com/blocknetdx/XQuery.git#main:reverse-proxy
+    build: ./indexer/reverse-proxy
     #ports:
     #  - "{{ reverse_proxy_port }}:{{ reverse_proxy_port }}"
     restart: always
