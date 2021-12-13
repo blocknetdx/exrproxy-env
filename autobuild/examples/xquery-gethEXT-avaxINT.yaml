@@ -1,3 +1,4 @@
+# EXAMPLE INPUT FILE FOR XQUERY WITH EXTERNAL GETH AND INTERNAL AVAX
 --- # snode daemon LIST
 - j2template: dockercompose.j2
   name: dockercompose
@@ -9,7 +10,7 @@
       nginx_mount_dir: /exr/data/snode/xr_proxy/nginx # DO NOT DELETE
     # DO NOT DELETE ETH ENTRY
     - name: ETH # DO NOT DELETE
-      host: 888.888.888.888 #examaple IP for external geth 
+      host: 192.168.32.10 #examaple IP for external geth 
       # host: internal #example for internal geth
       image: blocknetdx/eth-payment-processor:0.5.2 # DO NOT DELETE
       postgresql_data_mount_dir: /exr/data/snode/eth_pymt_db # DO NOT DELETE

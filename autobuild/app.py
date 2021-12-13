@@ -128,7 +128,8 @@ def processcustom(customlist):
                         customlist[0]['blocknet_image'] = c['daemons'][i]['image']
                         customlist[0]['blocknet_node'] = name.lower()
                     else:
-                        customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
+                        if 'image' in list(c['daemons'][i]):
+                            customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
                     while True:
                         custom_ip = autoconfig.random_ip()
                         if custom_ip not in used_ip.values():
@@ -145,6 +146,7 @@ def processcustom(customlist):
                             ip = ipaddress.ip_address(c['daemons'][i]['host'])
                             customlist[0]['gethexternal'] = ip
                         except Exception as e:
+                            print(e)
                             logging.info("Using local geth")
                     customlist[0]['plugins'].append('eth_passthrough')
                     # customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
@@ -159,8 +161,11 @@ def processcustom(customlist):
                                 used_ip[f'{k.lower()}_ip'] = custom_ip
                                 break
                 if name.upper() == 'AVAX':
-                    customlist[0]['deploy_avax'] = True
-                    # customlist[0]['plugins'].append('avax')
+                    if 'image' in list(c['daemons'][i]):
+                        customlist[0]['deploy_avax'] = True
+                    else:
+                        customlist[0]['deploy_avax'] = False
+                        customlist[0][f'{name.lower()}_ip'] = c['daemons'][i]['host']
                 if name.upper() == 'XQUERY':
                     logging.info('XQUERY exists')
                     customlist[0]['plugins'].append('xquery')
