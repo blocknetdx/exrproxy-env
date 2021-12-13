@@ -144,7 +144,13 @@ services:
     restart: unless-stopped
     environment:
       ETH_HOST: {{ geth_ip }}
-      ETH_PORT: 8546
+      ETH_PORT: 8545
+      ETH_HOST_TYPE: http
+{% if deploy_avax %}
+      AVAX_HOST: {{ avax_ip }}
+      AVAX_PORT: 9650
+      AVAX_HOST_TYPE: http
+{% endif %}
       PAYMENT_AMOUNT_TIER1: 35
       PAYMENT_AMOUNT_TIER2: 200
       DB_HOST: {{ pg_ip }}
