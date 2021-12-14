@@ -1,8 +1,7 @@
 {% for chain in chains %}
 ####{{ chain.name.lower() }} STACK START
   xquery-event-processor-{{ chain.name.lower() }}:
-    #build: https://github.com/blocknetdx/XQuery.git#main:event-processor
-    build: ./indexer/event-processor
+    build: ./xquery/event-processor
     depends_on:
       - "xquery-graphql-engine"
       - "xquery-gateway-processor"
@@ -21,8 +20,7 @@
       ZMQ_GATEWAY_PORT1: {{ gateway_processor_port1 }}
       ZMQ_GATEWAY_PORT2: {{ gateway_processor_port2 }}
     volumes:
-      #- https://raw.githubusercontent.com/blocknetdx/XQuery/main/abi/{{ chain.abi }}:/app/manager/abi.json
-      - ${PWD}/indexer/abi/{{ chain.abi }}:/app/manager/abi.json
+      - ${PWD}/xquery/abi/{{ chain.abi }}:/app/manager/abi.json
       - ${PWD}/{{ query_config }}:/app/manager/query.yaml
     networks:
       backend:
@@ -31,8 +29,7 @@
 {% endfor %}
 
   xquery-gateway-processor:
-    #build: https://github.com/blocknetdx/XQuery.git#main:gateway-processor
-    build: ./indexer/gateway-processor
+    build: ./xquery/gateway-processor
     depends_on:
       - "xquery-postgres"
     restart: always
@@ -50,8 +47,7 @@
       backend:
         ipv4_address: {{ gateway_processor_ip }}
   xquery-db-processor:
-    #build: https://github.com/blocknetdx/XQuery.git#main:db-processor
-    build: ./indexer/db-processor
+    build: ./xquery/db-processor
     depends_on:
       - "xquery-postgres"
     restart: always
@@ -71,8 +67,7 @@
 {% endfor %}
     volumes:
 {% for chain in chains %}
-      #- https://raw.githubusercontent.com/blocknetdx/XQuery/main/abi/{{ chain.abi }}:/app/manager/{{ chain.abi }}
-      - ${PWD}/indexer/abi/{{ chain.abi }}:/app/manager/{{ chain.abi }}
+      - ${PWD}/xquery/abi/{{ chain.abi }}:/app/manager/{{ chain.abi }}
 {% endfor %}
     networks:
       backend:
@@ -108,8 +103,7 @@
       backend:
         ipv4_address: {{ graphql_engine_ip }}
   xquery-reverse-proxy:
-    #build: https://github.com/blocknetdx/XQuery.git#main:reverse-proxy
-    build: ./indexer/reverse-proxy
+    build: ./xquery/reverse-proxy
     #ports:
     #  - "{{ reverse_proxy_port }}:{{ reverse_proxy_port }}"
     restart: always
@@ -129,8 +123,7 @@
     volumes:
       - ${PWD}/{{ query_config }}:/app/manager/{{ query_config }}
 {% for chain in chains %}
-      #- https://raw.githubusercontent.com/blocknetdx/XQuery/main/abi/{{ chain.abi }}:/app/manager/{{ chain.name }}.json
-      - ${PWD}/indexer/abi/{{ chain.abi }}:/app/manager/{{ chain.name }}.json
+      - ${PWD}/xquery/abi/{{ chain.abi }}:/app/manager/{{ chain.name }}.json
 {% endfor %}
     networks:
       backend:

@@ -20,4 +20,4 @@ chains:
   query:
   - name: Swap
 endpoint: /xquery
-graph: AVAX
+graph: AVAX_ETH

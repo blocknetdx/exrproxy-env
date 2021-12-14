@@ -143,8 +143,8 @@ def processcustom(customlist):
                     customlist[0]['deploy_eth'] = True
                     if 'host' in list(c['daemons'][i]):
                         try:
-                            ip = ipaddress.ip_address(c['daemons'][i]['host'])
-                            customlist[0]['gethexternal'] = ip
+                            # ip = ipaddress.ip_address(c['daemons'][i]['host'])
+                            customlist[0]['gethexternal'] = c['daemons'][i]['host']
                         except Exception as e:
                             print(e)
                             logging.info("Using local geth")

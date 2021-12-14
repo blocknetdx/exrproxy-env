@@ -1,0 +1,3 @@
+[submodule "xquery"]
+	path = xquery
+	url = https://github.com/blocknetdx/XQuery.git

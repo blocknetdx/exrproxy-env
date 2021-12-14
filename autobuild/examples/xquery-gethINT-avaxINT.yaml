@@ -44,7 +44,7 @@
       image: avaplatform/avalanchego:v1.6.1
       data_mount_dir: /exr/data/snode
     - name: XQUERY
-      graph: AVAX
+      graph: AVAX_ETH
       endpoint: /xquery
       chains:
         - name: AVAX
