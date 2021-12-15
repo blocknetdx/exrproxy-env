@@ -4,6 +4,10 @@ Use this command to clone the project with all its submodules
 
 `git clone --recursive <project url>`
 
+Update submodules using 
+
+`git submodule update --init --recursive`
+
 # Requirements
 - `Docker`
 - `Docker-Compose`
