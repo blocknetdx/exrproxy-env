@@ -201,6 +201,7 @@ docker-compose -f docker-compose.yaml up -d --build
 ```
 
 8. Get data
+
 Check if the XQuery service is available at
 
 ```
