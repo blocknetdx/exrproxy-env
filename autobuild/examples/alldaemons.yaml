@@ -18,36 +18,41 @@
       image: blocknetdx/servicenode:latest # DO NOT DELETE
       config_mount_dir: /snode # DO NOT DELETE
       data_mount_dir: /snode # DO NOT DELETE
+    # AVALANCHE INDEXER - DELETE IF NOT NEEDED  
     - name: AVAX # Requires 200 GB of disk, 16 GB RAM & 6 vCPUs (23 Nov, 2021)
       image: avaplatform/avalanchego:v1.7.2
       data_mount_dir: /snode
-    - name: BTC # Requires 415.5 GB of disk (7 June, 2021)
+    # THE STANDARD XLITE WALLET SET - DELETE ANY YOU DON'T NEED  
+    - name: BTC # Requires 451 GB of disk (15 December, 2021)
       image: blocknetdx/bitcoin:v0.20.0
       config_mount_dir: /snode
       data_mount_dir: /snode
-    - name: LTC # Requires 66 GB of disk (4 Nov, 2021)
-      image: blocknetdx/litecoin:v0.18.1
+    - name: DASH # Requires 32 GB of disk (15 December, 2021)
+      image: blocknetdx/dash:v0.17.0.3
       config_mount_dir: /snode
       data_mount_dir: /snode
-    - name: DGB # Requires 27 GB of disk (4 Nov, 2021), 4-5 GB RAM/Swap
+    - name: DGB # Requires 27 GB of disk (15 December, 2021), 4-5 GB RAM/Swap
       image: blocknetdx/digibyte:v7.17.2
       config_mount_dir: /snode
       data_mount_dir: /snode
-    - name: SYS # Requires 3 GB of disk (4 Nov, 2021)
-      image: blocknetdx/syscoin4:v4.3.0
+    - name: LTC # Requires 71 GB of disk (15 December, 2021)
+      image: blocknetdx/litecoin:v0.18.1
       config_mount_dir: /snode
       data_mount_dir: /snode
-    - name: PIVX # Requires 18 GB of disk (4 Nov, 2021)
+    - name: PIVX # Requires 19 GB of disk (15 December, 2021)
       image: blocknetdx/pivx:v5.3.2
       config_mount_dir: /snode
       data_mount_dir: /snode
+    - name: SYS # Requires 4 GB of disk (15 December, 2021)
+      image: blocknetdx/syscoin4:v4.3.0
+      config_mount_dir: /snode
+      data_mount_dir: /snode
+    # OTHERS - DELETE ANY YOU DON'T NEED  
     - name: LBC # Requires 150 GB of disk (4 Nov, 2021); can take 2 weeks to sync, depending on HW
       image: blocknetdx/lbrycredits:v0.17.4.6
       config_mount_dir: /snode
       data_mount_dir: /snode
-    - name: DASH # Requires 30 GB of disk (24 Nov, 2021)
-      image: blocknetdx/dash:v0.17.0.2
+    - name: MUE # Requires 5GB of disk (15 December, 2021)
+      image: blocknetdx/monetaryunit:v2.2.0
       config_mount_dir: /snode
       data_mount_dir: /snode
-
-
