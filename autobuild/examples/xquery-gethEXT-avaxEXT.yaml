@@ -46,7 +46,7 @@
       # data_mount_dir: /exr/data/snode
     - name: XQUERY
       graph: AVAX_ETH
-      endpoint: /xquery
+      endpoint: /indexer
       chains:
         - name: AVAX
           abi: avax.json
