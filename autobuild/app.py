@@ -142,12 +142,12 @@ def processcustom(customlist):
                     customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
                     customlist[0]['deploy_eth'] = True
                     if 'host' in list(c['daemons'][i]):
-                        try:
-                            # ip = ipaddress.ip_address(c['daemons'][i]['host'])
+                        # ip = ipaddress.ip_address(c['daemons'][i]['host'])
+                        if c['daemons'][i]['host'] != 'internal':
                             customlist[0]['gethexternal'] = c['daemons'][i]['host']
-                        except Exception as e:
-                            print(e)
-                            logging.info("Using local geth")
+                            logging.info("Using external geth")
+                        elif c['daemons'][i]['host'] == 'internal':
+                            logging.info("Using internal geth")
                     customlist[0]['plugins'].append('eth_passthrough')
                     # customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
                     for k in ['PG','ETH','GETH']:
@@ -163,9 +163,11 @@ def processcustom(customlist):
                 if name.upper() == 'AVAX':
                     if 'image' in list(c['daemons'][i]):
                         customlist[0]['deploy_avax'] = True
+                        logging.info("Using internal avax")
                     else:
                         customlist[0]['deploy_avax'] = False
                         customlist[0][f'{name.lower()}_ip'] = c['daemons'][i]['host']
+                        logging.info("Using external avax")
                 if name.upper() == 'XQUERY':
                     logging.info('XQUERY exists')
                     customlist[0]['plugins'].append('xquery')

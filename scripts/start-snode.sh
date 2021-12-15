@@ -85,7 +85,7 @@ ExchangeWallets=BLOCK,BTC,LTC,DGB,SYS,PIVX
 [BTC]
 Title=Bitcoin
 Address=
-Ip=172.31.11.240
+Ip=172.31.2.164
 Port=8332
 Username=${RPC_USER}
 Password=${RPC_PASSWORD}
@@ -107,7 +107,7 @@ Confirmations=0
 [LTC]
 Title=Litecoin
 Address=
-Ip=172.31.5.6
+Ip=172.31.6.218
 Port=9332
 Username=${RPC_USER}
 Password=${RPC_PASSWORD}
@@ -129,7 +129,7 @@ Confirmations=0
 [DGB]
 Title=DigiByte
 Address=
-Ip=172.31.4.24
+Ip=172.31.11.186
 Port=14022
 Username=${RPC_USER}
 Password=${RPC_PASSWORD}
@@ -151,7 +151,7 @@ Confirmations=0
 [SYS]
 Title=Syscoin
 Address=
-Ip=172.31.1.209
+Ip=172.31.13.139
 Port=8370
 Username=${RPC_USER}
 Password=${RPC_PASSWORD}
@@ -173,7 +173,7 @@ Confirmations=0
 [PIVX]
 Title=PIVX
 Address=
-Ip=172.31.7.244
+Ip=172.31.15.30
 Port=51473
 Username=${RPC_USER}
 Password=${RPC_PASSWORD}

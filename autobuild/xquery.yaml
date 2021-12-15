@@ -19,5 +19,5 @@ chains:
   name: ETH
   query:
   - name: Swap
-endpoint: /xquery
+endpoint: /indexer
 graph: AVAX_ETH

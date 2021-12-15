@@ -4,7 +4,7 @@
   daemons:
     # DO NOT DELETE XR_PROXY ENTRY
     - name: XR_PROXY # DO NOT DELETE
-      image: blocknetdx/exrproxy:0.7.9 # DO NOT DELETE
+      image: blocknetdx/exrproxy:0.8.0 # DO NOT DELETE
       config_mount_dir: /snode/xr_proxy/config # DO NOT DELETE
       nginx_mount_dir: /snode/xr_proxy/nginx # DO NOT DELETE
     # DO NOT DELETE ETH ENTRY
@@ -18,8 +18,8 @@
       config_mount_dir: /snode # DO NOT DELETE
       data_mount_dir: /snode # DO NOT DELETE
     - name: AVAX 
-      image: avaplatform/avalanchego:v1.6.1
-      data_mount_dir: /exr/data/snode
+      image: avaplatform/avalanchego:v1.7.2
+      data_mount_dir: /snode
     - name: BTC
       image: blocknetdx/bitcoin:v0.20.0
       config_mount_dir: /snode

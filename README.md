@@ -184,7 +184,7 @@ python app.py --yaml examples/xquery-gethINT-avaxINT.yaml
 5. Move to the root folder of the repo and move/copy the generated files
 
 ```
-mv autobuild/dockercompose-custom.yaml docker-compose.yaml
+mv autobuild/dockercompose-custom.yaml docker-compose.yml
 mv autobuild/xquery.yaml xquery.yaml
 ```
 
@@ -197,7 +197,7 @@ docker-compose build
 7. Deploy stack
 
 ```
-docker-compose -f docker-compose.yaml up -d --build
+docker-compose -f docker-compose.yml up -d --build
 ```
 
 8. Get data
