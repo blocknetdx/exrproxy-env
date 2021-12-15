@@ -169,3 +169,10 @@ mv autobuild/xquery.yaml xquery.yaml
 
 7. Deploy stack
 `docker-compose -f docker-compose.yaml up -d --build`
+
+8. Get data
+Check if the XQuery service is available at
+`http://127.0.0.1/xrs/xquery`
+Use specified GraphQL endpoint to retrive data
+`http://127.0.0.1/xrs/xquery/indexer`
+
