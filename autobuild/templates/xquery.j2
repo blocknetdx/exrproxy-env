@@ -88,8 +88,8 @@
   xquery-graphql-engine:
     image: hasura/graphql-engine:v2.0.10
     hostname: graphql-engine
-    ports:
-      - "{{ graphql_engine_port }}:{{ graphql_engine_port }}"
+    #ports:
+    #  - "{{ graphql_engine_port }}:{{ graphql_engine_port }}"
     depends_on:
       - "xquery-postgres"
     restart: always
