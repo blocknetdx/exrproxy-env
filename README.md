@@ -1,4 +1,8 @@
-# xrouter-proxy-auto-deploy for use with hydra
+# xrouter-proxy-auto-deploy
+
+Use this command to clone the project with all its submodules
+
+`git clone --recursive <project url>`
 
 # Requirements
 - `Docker`
