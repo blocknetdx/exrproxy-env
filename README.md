@@ -169,38 +169,45 @@ To use external connections check
 autobuild/examples/xquery-gethEXT-avaxEXT.yaml
 ```
 
-3. Move to autobuild directory
+3. Move eth-payment-processor to the correct branch
+
+```
+cd eth-payment-processor
+git checkout feature/ablock_payment
+```
+
+4. Move to autobuild directory
 
 ```
 cd autobuild
 ```
 
-4. Generate docker-compose stack
+5. Generate docker-compose stack
 
 ```
 python app.py --yaml examples/xquery-gethINT-avaxINT.yaml
 ```
 
-5. Move to the root folder of the repo and move/copy the generated files
+6. Move to the root folder of the repo and move/copy the generated files
 
 ```
 mv autobuild/dockercompose-custom.yaml docker-compose.yml
 mv autobuild/xquery.yaml xquery.yaml
 ```
 
-6. Build images
+7. Build images
 
 ```
 docker-compose build
 ```
 
-7. Deploy stack
+8. Deploy stack
 
 ```
 docker-compose -f docker-compose.yml up -d --build
 ```
 
-8. Get data
+9. Get data
 
 Check if the XQuery service is available at
 
