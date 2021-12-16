@@ -140,7 +140,8 @@ services:
 {% endif %}
 
   eth_payment_api:
-    image: {{ eth_image }}
+    #image: {{ eth_image }}
+    build: ./eth-payment-processor
     restart: unless-stopped
     environment:
       ETH_HOST: {{ geth_ip }}

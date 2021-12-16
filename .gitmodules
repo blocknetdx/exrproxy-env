@@ -1,3 +1,6 @@
 [submodule "xquery"]
 	path = xquery
 	url = https://github.com/blocknetdx/XQuery.git
+[submodule "eth-payment-processor"]
+	path = eth-payment-processor
+	url = https://github.com/blocknetdx/eth-payment-processor.git
