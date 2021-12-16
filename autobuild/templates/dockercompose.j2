@@ -152,6 +152,11 @@ services:
       AVAX_PORT: 9650
       AVAX_HOST_TYPE: http
 {% endif %}
+{% if avaxexternal %}
+      AVAX_HOST: {{ avax_ip }}
+      AVAX_PORT: 9650
+      AVAX_HOST_TYPE: http
+{% endif %}
       PAYMENT_AMOUNT_TIER1: 35
       PAYMENT_AMOUNT_TIER2: 200
       DB_HOST: {{ pg_ip }}

@@ -123,8 +123,8 @@ def processcustom(customlist):
             else:
                 #others configs
                 to_del_index.append(i)
-                if name.upper() in ['XR_PROXY','AVAX', 'SNODE', 'TNODE', 'TESTSNODE']:
-                    if name.upper() not in ['XR_PROXY', 'AVAX']:
+                if name.upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE']:
+                    if name.upper() not in ['XR_PROXY']:
                         customlist[0]['blocknet_image'] = c['daemons'][i]['image']
                         customlist[0]['blocknet_node'] = name.lower()
                     else:
@@ -162,12 +162,21 @@ def processcustom(customlist):
                                 break
                 if name.upper() == 'AVAX':
                     if 'image' in list(c['daemons'][i]):
+                        customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
                         customlist[0]['deploy_avax'] = True
                         logging.info("Using internal avax")
+                        while True:
+                            custom_ip = autoconfig.random_ip()
+                            if custom_ip not in used_ip.values():
+                                customlist[0][f'{name.lower()}_ip'] = custom_ip
+                                used_ip[f'{name.lower()}_ip'] = custom_ip
+                                break
                     else:
                         customlist[0]['deploy_avax'] = False
+                        customlist[0]['avaxexternal'] = True
                         customlist[0][f'{name.lower()}_ip'] = c['daemons'][i]['host']
                         logging.info("Using external avax")
+                    
                 if name.upper() == 'XQUERY':
                     logging.info('XQUERY exists')
                     customlist[0]['plugins'].append('xquery')
