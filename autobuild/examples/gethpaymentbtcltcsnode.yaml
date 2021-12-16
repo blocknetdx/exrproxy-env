@@ -4,22 +4,22 @@
   daemons:
     - name: XR_PROXY
       image: blocknetdximg/exrproxy:0.8.0
-      config_mount_dir: /exr/data/snode/xr_proxy/config
-      nginx_mount_dir: /exr/data/snode/xr_proxy/nginx
+      config_mount_dir: /snode/xr_proxy/config
+      nginx_mount_dir: /snode/xr_proxy/nginx
     - name: ETH
       image: blocknetdx/eth-payment-processor:0.5.2
       postgresql_data_mount_dir: /snode/eth_pymt_db
       geth_data_mount_dir: /snode
     - name: SNODE
       image: blocknetdx/servicenode:latest
-      config_mount_dir: /exr/data/snode
-      data_mount_dir: /exr/data/snode
+      config_mount_dir: /snode
+      data_mount_dir: /snode
     - name: BTC
       image: blocknetdx/bitcoin:v0.20.0
-      config_mount_dir: /exr/data/snode
-      data_mount_dir: /exr/data/snode
+      config_mount_dir: /snode
+      data_mount_dir: /snode
     - name: LTC
       image: blocknetdx/litecoin:v0.18.1
-      config_mount_dir: /exr/data/snode
-      data_mount_dir: /exr/data/snode
+      config_mount_dir: /snode
+      data_mount_dir: /snode
 

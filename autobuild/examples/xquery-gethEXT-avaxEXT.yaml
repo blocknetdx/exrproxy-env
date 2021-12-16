@@ -6,20 +6,20 @@
     # DO NOT DELETE XR_PROXY ENTRY
     - name: XR_PROXY # DO NOT DELETE
       image: blocknetdximg/exrproxy:0.8.0 # DO NOT DELETE
-      config_mount_dir: /exr/data/snode/xr_proxy/config # DO NOT DELETE
-      nginx_mount_dir: /exr/data/snode/xr_proxy/nginx # DO NOT DELETE
+      config_mount_dir: /snode/xr_proxy/config # DO NOT DELETE
+      nginx_mount_dir: /snode/xr_proxy/nginx # DO NOT DELETE
     # DO NOT DELETE ETH ENTRY
     - name: ETH # DO NOT DELETE
       host: 192.168.32.10 #examaple IP for external geth 
       # host: internal #example for internal geth
       image: blocknetdx/eth-payment-processor:0.5.2 # DO NOT DELETE
-      postgresql_data_mount_dir: /exr/data/snode/eth_pymt_db # DO NOT DELETE
-      geth_data_mount_dir: /exr/data/snode # DO NOT DELETE
+      postgresql_data_mount_dir: /snode/eth_pymt_db # DO NOT DELETE
+      geth_data_mount_dir: /snode # DO NOT DELETE
     # DO NOT DELETE SNODE ENTRY
     - name: SNODE # DO NOT DELETE
       image: blocknetdx/servicenode:latest # DO NOT DELETE
-      config_mount_dir: /exr/data/snode # DO NOT DELETE
-      data_mount_dir: /exr/data/snode # DO NOT DELETE
+      config_mount_dir: /snode # DO NOT DELETE
+      data_mount_dir: /snode # DO NOT DELETE
     - name: BTC
       image: blocknetdx/bitcoin:v0.20.0
       config_mount_dir: /snode
