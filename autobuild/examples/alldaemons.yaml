@@ -18,11 +18,11 @@
       image: blocknetdx/servicenode:latest # DO NOT DELETE
       config_mount_dir: /snode # DO NOT DELETE
       data_mount_dir: /snode # DO NOT DELETE
-    # AVALANCHE INDEXER - DELETE IF NOT NEEDED  
-    - name: AVAX # Requires 200 GB of disk, 16 GB RAM & 6 vCPUs (23 Nov, 2021)
+    # AVALANCHE INDEXER - DELETE IF YOU DON'T WANT TO SUPPORT XQUERY
+    - name: AVAX # Requires 210 GB of disk, 16 GB RAM & 6 vCPUs (19 December, 2021)
       image: avaplatform/avalanchego:v1.7.2
       data_mount_dir: /snode
-    # THE STANDARD XLITE WALLET SET - DELETE ANY YOU DON'T NEED  
+    # THE STANDARD XLITE WALLET SET - DELETE ANY YOU DON'T WANT TO SUPPORT  
     - name: BTC # Requires 451 GB of disk (15 December, 2021)
       image: blocknetdx/bitcoin:v0.20.0
       config_mount_dir: /snode
@@ -47,7 +47,7 @@
       image: blocknetdx/syscoin4:v4.3.0
       config_mount_dir: /snode
       data_mount_dir: /snode
-    # OTHERS - DELETE ANY YOU DON'T NEED  
+    # OTHERS - DELETE ANY YOU DON'T WANT TO SUPPORT 
     - name: LBC # Requires 150 GB of disk (4 Nov, 2021); can take 2 weeks to sync, depending on HW
       image: blocknetdx/lbrycredits:v0.17.4.6
       config_mount_dir: /snode
