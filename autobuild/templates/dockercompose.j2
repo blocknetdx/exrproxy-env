@@ -80,7 +80,7 @@ services:
       - 9651
     entrypoint: /avalanchego/build/avalanchego
     command:
-      - --http-host=0.0.0.0
+      - --http-host={{ avax_ip }}
       - --index-enabled
       - --db-dir=/data
     volumes:
