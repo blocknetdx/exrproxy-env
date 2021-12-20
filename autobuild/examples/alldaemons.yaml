@@ -4,11 +4,12 @@
   daemons:
     # DO NOT DELETE XR_PROXY ENTRY
     - name: XR_PROXY # DO NOT DELETE
-      image: blocknetdximg/exrproxy:0.8.0 # DO NOT DELETE
+      image: blocknetdx/exrproxy:0.8.0 # DO NOT DELETE
       config_mount_dir: /snode/xr_proxy/config # DO NOT DELETE
       nginx_mount_dir: /snode/xr_proxy/nginx # DO NOT DELETE
     # DO NOT DELETE ETH ENTRY
-    - name: ETH # DO NOT DELETE
+    - name: ETH # DO NOT DELETE - Requires 9+ TB NVMe SSD storage (4 Nov, 2021), 16 GB RAM when GETH deployed locally
+      # Only deployed when --deploy_eth or --gethexternal param passed to app.py; Otherwise, ETH entry is ignored.
       image: blocknetdx/eth-payment-processor:0.5.2 # DO NOT DELETE
       postgresql_data_mount_dir: /snode/eth_pymt_db # DO NOT DELETE
       geth_data_mount_dir: /snode # DO NOT DELETE
@@ -17,26 +18,41 @@
       image: blocknetdx/servicenode:latest # DO NOT DELETE
       config_mount_dir: /snode # DO NOT DELETE
       data_mount_dir: /snode # DO NOT DELETE
-    - name: AVAX 
+    # AVALANCHE INDEXER - DELETE IF YOU DON'T WANT TO SUPPORT XQUERY
+    - name: AVAX # Requires 210 GB of disk, 16 GB RAM & 6 vCPUs (19 December, 2021)
       image: avaplatform/avalanchego:v1.7.2
       data_mount_dir: /snode
-    - name: BTC
+    # THE STANDARD XLITE WALLET SET - DELETE ANY YOU DON'T WANT TO SUPPORT  
+    - name: BTC # Requires 451 GB of disk (15 December, 2021)
       image: blocknetdx/bitcoin:v0.20.0
       config_mount_dir: /snode
       data_mount_dir: /snode
-    - name: LTC
-      image: blocknetdx/litecoin:v0.18.1
+    - name: DASH # Requires 32 GB of disk (15 December, 2021)
+      image: blocknetdx/dash:v0.17.0.3
       config_mount_dir: /snode
       data_mount_dir: /snode
-    - name: DGB
+    - name: DGB # Requires 27 GB of disk (15 December, 2021), 4-5 GB RAM/Swap
       image: blocknetdx/digibyte:v7.17.2
       config_mount_dir: /snode
       data_mount_dir: /snode
-    - name: SYS
-      image: blocknetdx/syscoin4:v4.2.2
+    - name: LTC # Requires 71 GB of disk (15 December, 2021)
+      image: blocknetdx/litecoin:v0.18.1
       config_mount_dir: /snode
       data_mount_dir: /snode
-    - name: PIVX
+    - name: PIVX # Requires 19 GB of disk (15 December, 2021)
       image: blocknetdx/pivx:v5.3.2
+      config_mount_dir: /snode
+      data_mount_dir: /snode
+    - name: SYS # Requires 4 GB of disk (15 December, 2021)
+      image: blocknetdx/syscoin4:v4.3.0
+      config_mount_dir: /snode
+      data_mount_dir: /snode
+    # OTHERS - DELETE ANY YOU DON'T WANT TO SUPPORT 
+    - name: LBC # Requires 150 GB of disk (4 Nov, 2021); can take 2 weeks to sync, depending on HW
+      image: blocknetdx/lbrycredits:v0.17.4.6
+      config_mount_dir: /snode
+      data_mount_dir: /snode
+    - name: MUE # Requires 5GB of disk (15 December, 2021)
+      image: blocknetdx/monetaryunit:v2.2.0
       config_mount_dir: /snode
       data_mount_dir: /snode

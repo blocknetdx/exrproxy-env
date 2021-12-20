@@ -80,7 +80,7 @@ services:
       - 9651
     entrypoint: /avalanchego/build/avalanchego
     command:
-      - --http-host={{ avax_ip }}
+      - --http-host=0.0.0.0
       - --index-enabled
       - --db-dir=/data
     volumes:
@@ -116,12 +116,12 @@ services:
       - --http
       - --http.api
       - "personal,eth,net,web3"
-      - --http.addr={{ geth_ip }}
+      - --http.addr=0.0.0.0
       - --http.vhosts=*
       - --http.corsdomain=*
       - --ws
       - --ws.origins=*
-      - --ws.addr={{ geth_ip }}
+      - --ws.addr=0.0.0.0
       - --ws.api
       - "personal,eth,net,web3"
       - --graphql
@@ -140,8 +140,7 @@ services:
 {% endif %}
 
   eth_payment_api:
-    #image: {{ eth_image }}
-    build: ./eth-payment-processor
+    image: {{ eth_image }}
     restart: unless-stopped
     environment:
       ETH_HOST: {{ geth_ip }}
