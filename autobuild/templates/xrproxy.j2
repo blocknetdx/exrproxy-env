@@ -38,6 +38,12 @@ set-ph = RPC_{{ daemon.name }}_PASS=${RPC_PASSWORD}
 set-ph = RPC_{{ daemon.name }}_VER=2.0
 
 {% endfor %}
+
+{% if deploy_xquery %}
+set-ph = URL_XQUERY_HOSTIP={{ reverse_proxy_ip }}
+set-ph = URL_XQUERY_PORT={{ reverse_proxy_port }}
+{% endif %}
+
 EOL
 # ensure supervisord runs at pid1
 exec supervisord -c /etc/supervisord.conf

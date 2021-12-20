@@ -6,14 +6,19 @@ import re
 import yaml
 import argparse
 import logging
-from jinja2 import Environment, FileSystemLoader, Template
+import ipaddress
+from jinja2 import Environment, FileSystemLoader, Template, BaseLoader
 from utils.loggerinit import *
 from utils import autoconfig
+from utils.xquery import xq_template
 from pprint import pprint as print
 
 initialize_logger('')
 
 J2_ENV = Environment(loader=FileSystemLoader(''),
+                     trim_blocks=True)
+
+J2_ENV2 = Environment(loader=BaseLoader(),
                      trim_blocks=True)
 
 parser = argparse.ArgumentParser()
@@ -76,7 +81,7 @@ def processcustom(customlist):
         for i in range(len(c['daemons'])):
             name = c['daemons'][i]['name']
             #daemon configs
-            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'AVAX']:
+            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'XQUERY', 'AVAX']:
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
                     if customlist[0]['custom_manifest']:
@@ -113,17 +118,19 @@ def processcustom(customlist):
                     daemons_list.append(name.upper())
                     rpc_threads += 1
                 except Exception as e:
-                    print("Config for currency {} not found. The error is {}".format(name, e))
+                    logging.info("Config for currency {} not found. The error is {}".format(name, e))
                     del c['daemons'][i]
             else:
                 #others configs
                 to_del_index.append(i)
-                if name.upper() in ['XR_PROXY','AVAX', 'SNODE', 'TNODE', 'TESTSNODE']:
-                    if name.upper() not in ['XR_PROXY', 'AVAX']:
+
+                if name.upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE']:
+                    if name.upper() not in ['XR_PROXY']:
                         customlist[0]['blocknet_image'] = c['daemons'][i]['image']
                         customlist[0]['blocknet_node'] = name.lower()
                     else:
-                        customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
+                        if 'image' in list(c['daemons'][i]):
+                            customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
                     while True:
                         custom_ip = autoconfig.random_ip()
                         if custom_ip not in used_ip.values():
@@ -134,6 +141,15 @@ def processcustom(customlist):
                 if name.upper() == 'ETH':
                     # deploy_eth = os.environ.get("DEPLOY_ETH", "true")
                     customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
+                    customlist[0]['deploy_eth'] = True
+                    if 'host' in list(c['daemons'][i]):
+                        # ip = ipaddress.ip_address(c['daemons'][i]['host'])
+                        if c['daemons'][i]['host'] != 'internal':
+                            customlist[0]['gethexternal'] = c['daemons'][i]['host']
+                            logging.info("Using external geth")
+                        elif c['daemons'][i]['host'] == 'internal':
+                            logging.info("Using internal geth")
+                    customlist[0]['plugins'].append('eth_passthrough')
                     # customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
                     for k in ['PG','ETH','GETH']:
                         while True:
@@ -146,8 +162,32 @@ def processcustom(customlist):
                                 used_ip[f'{k.lower()}_ip'] = custom_ip
                                 break
                 if name.upper() == 'AVAX':
-                    customlist[0]['deploy_avax'] = True
-                    customlist[0]['plugins'].append('avax')
+                    if 'image' in list(c['daemons'][i]):
+                        customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
+                        customlist[0]['deploy_avax'] = True
+                        logging.info("Using internal avax")
+                        while True:
+                            custom_ip = autoconfig.random_ip()
+                            if custom_ip not in used_ip.values():
+                                customlist[0][f'{name.lower()}_ip'] = custom_ip
+                                used_ip[f'{name.lower()}_ip'] = custom_ip
+                                break
+                    else:
+                        customlist[0]['deploy_avax'] = False
+                        customlist[0]['avaxexternal'] = True
+                        customlist[0][f'{name.lower()}_ip'] = c['daemons'][i]['host']
+                        logging.info("Using external avax")
+                    
+                if name.upper() == 'XQUERY':
+                    logging.info('XQUERY exists')
+                    customlist[0]['plugins'].append('xquery')
+                    customlist[0]['deploy_xquery'] = True
+                    query = dict(c['daemons'][i])
+                    del query['name']
+                    logging.info(autoconfig.write_yaml_file(query))
+                    qtemplate = xq_template(query, customlist[0])
+                    for key, item in qtemplate.items():
+                        c[key] = item
                 #volumes paths configs
                 for j in list(c['daemons'][i]):
                     if j not in ['name','image']:
@@ -169,7 +209,8 @@ def processcustom(customlist):
                     #if daemons missing config add to to_del_index
                     logging.info(f'invalid config in YAML for {var["name"]}:\nmissing {list(set(tocomp_a).symmetric_difference(set(tocomp_b)))}')
                     to_del_index.append(index)
-            elif var['name'].upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'AVAX']:
+
+            elif var['name'].upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XQUERY', 'AVAX']:
                 continue
 
         #delete fake daemons SNODE ETH XR_PROXY
@@ -182,8 +223,12 @@ def processcustom(customlist):
         else:
             c['rpcthreads'] = 8
 
+
         custom_template_fname = 'templates/{}'.format(c['j2template'])
-        custom_template = J2_ENV.get_template(custom_template_fname)
+        with open(custom_template_fname,'r') as file:
+            template_string = file.read()
+        custom_template = J2_ENV.from_string(template_string)
+        # custom_template = J2_ENV2.get_template(custom_template_fname)
         rendered_data = custom_template.render(c)
         rendered_filename = '{}{}-custom.yaml'.format(OUTPUT_PATH, c['name'])
         write_file(rendered_filename, rendered_data)

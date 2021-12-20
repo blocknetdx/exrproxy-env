@@ -4,9 +4,9 @@
   daemons:
     # DO NOT DELETE XR_PROXY ENTRY
     - name: XR_PROXY # DO NOT DELETE
-      image: blocknetdximg/exrpoxy:0.8.0 # DO NOT DELETE
-      config_mount_dir: /snode/xr_proxy/config # DO NOT DELETE
-      nginx_mount_dir: /snode/xr_proxy/nginx # DO NOT DELETE
+      image: blocknetdx/exrproxy:0.8.0 # DO NOT DELETE
+      config_mount_dir: /exr/data/snode/xr_proxy/config # DO NOT DELETE
+      nginx_mount_dir: /exr/data/snode/xr_proxy/nginx # DO NOT DELETE
     # DO NOT DELETE ETH ENTRY
     - name: ETH # DO NOT DELETE - Requires 9+ TB NVMe SSD storage (4 Nov, 2021), 16 GB RAM when GETH deployed locally
       # Only deployed when --deploy_eth or --gethexternal param passed to app.py; Otherwise, ETH entry is ignored.
@@ -16,14 +16,16 @@
     # DO NOT DELETE SNODE ENTRY
     - name: SNODE # DO NOT DELETE
       image: blocknetdx/servicenode:latest # DO NOT DELETE
-      config_mount_dir: /snode # DO NOT DELETE
-      data_mount_dir: /snode # DO NOT DELETE
-    - name: BTC # Requires 415.5 GB of disk (7 June, 2021)
+      config_mount_dir: /exr/data/snode # DO NOT DELETE
+      data_mount_dir: /exr/data/snode # DO NOT DELETE
+    - name: AVAX 
+      image: avaplatform/avalanchego:v1.6.1
+      data_mount_dir: /exr/data/snode
+    - name: BTC
       image: blocknetdx/bitcoin:v0.20.0
-      config_mount_dir: /snode
-      data_mount_dir: /snode
-    - name: LTC # Requires 66 GB of disk (4 Nov, 2021)
+      config_mount_dir: /exr/data/snode
+      data_mount_dir: /exr/data/snode
+    - name: LTC
       image: blocknetdx/litecoin:v0.18.1
-      config_mount_dir: /snode
-      data_mount_dir: /snode
-
+      config_mount_dir: /exr/data/snode
+      data_mount_dir: /exr/data/snode

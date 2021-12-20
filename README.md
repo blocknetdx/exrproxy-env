@@ -1,4 +1,12 @@
-# xrouter-proxy-auto-deploy for use with hydra
+# xrouter-proxy-auto-deploy
+
+Use this command to clone the project with all its submodules
+
+`git clone --recursive <project url>`
+
+Update submodules using 
+
+`git submodule update --init --recursive`
 
 # Requirements
 - `Docker`
@@ -131,3 +139,107 @@ Method eth_blockNumber HTTP status code 200
 Method eth_chainId HTTP status code 200
 0x3
 ```
+
+# Autobuild steps
+
+0. Manually edit your environment data
+
+```
+export PUBLIC_IP=""  # Update with your public ip address
+export SN_NAME="servicenode01"  # Update with your snode name
+export SN_KEY="servicenodeprivatekey"  # Update with your snode private key
+export SN_ADDRESS="servicenodekeyaddress"  # Update with your snode address
+export RPC_USER="user"
+export RPC_PASSWORD="password"
+docker-compose -f "docker-compose.yml" up -d --build
+```
+
+1. Clone this repo
+Using the command from below you can clone the repo with XQuery submodule
+
+```
+git clone --recursive https://github.com/blocknetdx/exrproxy-env.git
+```
+
+```
+cd exrproxy-env
+```
+
+```
+git submodule update --init --recursive
+```
+
+2. Input file
+Edit your XQuery integration input file with your desired graph. 
+
+Check for reference for local nodes
+
+```
+autobuild/examples/xquery-gethINT-avaxINT.yaml
+```
+
+To use external connections check 
+
+```
+autobuild/examples/xquery-gethEXT-avaxEXT.yaml
+```
+
+3. Move to autobuild directory
+
+```
+cd autobuild
+```
+
+4. Install python requirements if you don't have them
+```
+pip3 install -r requirements.txt
+```
+
+5. Generate docker-compose stack
+
+```
+python app.py --yaml examples/xquery-gethINT-avaxINT.yaml
+```
+
+6. Move to the root folder of the repo and move/copy the generated files
+
+```
+mv autobuild/dockercompose-custom.yaml docker-compose.yml
+mv autobuild/xquery.yaml xquery.yaml
+```
+
+7. Build images
+
+```
+docker-compose build
+```
+
+8. Deploy stack
+
+```
+docker-compose -f docker-compose.yml up -d --build
+```
+
+9. Create project
+
+```
+curl http://127.0.0.1/xrs/eth_passthrough \
+                    -X POST \
+                    -H "Content-Type: application/json" \
+                    -d '{"jsonrpc":"2.0","method":"request_project","params": [],"id":1}'
+```
+
+10. With the api-key provided and after payment get your data
+
+```
+curl http://127.0.0.1/xrs/xquery/<PROJECT-ID>/help -X POST -H "Api-Key:<API-KEY>"
+```
+
+11. Test XQuery via python code
+
+Check the python script in autobuild/xqtest.py
+
+```
+python3 exrproxy-env/autobuild/xqtest.py --projectid YOUR-PROJECT-ID --apikey YOUR-API-KEY
+```
+

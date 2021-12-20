@@ -148,6 +148,17 @@ services:
     environment:
       ETH_HOST: {{ geth_ip }}
       ETH_PORT: 8546
+      ETH_HOST_TYPE: ws
+{% if deploy_avax %}
+      AVAX_HOST: {{ avax_ip }}
+      AVAX_PORT: 9650
+      AVAX_HOST_TYPE: http
+{% endif %}
+{% if avaxexternal %}
+      AVAX_HOST: {{ avax_ip }}
+      AVAX_PORT: 9650
+      AVAX_HOST_TYPE: http
+{% endif %}
       PAYMENT_AMOUNT_TIER1: 35
       PAYMENT_AMOUNT_TIER2: 200
       DB_HOST: {{ pg_ip }}
@@ -201,8 +212,8 @@ services:
       DB_PASSWORD: password
       DB_DATABASE: eth
 {% endif %}
-{% if deploy_avax %}
-      XQUERY_HOST: http://{{ avax_ip }}:9650
+{% if deploy_xquery %}
+      XQUERY_HOST: http://{{ reverse_proxy_ip }}:{{ reverse_proxy_port}}
 {% endif %}
     volumes:
       - {{ xr_proxy_config_mount_dir }}:/opt/uwsgi/conf
@@ -214,6 +225,14 @@ services:
       frontend:
       backend:
         ipv4_address: {{ xr_proxy_ip }}
+
+#### XQUERY ####
+{% if deploy_xquery %}
+
+{% include 'templates/xquery.j2' %}
+
+{% endif %}
+#### XQUERY ####
 
 networks:
   frontend:
