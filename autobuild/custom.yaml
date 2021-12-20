@@ -8,7 +8,8 @@
       config_mount_dir: /exr/data/snode/xr_proxy/config # DO NOT DELETE
       nginx_mount_dir: /exr/data/snode/xr_proxy/nginx # DO NOT DELETE
     # DO NOT DELETE ETH ENTRY
-    - name: ETH # DO NOT DELETE
+    - name: ETH # DO NOT DELETE - Requires 9+ TB NVMe SSD storage (4 Nov, 2021), 16 GB RAM when GETH deployed locally
+      # Only deployed when --deploy_eth or --gethexternal param passed to app.py; Otherwise, ETH entry is ignored.
       image: blocknetdx/eth-payment-processor:0.5.2 # DO NOT DELETE
       postgresql_data_mount_dir: /snode/eth_pymt_db # DO NOT DELETE
       geth_data_mount_dir: /snode # DO NOT DELETE
@@ -28,4 +29,3 @@
       image: blocknetdx/litecoin:v0.18.1
       config_mount_dir: /exr/data/snode
       data_mount_dir: /exr/data/snode
-

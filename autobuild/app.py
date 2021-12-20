@@ -27,7 +27,7 @@ parser.add_argument('--deploy_eth', help='Deploy ethereum stack', action='store_
 parser.add_argument('--testnet', help='Use testnet', default=False)
 parser.add_argument('--syncmode', help='sync mode', default='light')
 parser.add_argument('--gethexternal', help='Use remote ethereum node', default=False)
-parser.add_argument('--custom_manifest', help='URL to custom manifest files and configs', default=False)
+parser.add_argument('--custom_manifest', help='raw URL to custom manifest file and configs; e.g. https://raw.githubusercontent.com/ConanMishler/blockchain-configuration-files/bump-SYS-v4.2.2/', default=False)
 args = parser.parse_args()
 IMPORTYAML = args.yaml
 DEPLOY_ETH = args.deploy_eth
@@ -123,6 +123,7 @@ def processcustom(customlist):
             else:
                 #others configs
                 to_del_index.append(i)
+
                 if name.upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE']:
                     if name.upper() not in ['XR_PROXY']:
                         customlist[0]['blocknet_image'] = c['daemons'][i]['image']
@@ -208,6 +209,7 @@ def processcustom(customlist):
                     #if daemons missing config add to to_del_index
                     logging.info(f'invalid config in YAML for {var["name"]}:\nmissing {list(set(tocomp_a).symmetric_difference(set(tocomp_b)))}')
                     to_del_index.append(index)
+
             elif var['name'].upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XQUERY', 'AVAX']:
                 continue
 
