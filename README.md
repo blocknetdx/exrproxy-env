@@ -32,7 +32,7 @@ cd exrproxy-env
 git submodule update --init --recursive
 ```
 
-3. Input file - Edit your XQuery integration input file with your desired graph. 
+3. Input file - Edit your XQuery integration input file with your desired graph 
 
 Check for reference for local nodes:
 
