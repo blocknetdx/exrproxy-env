@@ -190,32 +190,37 @@ autobuild/examples/xquery-gethEXT-avaxEXT.yaml
 cd autobuild
 ```
 
-4. Generate docker-compose stack
+4. Install python requirements if you don't have them
+```
+pip3 install -r requirements.txt
+```
+
+5. Generate docker-compose stack
 
 ```
 python app.py --yaml examples/xquery-gethINT-avaxINT.yaml
 ```
 
-5. Move to the root folder of the repo and move/copy the generated files
+6. Move to the root folder of the repo and move/copy the generated files
 
 ```
 mv autobuild/dockercompose-custom.yaml docker-compose.yml
 mv autobuild/xquery.yaml xquery.yaml
 ```
 
-6. Build images
+7. Build images
 
 ```
 docker-compose build
 ```
 
-7. Deploy stack
+8. Deploy stack
 
 ```
 docker-compose -f docker-compose.yml up -d --build
 ```
 
-8. Create project
+9. Create project
 
 ```
 curl http://127.0.0.1/xrs/eth_passthrough \
@@ -224,13 +229,13 @@ curl http://127.0.0.1/xrs/eth_passthrough \
                     -d '{"jsonrpc":"2.0","method":"request_project","params": [],"id":1}'
 ```
 
-9. With the api-key provided and after payment get your data
+10. With the api-key provided and after payment get your data
 
 ```
 curl http://127.0.0.1/xrs/xquery/<PROJECT-ID>/help -X POST -H "Api-Key:<API-KEY>"
 ```
 
-10. Test XQuery via python code
+11. Test XQuery via python code
 
 Check the python script in autobuild/xqtest.py
 
