@@ -6,7 +6,7 @@
 
 # Autobuild steps
 
-0. Manually edit your environment data
+1. Manually edit your environment data
 
 ```
 export PUBLIC_IP=""  # Update with your public ip address
@@ -18,8 +18,7 @@ export RPC_PASSWORD="password"
 docker-compose -f "docker-compose.yml" up -d --build
 ```
 
-1. Clone this repo
-Using the command from below you can clone the repo with XQuery submodule
+2. Clone this repo - using the command below you can clone this repo with XQuery submodule
 
 ```
 git clone --recursive https://github.com/blocknetdx/exrproxy-env.git
@@ -33,58 +32,57 @@ cd exrproxy-env
 git submodule update --init --recursive
 ```
 
-2. Input file
-Edit your XQuery integration input file with your desired graph. 
+3. Input file - Edit your XQuery integration input file with your desired graph. 
 
-Check for reference for local nodes
+Check for reference for local nodes:
 
 ```
 autobuild/examples/xquery-gethINT-avaxINT.yaml
 ```
 
-To use external connections check 
+To use external connections check:
 
 ```
 autobuild/examples/xquery-gethEXT-avaxEXT.yaml
 ```
 
-3. Move to autobuild directory
+4. Change to autobuild directory
 
 ```
 cd autobuild
 ```
 
-4. Install python requirements if you don't have them
+5. Install python requirements if not already installed
 ```
 pip3 install -r requirements.txt
 ```
 
-5. Generate docker-compose stack
+6. Generate docker-compose stack
 
 ```
 python app.py --yaml examples/xquery-gethINT-avaxINT.yaml
 ```
 
-6. Move to the root folder of the repo and move/copy the generated files
+7. Change to the root folder of the repo and move/copy the generated files
 
 ```
 mv autobuild/dockercompose-custom.yaml docker-compose.yml
 mv autobuild/xquery.yaml xquery.yaml
 ```
 
-7. Build images
+8. Build images
 
 ```
 docker-compose build
 ```
 
-8. Deploy stack
+9. Deploy stack
 
 ```
 docker-compose -f docker-compose.yml up -d --build
 ```
 
-9. Create project
+10. Create project
 
 ```
 curl http://127.0.0.1/xrs/eth_passthrough \
@@ -93,20 +91,19 @@ curl http://127.0.0.1/xrs/eth_passthrough \
                     -d '{"jsonrpc":"2.0","method":"request_project","params": [],"id":1}'
 ```
 
-10. With the api-key provided and after payment get your data
+11. With the api-key provided and after payment get your data
 
 ```
 curl http://127.0.0.1/xrs/xquery/<PROJECT-ID>/help -X POST -H "Api-Key:<API-KEY>"
 ```
 
-11. Test XQuery via python code
+12. Test XQuery via python code
 
 Check the python script in autobuild/xqtest.py
 
 ```
 python3 exrproxy-env/autobuild/xqtest.py --projectid YOUR-PROJECT-ID --apikey YOUR-API-KEY
 ```
-
 
 
 
