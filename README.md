@@ -15,12 +15,12 @@ Update submodules using
 - `Port 80 must be opened on the host`
 
 # Supports external GETH host using gethexternal w/ deployscript (for use with archival node), otherwise a non geth-instance will be spun up
-```
+```bash
 ./deploy.sh gethexternal
 ```
 
 # Recommended Usage
-```
+```bash
 # Run deploy.sh
 ./deploy.sh
 
@@ -37,7 +37,7 @@ Update submodules using
 ```
 
 # Manual Usage
-```
+```bash
 export PUBLIC_IP=""  # Update with your public ip address
 export SN_NAME="servicenode01"  # Update with your snode name
 export SN_KEY="servicenodeprivatekey"  # Update with your snode private key
@@ -60,17 +60,17 @@ docker-compose -f "docker-compose.yml" up -d --build
 * DEPLOY_ETH - Whether GETH and ETH-Webserver should be deployed (defaults to true)
 
 # bring down environment
-```
+```bash
 docker-compose down
 ```
 
 # Check geth accounts via console
-```
+```bash
 function checkAllBalances() { var i =0; eth.accounts.forEach( function(e){ console.log("  eth.accounts["+i+"]: " +  e + " \tbalance: " + web3.fromWei(eth.getBalance(e), "ether") + " ether"); i++; })}; checkAllBalances();
 ```
 
 # Create Project
-```
+```bash
 Creates Hydra Project"
     Request Hydra Project, this creates project-id in db and gets ETH address for payment.
     Example: curl http://127.0.0.1/xrs/eth_passthrough \
@@ -83,7 +83,7 @@ Creates Hydra Project"
 ```
 
 # Request Data/Example call
-```
+```bash
 curl http://127.0.0.1/xrs/eth_passthrough/<project_id> \
                     -X POST \
                     -H "Content-Type: application/json" \
@@ -92,7 +92,7 @@ curl http://127.0.0.1/xrs/eth_passthrough/<project_id> \
 ```
 
 # Pricing
-```
+```bash
 Set these values in USD:
       PAYMENT_AMOUNT_TIER1: 35
       PAYMENT_AMOUNT_TIER2: 200
@@ -144,7 +144,7 @@ Method eth_chainId HTTP status code 200
 
 0. Manually edit your environment data
 
-```
+```bash
 export PUBLIC_IP=""  # Update with your public ip address
 export SN_NAME="servicenode01"  # Update with your snode name
 export SN_KEY="servicenodeprivatekey"  # Update with your snode private key
@@ -157,15 +157,15 @@ docker-compose -f "docker-compose.yml" up -d --build
 1. Clone this repo
 Using the command from below you can clone the repo with XQuery submodule
 
-```
+```bash
 git clone --recursive https://github.com/blocknetdx/exrproxy-env.git
 ```
 
-```
+```bash
 cd exrproxy-env
 ```
 
-```
+```bash
 git submodule update --init --recursive
 ```
 
@@ -174,55 +174,55 @@ Edit your XQuery integration input file with your desired graph.
 
 Check for reference for local nodes
 
-```
-autobuild/examples/xquery-gethINT-avaxINT.yaml
+```bash
+cat autobuild/examples/xquery-gethINT-avaxINT.yaml
 ```
 
 To use external connections check 
 
-```
-autobuild/examples/xquery-gethEXT-avaxEXT.yaml
+```bash
+cat autobuild/examples/xquery-gethEXT-avaxEXT.yaml
 ```
 
 3. Move to autobuild directory
 
-```
+```bash
 cd autobuild
 ```
 
 4. Install python requirements if you don't have them
-```
+```bash
 pip3 install -r requirements.txt
 ```
 
 5. Generate docker-compose stack
 
-```
+```bash
 python app.py --yaml examples/xquery-gethINT-avaxINT.yaml
 ```
 
 6. Move to the root folder of the repo and move/copy the generated files
 
-```
+```bash
 mv autobuild/dockercompose-custom.yaml docker-compose.yml
 mv autobuild/xquery.yaml xquery.yaml
 ```
 
 7. Build images
 
-```
+```bash
 docker-compose build
 ```
 
 8. Deploy stack
 
-```
+```bash
 docker-compose -f docker-compose.yml up -d --build
 ```
 
 9. Create project
 
-```
+```bash
 curl http://127.0.0.1/xrs/eth_passthrough \
                     -X POST \
                     -H "Content-Type: application/json" \
@@ -231,7 +231,7 @@ curl http://127.0.0.1/xrs/eth_passthrough \
 
 10. With the api-key provided and after payment get your data
 
-```
+```bash
 curl http://127.0.0.1/xrs/xquery/<PROJECT-ID>/help -X POST -H "Api-Key:<API-KEY>"
 ```
 
@@ -239,7 +239,18 @@ curl http://127.0.0.1/xrs/xquery/<PROJECT-ID>/help -X POST -H "Api-Key:<API-KEY>
 
 Check the python script in autobuild/xqtest.py
 
+```bash
+python3 exrproxy-env/autobuild/xqtest.py --projectid YOUR-PROJECT-ID --xqhelp
 ```
+
+XQuery current graph configuration
+```bash
+python3 exrproxy-env/autobuild/xqtest.py --projectid YOUR-PROJECT-ID --xqgraph
+```
+
+XQuery with a sample query
+
+```bash
 python3 exrproxy-env/autobuild/xqtest.py --projectid YOUR-PROJECT-ID --apikey YOUR-API-KEY
 ```
 
