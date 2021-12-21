@@ -33,7 +33,8 @@ def template_vars(template_path):
         contents = str(contents.split('#### XQUERY ####')[0])+str(contents.split('#### XQUERY ####')[-1])
         variables = jinja2schema.infer(contents)
         variables = jinja2schema.to_json_schema(variables)
-        variables['properties']['daemons']['items']['required'].remove('chainstate_mount_dir')
+        if 'chainstate_mount_dir' in variables['properties']['daemons']['items']['required']:
+            variables['properties']['daemons']['items']['required'].remove('chainstate_mount_dir')
         #parse schema
         d = {}
         for req in variables['required']:
