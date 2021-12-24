@@ -97,12 +97,14 @@ def processcustom(customlist):
                     if tag != 'latest':
                         c['daemons'][i]['deprecatedrpc'] = xbridge_json[name]['versions'][tag]['deprecatedrpc']
                         c['daemons'][i]['legacy'] = xbridge_json[name]['versions'][tag]['legacy']
+                        c['daemons'][i]['testnet'] = xbridge_json[name]['versions'][tag]['testnet']
                     else:
                         version_list = list(xbridge_json[name]['versions'])
                         version_list.sort()
                         tag = version_list[-1]
                         c['daemons'][i]['deprecatedrpc'] = xbridge_json[name]['versions'][tag]['deprecatedrpc']
                         c['daemons'][i]['legacy'] = xbridge_json[name]['versions'][tag]['legacy']
+                        c['daemons'][i]['testnet'] = xbridge_json[name]['versions'][tag]['testnet']
 
                     while True:
                         custom_ip = autoconfig.random_ip()
