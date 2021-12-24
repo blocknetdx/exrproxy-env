@@ -13,12 +13,12 @@ import time
 import ipcalc
 import yaml
 
-MANIFEST_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/manifest-latest.json'
+#MANIFEST_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/manifest-latest.json'
 
-XBRIDGE_CONF_BASE_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/xbridge-confs/'
+#XBRIDGE_CONF_BASE_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/xbridge-confs/'
 
-walletconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/autobuild/templates/wallet.conf.j2"
-xbridgeconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/autobuild/templates/xbridge.conf.j2"
+#walletconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/autobuild/templates/wallet.conf.j2"
+#xbridgeconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/autobuild/templates/xbridge.conf.j2"
 
 
 def write_yaml_file(data):
@@ -57,14 +57,17 @@ def load_template(template_url):
       return result
     time.sleep(10)
     
-def chain_lookup(s):
-  return "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/autobuild/configs/{}.base.j2".format(s.lower())
+def chain_lookup(BASE_URL, s):
+	return BASE_URL + "/autobuild/configs/{}.base.j2".format(s.lower())
 
-def manifest_content():
-  return MANIFEST_URL
+def manifest_content(BASE_URL):
+	return BASE_URL + '/manifest-latest.json'
 
-def wallet_config():
-  return walletconfj2_url
+def wallet_config(BASE_URL):
+	return BASE_URL + "/autobuild/templates/wallet.conf.j2"
+
+def xbridge_config(BASE_URL):
+	return BASE_URL + "/autobuild/templates/xbridge.conf.j2"
 
 def random_gen(size=32, chars=string.ascii_uppercase + string.digits + string.ascii_lowercase):
   return ''.join(random.choice(chars) for x in range(size))
@@ -89,7 +92,7 @@ def parse_config(config_string):
   return config_string.splitlines()
 
 #generate confs IP dependent
-def generate_confs(blockchain, p2pport, rpcport, username, password, ip):
+def generate_confs(BASE_URL, blockchain, p2pport, rpcport, username, password, ip):
   if blockchain:
     if username is None:
       rpcuser = random_gen()
@@ -101,7 +104,7 @@ def generate_confs(blockchain, p2pport, rpcport, username, password, ip):
       rpcpass = password
     # find the URL for the chain
     try:
-      xbridge_text = load_template(chain_lookup(blockchain))
+      xbridge_text = load_template(chain_lookup(BASE_URL, blockchain))
     except urllib.error.HTTPError as e:
       print("Config for currency {} not found".format(blockchain))
       return ""
@@ -118,14 +121,12 @@ def generate_confs(blockchain, p2pport, rpcport, username, password, ip):
     for sym in xbridge_json:
       # if sym == 'BLOCK':
       #   continue
-      
       xbridge_json[sym]['Ip'] = ip
 
     # generate xbridge config
-    xbridge_config = load_template(xbridgeconfj2_url)
-    # f = open("xbridge.conf.j2", "r")
-    # xbridge_config = f.read()
-    xbridge_template = Template(xbridge_config)
+    #xbridge_config = load_template(xbridgeconfj2_url)
+    xbridge_conf = load_template(xbridge_config(BASE_URL))
+    xbridge_template = Template(xbridge_conf)
     
     chain = list(xbridge_json.keys())[0]
     xbridge_json[chain]['ticker'] = chain

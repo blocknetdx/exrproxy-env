@@ -12,6 +12,7 @@ from utils.loggerinit import *
 from utils import autoconfig
 from utils.xquery import xq_template
 from pprint import pprint as print
+from icecream import ic
 
 initialize_logger('')
 
@@ -24,17 +25,17 @@ J2_ENV2 = Environment(loader=BaseLoader(),
 parser = argparse.ArgumentParser()
 parser.add_argument('--yaml', help='yaml filename to process', default='custom.yaml')
 parser.add_argument('--deploy_eth', help='Deploy ethereum stack', action='store_true')
-parser.add_argument('--testnet', help='Use testnet', default=False)
+parser.add_argument('--testnet', help='Use Ethernet testnet', default=False)
 parser.add_argument('--syncmode', help='sync mode', default='light')
 parser.add_argument('--gethexternal', help='Use remote ethereum node', default=False)
-parser.add_argument('--custom_manifest', help='raw URL to custom manifest file and configs; e.g. https://raw.githubusercontent.com/ConanMishler/blockchain-configuration-files/bump-SYS-v4.2.2/', default=False)
+parser.add_argument('--branchpath', help='Custom branch path for testing configs', default='https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master')
 args = parser.parse_args()
 IMPORTYAML = args.yaml
 DEPLOY_ETH = args.deploy_eth
 GETHEXTERNAL = args.gethexternal
 ETH_TESTNET = args.testnet
 SYNCMODE = args.syncmode
-CUSTOM_MANIFEST_URL = args.custom_manifest
+BRANCHPATH = re.sub(r'(^(?!.*/$).*)',r'\1/',args.branchpath)
 
 if GETHEXTERNAL or ETH_TESTNET:
     DEPLOY_ETH = True
@@ -69,10 +70,7 @@ def processcustom(customlist):
     daemons_list = []
     daemonFiles = {}
     rpc_threads = 0
-    if customlist[0]['custom_manifest']:
-        manifest_config = autoconfig.load_template(re.sub(r'(^(?!.*/$).*)',r'\1/',customlist[0]['custom_manifest'])+'manifest-latest.json')
-    else:
-        manifest_config = autoconfig.load_template(autoconfig.manifest_content())
+    manifest_config = autoconfig.load_template(autoconfig.manifest_content(BRANCHPATH))
     manifest = json.loads(Template(manifest_config).render())
     for blockchain in manifest:
         daemonFiles[blockchain['ticker']] = blockchain['conf_name']
@@ -81,13 +79,10 @@ def processcustom(customlist):
         for i in range(len(c['daemons'])):
             name = c['daemons'][i]['name']
             #daemon configs
-            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'XQUERY', 'AVAX']:
+            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'TESTTNODE', 'ETH', 'XR_PROXY', 'XQUERY', 'AVAX']:
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
-                    if customlist[0]['custom_manifest']:
-                        xbridge_text = autoconfig.load_template(re.sub(r'(^(?!.*/$).*)',r'\1/',customlist[0]['custom_manifest'])+'autobuild/configs/{}.base.j2'.format(name.lower()))
-                    else:
-                        xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(name))
+                    xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(BRANCHPATH, name))
                     xtemplate = Template(xbridge_text)
                     xresult = xtemplate.render()
                     xbridge_json = json.loads(xresult)
@@ -124,7 +119,7 @@ def processcustom(customlist):
                 #others configs
                 to_del_index.append(i)
 
-                if name.upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE']:
+                if name.upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'TESTTNODE']:
                     if name.upper() not in ['XR_PROXY']:
                         customlist[0]['blocknet_image'] = c['daemons'][i]['image']
                         customlist[0]['blocknet_node'] = name.lower()
@@ -210,7 +205,7 @@ def processcustom(customlist):
                     logging.info(f'invalid config in YAML for {var["name"]}:\nmissing {list(set(tocomp_a).symmetric_difference(set(tocomp_b)))}')
                     to_del_index.append(index)
 
-            elif var['name'].upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XQUERY', 'AVAX']:
+            elif var['name'].upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'TESTTNODE', 'ETH', 'XQUERY', 'AVAX']:
                 continue
 
         #delete fake daemons SNODE ETH XR_PROXY
@@ -245,17 +240,21 @@ def processcustom(customlist):
 
 
 def processconfigs(datalist):
-    # XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets=BLOCK"
-    XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets=BLOCK,"
+    if(datalist[0]["blocknet_node"].upper() in ['SNODE', 'TNODE']):
+        base_block = 'BLOCK'
+    else:
+        base_block = 'TBLOCK'
+
+    XBRIDGE_CONF = "[Main]\nFullLog=true\nLogPath=\nExchangeTax=300\nExchangeWallets="+base_block+","
 
     custom_template_ec = J2_ENV.get_template('templates/entrypoint_config.j2')
 
     for data in datalist:
         for daemon in data['daemons']:
             name = daemon['name']
-            if name.upper() not in ['TNODE', 'SNODE', 'TESTSNODE', 'ETH', 'XR_PROXY']:
+            if name.upper() not in ['TNODE', 'SNODE', 'TESTSNODE', 'TESTTNODE', 'ETH', 'XR_PROXY']:
                 XBRIDGE_CONF += "{},".format(name)
-                template_wc = Template(autoconfig.load_template(autoconfig.wallet_config())).render(daemon)
+                template_wc = Template(autoconfig.load_template(autoconfig.wallet_config(BRANCHPATH))).render(daemon)
                 rendered_data_ec = custom_template_ec.render({'walletConfig': template_wc,
                                                               'configName': daemon['configName']})
                 config_name = '../scripts/entrypoints/start-{}.sh'.format(daemon['configName'])
@@ -264,11 +263,10 @@ def processconfigs(datalist):
                 st = os.stat(config_name)
                 os.chmod(config_name, st.st_mode | stat.S_IEXEC)
 
-
     XBRIDGE_CONF = XBRIDGE_CONF[:-1]
     XBRIDGE_CONF += '\n\n'
 
-    XR_TOKENS = ''
+    XR_TOKENS = base_block
     for data in datalist:
         p2pport = ''
         rpcport = ''
@@ -277,12 +275,12 @@ def processconfigs(datalist):
         for daemon in data['daemons']:
             name = daemon['name']
             ip = daemon['ip']
-            if name.upper() not in ['TNODE', 'SNODE', 'TESTSNODE', 'ETH', 'XR_PROXY']:
-                XR_TOKENS += ','+name
-                XBRIDGE_CONF += "{}\n\n".format(autoconfig.generate_confs(name, p2pport, rpcport, username, password, ip))
+            if name.upper() not in ['TNODE', 'SNODE', 'TESTSNODE', 'TESTTNODE', 'ETH', 'XR_PROXY']:
+                XR_TOKENS += ','+name.upper()
+                XBRIDGE_CONF += "{}\n\n".format(autoconfig.generate_confs(BRANCHPATH, name, p2pport, rpcport, username, password, ip))
                 logging.info('Add Xbridge: {}'.format(name))
-        # ADD BLOCK settings
-        XBRIDGE_CONF += "{}\n\n".format(autoconfig.generate_confs('block', p2pport, rpcport, username, password, '127.0.0.1'))
+        # Add BLOCK settings
+        XBRIDGE_CONF += "{}\n\n".format(autoconfig.generate_confs(BRANCHPATH, base_block, p2pport, rpcport, username, password, '127.0.0.1'))
 
     autoconfig.save_config(XBRIDGE_CONF, os.path.join('../scripts/config', 'xbridge.conf'))
     custom_template_xr = J2_ENV.get_template('templates/xrouter.j2')
@@ -307,13 +305,10 @@ if __name__ == "__main__":
     datalist[0]['gethexternal'] = GETHEXTERNAL
     datalist[0]['eth_testnet'] = ETH_TESTNET
     datalist[0]['syncmode'] = SYNCMODE
-    datalist[0]['custom_manifest'] = CUSTOM_MANIFEST_URL
     if datalist == 'ERROR':
         logging.info('YAML LOAD FAILURE, check yaml format/file')
     else:
         data_with_ips = processcustom(datalist)  # render dockercompose file
-        # now we need xbridge files
-        # processconfigs(datalist)
         processconfigs(data_with_ips)
 
 
