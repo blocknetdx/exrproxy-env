@@ -12,7 +12,10 @@ from utils.loggerinit import *
 from utils import autoconfig
 from utils.xquery import xq_template
 from pprint import pprint as print
-from icecream import ic
+from icecream import ic, install
+
+ic.configureOutput(includeContext=True)   # show context
+install()                                 # make available to imported modules
 
 initialize_logger('')
 
@@ -25,7 +28,7 @@ J2_ENV2 = Environment(loader=BaseLoader(),
 parser = argparse.ArgumentParser()
 parser.add_argument('--yaml', help='yaml filename to process', default='custom.yaml')
 parser.add_argument('--deploy_eth', help='Deploy ethereum stack', action='store_true')
-parser.add_argument('--testnet', help='Use Ethernet testnet', default=False)
+parser.add_argument('--testnet', help='Use ethereum testnet', default=False)
 parser.add_argument('--syncmode', help='sync mode', default='light')
 parser.add_argument('--gethexternal', help='Use remote ethereum node', default=False)
 parser.add_argument('--branchpath', help='Custom branch path for testing configs', default='https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master')
@@ -86,7 +89,6 @@ def processcustom(customlist):
                     xtemplate = Template(xbridge_text)
                     xresult = xtemplate.render()
                     xbridge_json = json.loads(xresult)
-
                     c['daemons'][i]['p2pPort'] = xbridge_json[name]['p2pPort']
                     c['daemons'][i]['rpcPort'] = xbridge_json[name]['rpcPort']
                     c['daemons'][i]['binFile'] = daemonFiles[name].split('.conf')[0]+'d'
@@ -97,7 +99,10 @@ def processcustom(customlist):
                     if tag != 'latest':
                         c['daemons'][i]['deprecatedrpc'] = xbridge_json[name]['versions'][tag]['deprecatedrpc']
                         c['daemons'][i]['legacy'] = xbridge_json[name]['versions'][tag]['legacy']
-                        c['daemons'][i]['testnet'] = xbridge_json[name]['versions'][tag]['testnet']
+                        if 'testnet' in xbridge_json[name]['versions'][tag]: 
+                            c['daemons'][i]['testnet'] = xbridge_json[name]['versions'][tag]['testnet']
+                        else:
+                            c['daemons'][i]['testnet'] = False
                     else:
                         version_list = list(xbridge_json[name]['versions'])
                         version_list.sort()

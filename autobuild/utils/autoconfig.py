@@ -12,6 +12,7 @@ import configparser
 import time
 import ipcalc
 import yaml
+#from icecream import ic
 
 #MANIFEST_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/manifest-latest.json'
 
