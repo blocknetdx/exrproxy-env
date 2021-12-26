@@ -19,7 +19,7 @@
       data_mount_dir: /snode # DO NOT DELETE
     # AVALANCHE INDEXER - DELETE IF YOU DON'T WANT TO SUPPORT XQUERY
     - name: AVAX # Requires 300 GB of SSD disk, 16 GB RAM & 6 vCPUs for XQUERY (21 December, 2021)
-      image: avaplatform/avalanchego:v1.7.2
+      image: avaplatform/avalanchego:v1.7.3
       data_mount_dir: /snode
     # THE STANDARD XLITE WALLET SET - DELETE ANY YOU DON'T WANT TO SUPPORT  
     - name: BTC # Requires 451 GB of disk (15 December, 2021)
