@@ -12,14 +12,6 @@ import configparser
 import time
 import ipcalc
 import yaml
-#from icecream import ic
-
-#MANIFEST_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/manifest-latest.json'
-
-#XBRIDGE_CONF_BASE_URL = 'https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/xbridge-confs/'
-
-#walletconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/autobuild/templates/wallet.conf.j2"
-#xbridgeconfj2_url = "https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master/autobuild/templates/xbridge.conf.j2"
 
 
 def write_yaml_file(data):

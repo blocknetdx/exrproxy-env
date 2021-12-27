@@ -109,7 +109,10 @@ def processcustom(customlist):
                         tag = version_list[-1]
                         c['daemons'][i]['deprecatedrpc'] = xbridge_json[name]['versions'][tag]['deprecatedrpc']
                         c['daemons'][i]['legacy'] = xbridge_json[name]['versions'][tag]['legacy']
-                        c['daemons'][i]['testnet'] = xbridge_json[name]['versions'][tag]['testnet']
+                        if 'testnet' in xbridge_json[name]['versions'][tag]: 
+                            c['daemons'][i]['testnet'] = xbridge_json[name]['versions'][tag]['testnet']
+                        else:
+                            c['daemons'][i]['testnet'] = False
 
                     while True:
                         custom_ip = autoconfig.random_ip()
@@ -261,7 +264,8 @@ def processconfigs(datalist):
             name = daemon['name']
             if name.upper() not in ['TNODE', 'SNODE', 'TESTSNODE', 'TESTTNODE', 'ETH', 'XR_PROXY']:
                 XBRIDGE_CONF += "{},".format(name)
-                template_wc = Template(autoconfig.load_template(autoconfig.wallet_config(BRANCHPATH))).render(daemon)
+                #template_wc = Template(autoconfig.load_template(autoconfig.wallet_config(BRANCHPATH))).render(daemon)
+                template_wc = Template(autoconfig.load_template(autoconfig.wallet_config(BRANCHPATH))).render(p2pPort=daemon['p2pPort'],rpcPort=daemon['rpcPort'],legacy=daemon['legacy'],deprecatedrpc=daemon['deprecatedrpc'],)
                 rendered_data_ec = custom_template_ec.render({'walletConfig': template_wc,
                                                               'configName': daemon['configName']})
                 config_name = '../scripts/entrypoints/start-{}.sh'.format(daemon['configName'])
