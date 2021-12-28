@@ -101,7 +101,7 @@ services:
 {% if deploy_eth %}
 {% if gethexternal is sameas false %}
   geth:
-    image: ethereum/client-go:latest
+    image: {{ eth_image }}
     restart: unless-stopped
     volumes:
       - {{ eth_geth_data_mount_dir }}/ETH:/chaindata
@@ -141,14 +141,18 @@ services:
       backend:
         ipv4_address: {{ geth_ip }}
 {% endif %}
+{% endif %}
 
+{% if deploy_payment %}
   eth_payment_api:
-    image: {{ eth_image }}
+    image: {{ payment_image }}
     restart: unless-stopped
     environment:
+{% if deploy_eth %}
       ETH_HOST: {{ geth_ip }}
       ETH_PORT: 8546
       ETH_HOST_TYPE: ws
+{% endif %}
 {% if deploy_avax %}
       AVAX_HOST: {{ avax_ip }}
       AVAX_PORT: 9650
@@ -159,8 +163,8 @@ services:
       AVAX_PORT: 9650
       AVAX_HOST_TYPE: http
 {% endif %}
-      PAYMENT_AMOUNT_TIER1: 35
-      PAYMENT_AMOUNT_TIER2: 200
+      PAYMENT_AMOUNT_TIER1: {{ payment_tier1 }}
+      PAYMENT_AMOUNT_TIER2: {{ payment_tier2 }}
       DB_HOST: {{ pg_ip }}
       DB_USERNAME: ethproxy
       DB_PASSWORD: password
@@ -174,7 +178,7 @@ services:
       - postgresql
     networks:
       backend:
-        ipv4_address: {{ eth_ip }}
+        ipv4_address: {{ payment_ip }}
 
   postgresql:
     image: postgres
@@ -202,11 +206,13 @@ services:
       SN_KEY: "${SN_KEY}"
 {% if deploy_eth %}
       GETH_HOST: {{ geth_ip }}
-      PAYMENT_PROCESSOR_HOST: {{ eth_ip }}:8080
       ETH_HOST: http://{{ geth_ip }}:8545
       ETH_HOST_USER:
       ETH_HOST_PASS:
       ETH_HOST_DISALLOWED_METHODS: eth_accounts,db_putString,db_getString,db_putHex,db_getHex
+{% endif %}
+{% if deploy_payment %}
+      PAYMENT_PROCESSOR_HOST: {{ payment_ip }}:8080
       DB_HOST: {{ pg_ip }}
       DB_USERNAME: ethproxy
       DB_PASSWORD: password

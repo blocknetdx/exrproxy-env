@@ -11,10 +11,9 @@
     # DO NOT DELETE ETH ENTRY
     - name: ETH # DO NOT DELETE
       host: 192.168.32.10 #examaple IP for external geth 
-      # host: internal #example for internal geth
+    - name: PAYMENT # DO NOT DELETE
       image: blocknetdx/eth-payment-processor:0.5.2 # DO NOT DELETE
       postgresql_data_mount_dir: /snode/eth_pymt_db # DO NOT DELETE
-      geth_data_mount_dir: /snode # DO NOT DELETE
     # DO NOT DELETE SNODE ENTRY
     - name: SNODE # DO NOT DELETE
       image: blocknetdx/servicenode:latest # DO NOT DELETE
@@ -42,8 +41,6 @@
       data_mount_dir: /snode      
     - name: AVAX 
       host: 192.168.32.11 #examaple IP for external avax
-      # image: avaplatform/avalanchego:v1.7.2
-      # data_mount_dir: /snode
     - name: XQUERY
       graph: AVAX_ETH
       endpoint: /indexer

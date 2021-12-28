@@ -1,3 +1,5 @@
+endpoint: /indexer
+graph: AVAX_ETH
 chains:
 - abi: avax.json
   address:
@@ -19,5 +21,3 @@ chains:
   name: ETH
   query:
   - name: Swap
-endpoint: /indexer
-graph: AVAX_ETH
