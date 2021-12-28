@@ -55,3 +55,11 @@
       image: blocknetdx/monetaryunit:v2.2.0
       config_mount_dir: /snode
       data_mount_dir: /snode
+    - name: PHR # Requires 6GB of disk (27 December, 2021)
+      image: blocknetdx/phore:v1.8.0
+      config_mount_dir: /snode
+      data_mount_dir: /snode
+    - name: RVN # Requires 25GB of disk (27 December, 2021)
+      image: blocknetdx/ravencoin:v4.3.2.1
+      config_mount_dir: /snode
+      data_mount_dir: /snode
