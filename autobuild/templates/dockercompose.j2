@@ -143,6 +143,7 @@ services:
 {% endif %}
 {% endif %}
 
+{% if deploy_eth or deploy_avax %}
 {% if deploy_payment %}
   eth_payment_api:
     image: {{ payment_image }}
@@ -193,6 +194,7 @@ services:
       backend:
         ipv4_address: {{ pg_ip }}
 {% endif %}
+{% endif %}
 
   xr_proxy:
     image: {{ xr_proxy_image }}
@@ -211,12 +213,14 @@ services:
       ETH_HOST_PASS:
       ETH_HOST_DISALLOWED_METHODS: eth_accounts,db_putString,db_getString,db_putHex,db_getHex
 {% endif %}
+{% if deploy_eth or deploy_avax %}
 {% if deploy_payment %}
       PAYMENT_PROCESSOR_HOST: {{ payment_ip }}:8080
       DB_HOST: {{ pg_ip }}
       DB_USERNAME: ethproxy
       DB_PASSWORD: password
       DB_DATABASE: eth
+{% endif %}
 {% endif %}
 {% if deploy_xquery %}
       XQUERY_HOST: http://{{ reverse_proxy_ip }}:{{ reverse_proxy_port}}
