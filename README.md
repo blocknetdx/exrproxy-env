@@ -108,12 +108,12 @@ python3 exrproxy-env/autobuild/xqtest.py --projectid YOUR-PROJECT-ID --apikey YO
 
 
 # Supports external GETH host using gethexternal w/ deployscript (for use with archival node), otherwise a non geth-instance will be spun up
-```
+```bash
 ./deploy.sh gethexternal
 ```
 
 # Recommended Usage
-```
+```bash
 # Run deploy.sh
 ./deploy.sh
 
@@ -130,7 +130,7 @@ python3 exrproxy-env/autobuild/xqtest.py --projectid YOUR-PROJECT-ID --apikey YO
 ```
 
 # Manual Usage
-```
+```bash
 export PUBLIC_IP=""  # Update with your public ip address
 export SN_NAME="servicenode01"  # Update with your snode name
 export SN_KEY="servicenodeprivatekey"  # Update with your snode private key
@@ -153,17 +153,17 @@ docker-compose -f "docker-compose.yml" up -d --build
 * DEPLOY_ETH - Whether GETH and ETH-Webserver should be deployed (defaults to true)
 
 # bring down environment
-```
+```bash
 docker-compose down
 ```
 
 # Check geth accounts via console
-```
+```bash
 function checkAllBalances() { var i =0; eth.accounts.forEach( function(e){ console.log("  eth.accounts["+i+"]: " +  e + " \tbalance: " + web3.fromWei(eth.getBalance(e), "ether") + " ether"); i++; })}; checkAllBalances();
 ```
 
 # Create Project
-```
+```bash
 Creates Hydra Project"
     Request Hydra Project, this creates project-id in db and gets ETH address for payment.
     Example: curl http://127.0.0.1/xrs/eth_passthrough \
@@ -176,7 +176,7 @@ Creates Hydra Project"
 ```
 
 # Request Data/Example call
-```
+```bash
 curl http://127.0.0.1/xrs/eth_passthrough/<project_id> \
                     -X POST \
                     -H "Content-Type: application/json" \
@@ -185,7 +185,7 @@ curl http://127.0.0.1/xrs/eth_passthrough/<project_id> \
 ```
 
 # Pricing
-```
+```bash
 Set these values in USD:
       PAYMENT_AMOUNT_TIER1: 35
       PAYMENT_AMOUNT_TIER2: 200
