@@ -121,6 +121,7 @@ def processcustom(customlist):
                     logging.info("Config for currency {} not found. The error is {}".format(name, e))
                     del c['daemons'][i]
             else:
+                
                 #others configs
                 to_del_index.append(i)
 
