@@ -78,7 +78,7 @@ def processcustom(customlist):
     manifest = json.loads(Template(manifest_config).render())
     for blockchain in manifest:
         configFiles[blockchain['ticker']] = blockchain['conf_name']
-        if 'daemon_stem' in blockchain:
+        if 'daemon_stem' in blockchain: # eg: SCC, XVG have non-standard daemon names
             binFiles[blockchain['ticker']] = blockchain['daemon_stem'] + 'd'
         else:
             binFiles[blockchain['ticker']] = blockchain['conf_name'].split('.conf')[0] + 'd'
