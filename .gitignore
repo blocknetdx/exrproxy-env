@@ -1,4 +1,3 @@
-
 .idea/
-
-scripts/config/xbridge.conf
+scripts/
+autobuild/custom.yaml

@@ -51,7 +51,10 @@ services:
       - {{ tnode_data_mount_dir }}/tnode/data:/opt/blockchain/data
 {% elif blocknet_node == 'testsnode' %}
       - {{ testsnode_config_mount_dir }}/testsnode/config:/opt/blockchain/config
-      - {{ testsnode_data_mount_dir }}/testsnode/data:/opt/blockchain/data/testnet6
+      - {{ testsnode_data_mount_dir }}/testsnode/data:/opt/blockchain/data
+{% elif blocknet_node == 'testtnode' %}
+      - {{ testtnode_config_mount_dir }}/testtnode/config:/opt/blockchain/config
+      - {{ testtnode_data_mount_dir }}/testtnode/data:/opt/blockchain/data
 {% endif %}
       - type: bind
         source: ./scripts
@@ -72,6 +75,8 @@ services:
         ipv4_address: {{ tnode_ip }}
 {% elif blocknet_node == 'testsnode' %}
         ipv4_address: {{ testsnode_ip }}
+{% elif blocknet_node == 'testtnode' %}
+        ipv4_address: {{ testtnode_ip }}
 {% endif %}
 
 {% if deploy_avax %}

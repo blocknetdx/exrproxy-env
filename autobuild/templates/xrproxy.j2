@@ -11,6 +11,8 @@ set-ph = SERVICENODE_PRIVKEY=${SN_KEY}
 
 {% if blocknet_node == 'testsnode' %}
 set-ph = BLOCKNET_CHAIN=testnet
+{% elif blocknet_node == 'testtnode' %}
+set-ph = BLOCKNET_CHAIN=testnet
 {% else %}
 set-ph = BLOCKNET_CHAIN=mainnet
 {% endif %}
