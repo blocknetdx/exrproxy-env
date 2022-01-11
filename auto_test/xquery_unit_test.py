@@ -47,7 +47,7 @@ if __name__ == '__main__':
     parser.add_argument('--projectid', help='ID of EXR project', default=False)
 
     args = parser.parse_args()
-    HOST = '185.217.127.108:80'
+    HOST = '127.0.0.1:80'
     PROJECTID = args.projectid
     
     if PROJECTID:
