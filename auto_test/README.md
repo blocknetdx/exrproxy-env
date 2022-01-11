@@ -150,3 +150,44 @@ Method xrGetTransaction HTTP status code 200
 ```
 ----------------------------
 
+xquery_unit_test.py - XQuery tester. Checks for help and current graph
+
+It takes 1 argument
+-Project-ID of EXR project
+
+```bash
+python3 xquery_unit_test.py --projectid YOUR-PROJECT-ID
+----------------------------------------
+XQuery Help HTTP status code 200
+
+Powered by
+  https://blocknet.co
+  https://xquery.io
+
+Current Graph
+  http://127.0.0.1/xrs/xquery/YOUR-PROJECT-ID/help/graph
+
+List available endpoints
+  http://127.0.0.1/xrs/xquery/YOUR-PROJECT-ID/help
+
+GraphQL endpoint
+  http://127.0.0.1/xrs/xquery/YOUR-PROJECT-ID/indexer/
+
+GraphQL data types
+  http://127.0.0.1/xrs/xquery/YOUR-PROJECT-ID/help/schema
+
+Query example for chain ETH and event Swap
+  http://127.0.0.1/xrs/xquery/YOUR-PROJECT-ID/help/ETH_Swap
+
+Query example for chain AVAX and event Swap
+  http://127.0.0.1/xrs/xquery/YOUR-PROJECT-ID/help/AVAX_Swap
+
+
+
+
+----------------------------------------
+XQuery Current Graph HTTP status code 200
+
+{"chains": [{"abi": "avax.json", "address": [{"address": "0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106", "name": "Pangolin_Router"}], "historical": [{"fromBlock": "6800000"}], "name": "AVAX", "query": [{"name": "Swap"}]}, {"abi": "eth.json", "address": [{"address": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D", "name": "Uniswap_Router_v2"}, {"address": "0xe592427a0aece92de3edee1f18e0157c05861564", "name": "Uniswap_Router_v3"}], "historical": [{"fromBlock": "13600000"}], "name": "ETH", "query": [{"name": "Swap"}]}], "endpoint": "/indexer", "graph": "AVAX_ETH"}
+```
+----------------------------

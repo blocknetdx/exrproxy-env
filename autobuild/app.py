@@ -87,7 +87,7 @@ def processcustom(customlist):
         for i in range(len(c['daemons'])):
             name = c['daemons'][i]['name']
             #daemon configs
-            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'TESTTNODE', 'ETH', 'XR_PROXY', 'XQUERY', 'AVAX']:
+            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'XQUERY', 'AVAX', 'PAYMENT']:
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
                     xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(BRANCHPATH, name))
@@ -147,21 +147,54 @@ def processcustom(customlist):
                             customlist[0][f'{name.lower()}_ip'] = custom_ip
                             used_ip[f'{name.lower()}_ip'] = custom_ip
                             break
-                #deploy eth configs
-                if name.upper() == 'ETH':
+                #deploy payment configs
+                if name.upper() == 'PAYMENT':
                     # deploy_eth = os.environ.get("DEPLOY_ETH", "true")
                     customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
+                    if 'payment_tier1' in list(c['daemons'][i]):
+                        customlist[0][f'{name.lower()}_tier1'] = c['daemons'][i]['payment_tier1']
+                    else:
+                        customlist[0][f'{name.lower()}_tier1'] = 35
+                    if 'payment_tier2' in list(c['daemons'][i]):
+                        customlist[0][f'{name.lower()}_tier2'] = c['daemons'][i]['payment_tier2']
+                    else:
+                        customlist[0][f'{name.lower()}_tier2'] = 200
+                    # customlist[0]['deploy_eth'] = True
+                    # if 'host' in list(c['daemons'][i]):
+                        # ip = ipaddress.ip_address(c['daemons'][i]['host'])
+                        # if c['daemons'][i]['host'] != 'internal':
+                            # customlist[0]['gethexternal'] = c['daemons'][i]['host']
+                            # logging.info("Using external geth")
+                        # elif c['daemons'][i]['host'] == 'internal':
+                            # logging.info("Using internal geth")
+                    # customlist[0]['plugins'].append('eth_passthrough')
+                    customlist[0]['deploy_payment'] = True
+                    for k in ['PG','PAYMENT']:
+                        while True:
+                            custom_ip = autoconfig.random_ip()
+                            if custom_ip not in used_ip.values():
+                                # if k == 'GETH' and customlist[0]['gethexternal']:
+                                    # customlist[0][f'{k.lower()}_ip'] = customlist[0]['gethexternal']
+                                    # break
+                                customlist[0][f'{k.lower()}_ip'] = custom_ip
+                                used_ip[f'{k.lower()}_ip'] = custom_ip
+                                break
+                if name.upper() == 'ETH':
+                    # deploy_eth = os.environ.get("DEPLOY_ETH", "true")
+
+                    
                     customlist[0]['deploy_eth'] = True
                     if 'host' in list(c['daemons'][i]):
                         # ip = ipaddress.ip_address(c['daemons'][i]['host'])
-                        if c['daemons'][i]['host'] != 'internal':
-                            customlist[0]['gethexternal'] = c['daemons'][i]['host']
-                            logging.info("Using external geth")
-                        elif c['daemons'][i]['host'] == 'internal':
-                            logging.info("Using internal geth")
+                        # if c['daemons'][i]['host'] != 'internal':
+                        customlist[0]['gethexternal'] = c['daemons'][i]['host']
+                        logging.info("Using external geth")
+                    else:
+                        customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
+                        logging.info("Using internal geth")
                     customlist[0]['plugins'].append('eth_passthrough')
                     # customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
-                    for k in ['PG','ETH','GETH']:
+                    for k in ['GETH']:
                         while True:
                             custom_ip = autoconfig.random_ip()
                             if custom_ip not in used_ip.values():
@@ -220,7 +253,7 @@ def processcustom(customlist):
                     logging.info(f'invalid config in YAML for {var["name"]}:\nmissing {list(set(tocomp_a).symmetric_difference(set(tocomp_b)))}')
                     to_del_index.append(index)
 
-            elif var['name'].upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'TESTTNODE', 'ETH', 'XQUERY', 'AVAX']:
+            elif var['name'].upper() in ['XR_PROXY', 'SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XQUERY', 'AVAX', 'PAYMENT']:
                 continue
 
         #delete fake daemons SNODE ETH XR_PROXY
