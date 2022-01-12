@@ -4,7 +4,7 @@
   daemons:
     # DO NOT DELETE XR_PROXY ENTRY
     - name: XR_PROXY # DO NOT DELETE
-      image: blocknetdx/exrproxy:0.8.0 # DO NOT DELETE
+      image: blocknetdx/exrproxy:0.9.0 # DO NOT DELETE
       config_mount_dir: /snode/xr_proxy/config # DO NOT DELETE
       nginx_mount_dir: /snode/xr_proxy/nginx # DO NOT DELETE
     # DO NOT DELETE SNODE ENTRY
@@ -15,7 +15,7 @@
     - name: PAYMENT
       payment_tier1: 35
       payment_tier2: 200
-      image: blocknetdx/eth-payment-processor:0.5.2 
+      image: blocknetdx/eth-payment-processor:0.6.0
       postgresql_data_mount_dir: /snode/eth_pymt_db
       # DELETE THE FOLLOWING ETH ENTRY IF YOU DON'T WANT TO DEPLOY A 10+ TB GETH NODE
     - name: ETH # DELETE THIS ENTRY IF YOUR SERVER DOESN'T MEET HW REQUIREMENTS: 10+ TB NVMe SSD storage (21 Dec, 2021), 16 GB RAM when GETH deployed locally
