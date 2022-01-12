@@ -19,6 +19,7 @@ query MyQuery {
     xquery_token0_decimals
     xquery_blocknumber
     xquery_timestamp
+    xquery_tx_hash
   }
 }"""
 
@@ -45,6 +46,14 @@ def run_get_graph(host, project_id):
         print(request.text)
         raise Exception("XQuery current graph failed to run by returning code of {}".format(request.status_code))
 
+def run_get_schema(host, project_id):
+    request = requests.post(f'http://{host}/xrs/xquery/{project_id}/help/schema')
+    if request.status_code == 200:
+        return request.text
+    else:
+        print(request.text)
+        raise Exception("XQuery schema failed to run by returning code of {}".format(request.status_code))
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', help='Host of EXR', default='127.0.0.1:80')
@@ -53,6 +62,7 @@ if __name__ == '__main__':
     parser.add_argument('--query', help='Query string', default=query)
     parser.add_argument('--xqhelp', help='Display XQuery help message', action='store_true')
     parser.add_argument('--xqgraph', help='Display XQuery current graph', action='store_true')
+    parser.add_argument('--xqschema', help='Display XQuery schema', action='store_true')
 
     args = parser.parse_args()
     HOST = args.host
@@ -61,6 +71,7 @@ if __name__ == '__main__':
     QUERY = args.query
     XQHELP = args.xqhelp
     XQGRAPH = args.xqgraph
+    XQSCHEMA = args.xqschema
 
     
     if PROJECTID and APIKEY:
@@ -74,6 +85,10 @@ if __name__ == '__main__':
     elif XQGRAPH and PROJECTID:
         results = run_get_graph(HOST, PROJECTID)
         print("#### XQuery current graph")
+        print(results)
+    elif XQSCHEMA and PROJECTID:
+        results = run_get_schema(HOST, PROJECTID)
+        print("#### XQuery schema")
         print(results)
     else:
         print("Missing PROJECTID and/or APIKEY")
