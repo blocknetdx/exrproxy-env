@@ -68,3 +68,7 @@
       image: blocknetdx/ravencoin:v4.3.2.1
       config_mount_dir: /snode
       data_mount_dir: /snode
+    - name: GBX # Requires 2GB of disk (12 January, 2022)
+      image: blocknetdx/gobyte:v0.16.2.1
+      config_mount_dir: /snode
+      data_mount_dir: /snode
