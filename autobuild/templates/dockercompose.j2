@@ -178,8 +178,13 @@ services:
     expose:
       - 8080
     depends_on:
+{% if deploy_eth %}
 {% if gethexternal is sameas false %}
       - geth
+{% endif %}
+{% endif %}
+{% if deploy_avax %}
+      - avax
 {% endif %}
       - postgresql
     networks:
