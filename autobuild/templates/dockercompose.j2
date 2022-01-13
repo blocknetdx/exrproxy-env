@@ -194,7 +194,7 @@ services:
       POSTGRES_USER: ethproxy
       POSTGRES_PASSWORD: password
     volumes:
-      - {{ eth_postgresql_data_mount_dir }}:/var/lib/postgresql/data
+      - {{ payment_postgresql_data_mount_dir }}:/var/lib/postgresql/data
     networks:
       backend:
         ipv4_address: {{ pg_ip }}
