@@ -99,10 +99,10 @@ curl http://127.0.0.1/xrs/xquery/<PROJECT-ID>/help -X POST -H "Api-Key:<API-KEY>
 
 12. Test XQuery via python code
 
-Check the python script in autobuild/xqtest.py
+Check the python script in autobuild/xq.py
 
 ```
-python3 exrproxy-env/autobuild/xqtest.py --projectid YOUR-PROJECT-ID --apikey YOUR-API-KEY
+python3 exrproxy-env/autobuild/xq.py --projectid YOUR-PROJECT-ID --apikey YOUR-API-KEY
 ```
 
 
