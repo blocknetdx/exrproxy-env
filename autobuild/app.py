@@ -97,7 +97,7 @@ def processcustom(customlist):
                     c['daemons'][i]['p2pPort'] = xbridge_json[name]['p2pPort']
                     c['daemons'][i]['rpcPort'] = xbridge_json[name]['rpcPort']
                     c['daemons'][i]['binFile'] = binFiles[name]
-                    c['daemons'][i]['configName'] = configFiles[name]
+                    c['daemons'][i]['configName'] = configFiles[name].split('.conf')[0]
                     tag = c['daemons'][i]['image'].split(':')[1]
                     if '-staging' in tag:
                         tag = tag.split('-staging')[0]
