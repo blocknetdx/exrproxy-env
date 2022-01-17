@@ -12,6 +12,8 @@
     - name: ETH # DO NOT DELETE
       host: 192.168.32.10 #examaple IP for external geth 
     - name: PAYMENT # DO NOT DELETE
+      payment_tier1: 35
+      payment_tier2: 200
       image: blocknetdx/eth-payment-processor:0.6.0 # DO NOT DELETE
       postgresql_data_mount_dir: /snode/eth_pymt_db # DO NOT DELETE
     # DO NOT DELETE SNODE ENTRY
