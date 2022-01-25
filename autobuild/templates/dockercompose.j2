@@ -223,6 +223,10 @@ services:
       ETH_HOST_PASS:
       ETH_HOST_DISALLOWED_METHODS: eth_accounts,db_putString,db_getString,db_putHex,db_getHex
 {% endif %}
+{% if deploy_avax %}
+      AVAX_HOST: {{ avax_ip }}
+      AVAX_IP: 9650
+{% endif %}
 {% if deploy_eth or deploy_avax %}
 {% if deploy_payment %}
       PAYMENT_PROCESSOR_HOST: {{ payment_ip }}:8080
@@ -233,7 +237,7 @@ services:
 {% endif %}
 {% endif %}
 {% if deploy_xquery %}
-      XQUERY_HOST: http://{{ reverse_proxy_ip }}:{{ reverse_proxy_port}}
+      #XQUERY_HOST: http://{{ reverse_proxy_ip }}:{{ reverse_proxy_port}}
 {% endif %}
     volumes:
       - {{ xr_proxy_config_mount_dir }}:/opt/uwsgi/conf

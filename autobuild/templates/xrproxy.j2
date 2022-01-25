@@ -41,9 +41,25 @@ set-ph = RPC_{{ daemon.name }}_VER=2.0
 
 {% endfor %}
 
+set-ph = HYDRA={{ hydra }}
+
+{% if deploy_eth %}
+set-ph = ETH_HOST_IP={{ geth_ip }}
+set-ph = ETH_HOST_PORT=8545
+set-ph = ETH_HOST_USER=
+set-ph = ETH_HOST_PASS=
+set-ph = ETH_HOST_DISALLOWED_METHODS=eth_accounts,db_putString,db_getString,db_putHex,db_getHex
+{% endif %}
+
+{% if deploy_avax %}
+set-ph = AVAX_HOST_IP={{ avax_ip }}
+set-ph = AVAX_HOST_PORT=9650
+{% endif %}
+
+
 {% if deploy_xquery %}
-set-ph = URL_XQUERY_HOSTIP={{ reverse_proxy_ip }}
-set-ph = URL_XQUERY_PORT={{ reverse_proxy_port }}
+set-ph = XQUERY_IP={{ reverse_proxy_ip }}
+set-ph = XQUERY_PORT={{ reverse_proxy_port }}
 {% endif %}
 
 EOL
