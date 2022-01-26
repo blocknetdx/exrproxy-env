@@ -1,6 +1,6 @@
 {% for chain in chains %}
 ####{{ chain.name.lower() }} STACK START
-  xquery-event-processor-{{ chain.name.lower() }}:
+  xquery-event-processor-{{ chain.name.lower() | replace('_','-') }}:
     build: ./xquery/event-processor
     depends_on:
       - "xquery-graphql-engine"
@@ -76,7 +76,7 @@
     image: postgres:12
     restart: always
     volumes:
-      - {{ graph.lower() }}:/var/lib/postgresql/data
+      - {{ xquery_data_mount_dir }}:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: postgrespassword
     ports:
@@ -104,8 +104,6 @@
         ipv4_address: {{ graphql_engine_ip }}
   xquery-reverse-proxy:
     build: ./xquery/reverse-proxy
-    #ports:
-    #  - "{{ reverse_proxy_port }}:{{ reverse_proxy_port }}"
     restart: always
     environment:
       PORT: {{ reverse_proxy_port }}
@@ -118,7 +116,7 @@
 {% endfor %}
     depends_on:
 {% for chain in chains %}
-      - "xquery-event-processor-{{ chain.name.lower() }}"
+      - "xquery-event-processor-{{ chain.name.lower() | replace('_','-') }}"
 {% endfor %}
     volumes:
       - ${PWD}/{{ query_config }}:/app/manager/{{ query_config }}
@@ -128,5 +126,3 @@
     networks:
       backend:
         ipv4_address: {{ reverse_proxy_ip }}
-volumes:
-  {{ graph.lower() }}:

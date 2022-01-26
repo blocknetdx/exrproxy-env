@@ -176,12 +176,6 @@ GraphQL endpoint
 GraphQL data types
   http://127.0.0.1/xrs/xquery/YOUR-PROJECT-ID/help/schema
 
-Query example for chain ETH and event Swap
-  http://127.0.0.1/xrs/xquery/YOUR-PROJECT-ID/help/ETH_Swap
-
-Query example for chain AVAX and event Swap
-  http://127.0.0.1/xrs/xquery/YOUR-PROJECT-ID/help/AVAX_Swap
-
 
 
 
