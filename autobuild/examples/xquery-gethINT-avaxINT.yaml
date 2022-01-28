@@ -46,11 +46,12 @@
       image: avaplatform/avalanchego:v1.7.2
       data_mount_dir: /snode
     - name: XQUERY
+      data_mount_dir: /snode/xquery
       graph: AVAX_ETH
       endpoint: /indexer
       chains:
-        - name: AVAX
-          abi: avax.json
+        - name: AVAX_PANGOLIN
+          abi: pangolinRouter.json
           query:
           - name: Swap
           address:
@@ -58,8 +59,8 @@
             address: '0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106'
           historical:
           - fromBlock: "6800000"
-        - name: ETH
-          abi: eth.json
+        - name: ETH_UNISWAP
+          abi: uniswapRouter.json
           query:
           - name: Swap
           address:

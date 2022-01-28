@@ -44,11 +44,12 @@
     - name: AVAX 
       host: 192.168.32.11 #examaple IP for external avax
     - name: XQUERY
+      data_mount_dir: /snode/xquery
       graph: AVAX_ETH
       endpoint: /indexer
       chains:
-        - name: AVAX
-          abi: avax.json
+        - name: AVAX_PANGOLIN
+          abi: pangolinRouter.json
           query:
           - name: Swap
           address:
@@ -56,8 +57,8 @@
             address: '0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106'
           historical:
           - fromBlock: "6800000"
-        - name: ETH
-          abi: eth.json
+        - name: ETH_UNISWAP
+          abi: uniswapRouter.json
           query:
           - name: Swap
           address:
