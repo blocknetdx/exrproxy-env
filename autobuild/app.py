@@ -179,6 +179,7 @@ def processcustom(customlist):
                                 customlist[0][f'{k.lower()}_ip'] = custom_ip
                                 used_ip[f'{k.lower()}_ip'] = custom_ip
                                 break
+                    customlist[0]['plugins'].append('projects')
                 if name.upper() == 'ETH':
                     # deploy_eth = os.environ.get("DEPLOY_ETH", "true")
 
@@ -192,7 +193,10 @@ def processcustom(customlist):
                     else:
                         customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
                         logging.info("Using internal geth")
-                    customlist[0]['plugins'].append('eth_passthrough')
+                    if 'evm_passthrough' not in customlist[0]['plugins']:
+                        customlist[0]['plugins'].append('evm_passthrough')
+                    if 'ETH' not in customlist[0]['hydra']:
+                        customlist[0]['hydra'].append('ETH')
                     # customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
                     for k in ['GETH']:
                         while True:
@@ -220,6 +224,10 @@ def processcustom(customlist):
                         customlist[0]['avaxexternal'] = True
                         customlist[0][f'{name.lower()}_ip'] = c['daemons'][i]['host']
                         logging.info("Using external avax")
+                    if 'evm_passthrough' not in customlist[0]['plugins']:
+                        customlist[0]['plugins'].append('evm_passthrough')
+                    if 'AVAX' not in customlist[0]['hydra']:
+                        customlist[0]['hydra'].append('AVAX')
                     
                 if name.upper() == 'XQUERY':
                     logging.info('XQUERY exists')
@@ -283,6 +291,7 @@ def processcustom(customlist):
             plugins = plugins[:-1]
 
         customlist[0]['xrouter_plugins'] = plugins
+        customlist[0]['hydra'] = ','.join([x.upper() for x in customlist[0]['hydra']])
 
         return([c])
 
@@ -348,9 +357,10 @@ def processconfigs(datalist):
 if __name__ == "__main__":
     datalist = loadyaml(IMPORTYAML)
     datalist[0]['plugins'] = []
+    datalist[0]['hydra'] = []
     datalist[0]['deploy_eth'] = DEPLOY_ETH
-    if datalist[0]['deploy_eth'] == True:
-        datalist[0]['plugins'].append('eth_passthrough')
+    # if datalist[0]['deploy_eth'] == True:
+    #     datalist[0]['plugins'].append('evm_passthrough')
     datalist[0]['gethexternal'] = GETHEXTERNAL
     datalist[0]['eth_testnet'] = ETH_TESTNET
     datalist[0]['syncmode'] = SYNCMODE
