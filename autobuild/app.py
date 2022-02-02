@@ -27,10 +27,10 @@ J2_ENV2 = Environment(loader=BaseLoader(),
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--yaml', help='yaml filename to process', default='custom.yaml')
-parser.add_argument('--deploy_eth', help='Deploy ethereum stack', action='store_true')
-parser.add_argument('--testnet', help='Use ethereum testnet', default=False)
-parser.add_argument('--syncmode', help='sync mode', default='light')
-parser.add_argument('--gethexternal', help='Use remote ethereum node', default=False)
+# parser.add_argument('--deploy_eth', help='Deploy ethereum stack', action='store_true')
+# parser.add_argument('--testnet', help='Use ethereum testnet', default=False)
+# parser.add_argument('--syncmode', help='sync mode', default='light')
+# parser.add_argument('--gethexternal', help='Use remote ethereum node', default=False)
 parser.add_argument('--branchpath', help='Custom branch path for testing configs', default='https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master')
 args = parser.parse_args()
 IMPORTYAML = args.yaml
@@ -358,12 +358,12 @@ if __name__ == "__main__":
     datalist = loadyaml(IMPORTYAML)
     datalist[0]['plugins'] = []
     datalist[0]['hydra'] = []
-    datalist[0]['deploy_eth'] = DEPLOY_ETH
+    datalist[0]['deploy_eth'] = False
     # if datalist[0]['deploy_eth'] == True:
     #     datalist[0]['plugins'].append('evm_passthrough')
-    datalist[0]['gethexternal'] = GETHEXTERNAL
-    datalist[0]['eth_testnet'] = ETH_TESTNET
-    datalist[0]['syncmode'] = SYNCMODE
+    datalist[0]['gethexternal'] = False
+    datalist[0]['eth_testnet'] = False
+    datalist[0]['syncmode'] = 'light'
     if datalist == 'ERROR':
         logging.info('YAML LOAD FAILURE, check yaml format/file')
     else:
