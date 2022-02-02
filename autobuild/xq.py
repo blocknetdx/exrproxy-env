@@ -2,6 +2,8 @@ import json
 import requests
 import argparse
 from string import Template
+from rich import pretty
+pretty.install()
 
 schema = """
   id
@@ -137,7 +139,7 @@ def xpair_filter_query(pairs, routers, limit=20):
     }
 }""").substitute(combo=','.join(combos), schema=schema, limit=limit)
 
-def xaddress(addresses, limit=20):
+def xaddress_query(addresses, limit=20):
     c = []
     for address in addresses:
         c.append(Template("""{xquery_to: {_regex: "$address"} }""").substitute(address=address))
@@ -169,6 +171,7 @@ def run_help(host, project_id):
 def run_query(host, query, project_id, api_key):
     headers = {'Api-Key':f'{api_key}'}
     request = requests.post(f'http://{host}/xrs/xquery/{project_id}/indexer/', headers=headers, json={'query': query})
+    # request = requests.post(f'http://{host}/indexer/', headers=headers, json={'query': query})
     if request.status_code == 200:
         return request.json()
     else:
@@ -202,6 +205,7 @@ if __name__ == '__main__':
     parser.add_argument('--xqaddress', help='Address to query for', nargs='*')
     parser.add_argument('--xqpair', help='Pairs to query for | USDC/USDT ETH/USDT', nargs='*')
     parser.add_argument('--xqrouter', help='Routers names to query for | Uniswap Pangolin', nargs='*')
+    parser.add_argument('--xqlimit', help='Number of results', default=20)
 
     args = parser.parse_args()
     HOST = args.host
@@ -211,11 +215,54 @@ if __name__ == '__main__':
     XQHELP = args.xqhelp
     XQGRAPH = args.xqgraph
     XQSCHEMA = args.xqschema
+    XQADDRESS = args.xqaddress
+    XQPAIR = args.xqpair
+    XQROUTER = args.xqrouter
+    XQLIMIT = args.xqlimit
 
     if PROJECTID and APIKEY:
-        results = run_query(HOST, XQUERY, PROJECTID, APIKEY)
-        print("#### XQuery query")
-        print(results)
+        if XQPAIR and not XQROUTER:
+            pairs = []
+            for pair in XQPAIR:
+                if "/" not in pair and pair.count("/")!=1:
+                    print(f"### ignoring unknown format {pair}...")
+                else:
+                    if XQPAIR.count(pair)==1:
+                        p0 = pair.split("/")[0]
+                        p1 = pair.split("/")[1]
+                        pairs.append([p0,p1])
+            query_pairs = xpair_query(pairs, XQLIMIT)
+            results = run_query(HOST, query_pairs, PROJECTID, APIKEY)
+            print(f"#### XQuery for {'pair' if len(XQPAIR)==1 else 'pairs'} {' '.join(XQPAIR)} ")
+            print(results)
+        elif not XQPAIR and XQROUTER:
+            query_routers = xfilter_query(XQROUTER, XQLIMIT)
+            results = run_query(HOST, query_routers, PROJECTID, APIKEY)
+            print(f"#### XQuery for {'router' if len(XQROUTER)==1 else 'routers'} {' '.join(XQROUTER)} ")
+            print(results)
+        elif XQPAIR and XQROUTER:
+            pairs = []
+            for pair in XQPAIR:
+                if "/" not in pair and pair.count("/")!=1:
+                    print(f"### ignoring unknown format {pair}...")
+                else:
+                    if XQPAIR.count(pair)==1:
+                        p0 = pair.split("/")[0]
+                        p1 = pair.split("/")[1]
+                        pairs.append([p0,p1])
+            query_pair_router = xpair_filter_query(pairs, XQROUTER, XQLIMIT)
+            results = run_query(HOST, query_pair_router, PROJECTID, APIKEY)
+            print(f"#### XQuery for {'router' if len(XQROUTER)==1 else 'routers'} {' '.join(XQROUTER)} and {'pair' if len(XQPAIR)==1 else 'pairs'} {' '.join(XQPAIR)}")
+            print(results)
+        elif XQADDRESS:
+            query_address = xaddress_query(XQADDRESS, XQLIMIT)
+            results = run_query(HOST, query_address, PROJECTID, APIKEY)
+            print(f"#### XQuery for {'address' if len(XQADDRESS)==1 else 'addresses'} {XQADDRESS}")
+            print(results)
+        else:
+            results = run_query(HOST, XQUERY, PROJECTID, APIKEY)
+            print("#### XQuery example query")
+            print(results)
     elif XQHELP and PROJECTID:
         results = run_help(HOST, PROJECTID)
         print("#### XQuery help")
