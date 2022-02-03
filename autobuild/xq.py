@@ -79,7 +79,7 @@ schema = """
 
 query = Template("""
 query MyQuery {
-  xquery(where: {xquery_chain_name: {_eq: "AVAX"}, xquery_query_name: {_eq: "Swap"} }, limit: 20) {
+  xquery(order_by: {xquery_blocknumber: desc}, where: {xquery_chain_name: {_eq: "AVAX"}, xquery_query_name: {_eq: "Swap"} }, limit: 20) {
   $schema
   }
 }""").substitute(schema=schema)
@@ -91,7 +91,7 @@ def xpair_query(pairs, limit=20):
         pair_filter.append(Template("""{xquery_token0_symbol: {_regex: "$token0"}, xquery_token1_symbol: {_regex: "$token1"} }""").substitute(token0=pair[1],token1=pair[0]))
     template = Template("""
     query XPair {
-      xquery(where: {
+      xquery(order_by: {xquery_blocknumber: desc}, where: {
     _or: [
       $combo
     ], 
@@ -105,9 +105,9 @@ def xfilter_query(routers, limit=20):
     router_names = []
     for router in routers:
         router_names.append(Template("""{xquery_address_filter: {_regex: "$router"} }""").substitute(router=router))
-    return Tempalte("""
+    return Template("""
     query XAddressFilter {
-      xquery(where: {
+      xquery(order_by: {xquery_blocknumber: desc}, where: {
     _or: [
       $combo
     ], 
@@ -128,9 +128,9 @@ def xpair_filter_query(pairs, routers, limit=20):
         c = ','.join(c)
         c = '{'+c+'}'
         combos.append(c)
-    return Tempalte("""
+    return Template("""
     query XPairXAddressFilter {
-      xquery(where: {
+      xquery(order_by: {xquery_blocknumber: desc}, where: {
     _or: [
       $combo
     ], 
@@ -151,7 +151,7 @@ def xaddress_query(addresses, limit=20):
         c.append(Template("""{xquery_owner: {_regex: "$address"} }""").substitute(address=address))
     return Template("""
     query XAddress {
-      xquery(where: {
+      xquery(order_by: {xquery_blocknumber: desc}, where: {
     _or: [
       $combo
     ], 
@@ -257,7 +257,7 @@ if __name__ == '__main__':
         elif XQADDRESS:
             query_address = xaddress_query(XQADDRESS, XQLIMIT)
             results = run_query(HOST, query_address, PROJECTID, APIKEY)
-            print(f"#### XQuery for {'address' if len(XQADDRESS)==1 else 'addresses'} {XQADDRESS}")
+            print(f"#### XQuery for {'address' if len(XQADDRESS)==1 else 'addresses'} {' '.join(XQADDRESS)}")
             print(results)
         else:
             results = run_query(HOST, XQUERY, PROJECTID, APIKEY)
