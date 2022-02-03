@@ -34,14 +34,14 @@ parser.add_argument('--yaml', help='yaml filename to process', default='custom.y
 parser.add_argument('--branchpath', help='Custom branch path for testing configs', default='https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master')
 args = parser.parse_args()
 IMPORTYAML = args.yaml
-DEPLOY_ETH = args.deploy_eth
-GETHEXTERNAL = args.gethexternal
-ETH_TESTNET = args.testnet
-SYNCMODE = args.syncmode
+# DEPLOY_ETH = args.deploy_eth
+# GETHEXTERNAL = args.gethexternal
+# ETH_TESTNET = args.testnet
+# SYNCMODE = args.syncmode
 BRANCHPATH = re.sub(r'(^(?!.*/$).*)',r'\1/',args.branchpath)
 
-if GETHEXTERNAL or ETH_TESTNET:
-    DEPLOY_ETH = True
+# if GETHEXTERNAL or ETH_TESTNET:
+#     DEPLOY_ETH = True
 OUTPUT_PATH = './'
 
 
