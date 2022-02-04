@@ -55,7 +55,7 @@ def run_get_schema(host, project_id):
         raise Exception("XQuery schema failed to run by returning code of {}".format(request.status_code))
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description='CLI simple interface for XQuery')
     parser.add_argument('--host', help='Host of EXR', default='127.0.0.1:80')
     parser.add_argument('--projectid', help='ID of EXR project', default=False)
     parser.add_argument('--apikey', help='API-KEY of EXR project', default=False)
