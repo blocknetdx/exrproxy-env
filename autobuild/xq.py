@@ -4,6 +4,8 @@ import argparse
 from string import Template
 from rich import print
 
+xrouter_emoticon = ":twisted_rightwards_arrows:"
+
 def default_query(schema):
     return Template("""
     query MyQuery {
@@ -105,37 +107,33 @@ def xtx_query(txs_hash, schema):
 
 
 def run_help(host, project_id):
-    request = requests.post(f'http://{host}/xrs/xquery/{project_id}/help')
+    request = requests.post(f'http://{host}/xrs/xquery/{project_id}/help',timeout=300)
     if request.status_code == 200:
         return request.text
     else:
-        raise Exception("XQuery help failed to run by returning code of {}".format(request.status_code))
+        print("XQuery help failed to run by returning code of {}".format(request.status_code))
 
 def run_query(host, query, project_id, api_key):
     headers = {'Api-Key':f'{api_key}'}
-    request = requests.post(f'http://{host}/xrs/xquery/{project_id}/indexer/', headers=headers, json={'query': query})
-    # request = requests.post(f'http://{host}/indexer/', headers=headers, json={'query': query})
+    request = requests.post(f'http://{host}/xrs/xquery/{project_id}/indexer/', headers=headers, json={'query': query},timeout=300)
     if request.status_code == 200:
         return request.json()
     else:
-        raise Exception("XQuery call failed to run by returning code of {}".format(request.status_code))
+        print("XQuery call failed to run by returning code of {}".format(request.status_code))
 
 def run_get_graph(host, project_id):
-    request = requests.post(f'http://{host}/xrs/xquery/{project_id}/help/graph')
+    request = requests.post(f'http://{host}/xrs/xquery/{project_id}/help/graph',timeout=300)
     if request.status_code == 200:
         return request.json()
     else:
-        print(request.text)
-        raise Exception("XQuery current graph failed to run by returning code of {}".format(request.status_code))
+        print("XQuery current graph failed to run by returning code of {}".format(request.status_code))
 
 def run_get_schema(host, project_id):
-    request = requests.post(f'http://{host}/xrs/xquery/{project_id}/help/schema')
-    # request = requests.get(f'http://{host}/help/schema')
+    request = requests.post(f'http://{host}/xrs/xquery/{project_id}/help/schema',timeout=300)
     if request.status_code == 200:
         return request.text
     else:
-        print(request.text)
-        raise Exception("XQuery schema failed to run by returning code of {}".format(request.status_code))
+        print("XQuery schema failed to run by returning code of {}".format(request.status_code))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -180,12 +178,12 @@ if __name__ == '__main__':
                             p1 = pair.split("/")[1]
                             pairs.append([p0,p1])
                 query_pairs = xpair_query(pairs, schema, XQLIMIT)
-                print(":twisted_rightwards_arrows:",f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]pair[/bold yellow]' if len(XQPAIR)==1 else '[bold yellow]pairs[/bold yellow]'} {' '.join(XQPAIR)} ")
+                print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]pair[/bold yellow]' if len(XQPAIR)==1 else '[bold yellow]pairs[/bold yellow]'} {' '.join(XQPAIR)} ")
                 results = run_query(HOST, query_pairs, PROJECTID, APIKEY)
                 print(results)
             elif not XQPAIR and XQROUTER:
                 query_routers = xfilter_query(XQROUTER, schema, XQLIMIT)
-                print(":twisted_rightwards_arrows:",f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]router[/bold yellow]' if len(XQROUTER)==1 else '[bold yellow]routers[/bold yellow]'} {' '.join(XQROUTER)} ")
+                print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]router[/bold yellow]' if len(XQROUTER)==1 else '[bold yellow]routers[/bold yellow]'} {' '.join(XQROUTER)} ")
                 results = run_query(HOST, query_routers, PROJECTID, APIKEY)
                 print(results)
             elif XQPAIR and XQROUTER:
@@ -199,38 +197,38 @@ if __name__ == '__main__':
                             p1 = pair.split("/")[1]
                             pairs.append([p0,p1])
                 query_pair_router = xpair_filter_query(pairs, XQROUTER, schema, XQLIMIT)
-                print(":twisted_rightwards_arrows:",f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]router[/bold yellow]' if len(XQROUTER)==1 else '[bold yellow]routers[/bold yellow]'} {' '.join(XQROUTER)} and {'pair' if len(XQPAIR)==1 else 'pairs'} {' '.join(XQPAIR)}")
+                print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]router[/bold yellow]' if len(XQROUTER)==1 else '[bold yellow]routers[/bold yellow]'} {' '.join(XQROUTER)} and {'pair' if len(XQPAIR)==1 else 'pairs'} {' '.join(XQPAIR)}")
                 results = run_query(HOST, query_pair_router, PROJECTID, APIKEY)
                 print(results)
             elif XQADDRESS:
                 query_address = xaddress_query(XQADDRESS, schema, XQLIMIT)
-                print(":twisted_rightwards_arrows:",f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]address[/bold yellow]' if len(XQADDRESS)==1 else '[bold yellow]addresses[/bold yellow]'} {' '.join(XQADDRESS)}")
+                print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]address[/bold yellow]' if len(XQADDRESS)==1 else '[bold yellow]addresses[/bold yellow]'} {' '.join(XQADDRESS)}")
                 results = run_query(HOST, query_address, PROJECTID, APIKEY)
                 print(results)
             elif XQTX:
                 query_tx = xtx_query(XQTX, schema)
-                print(":twisted_rightwards_arrows:",f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]TX[/bold yellow]' if len(XQTX)==1 else '[bold yellow]TXs[/bold yellow]'} {' '.join(XQTX)}")
+                print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]TX[/bold yellow]' if len(XQTX)==1 else '[bold yellow]TXs[/bold yellow]'} {' '.join(XQTX)}")
                 results = run_query(HOST, query_tx, PROJECTID, APIKEY)
                 print(results)
             elif XQUERY:
-                print(":twisted_rightwards_arrows:","[bold magenta]XQuery[/bold magenta] for [bold yellow]custom query[/bold yellow]")
+                print(xrouter_emoticon,"[bold magenta]XQuery[/bold magenta] for [bold yellow]custom query[/bold yellow]")
                 results = run_query(HOST, XQUERY, PROJECTID, APIKEY)
                 print(results)
             else:
                 default = default_query(schema)
-                print(":twisted_rightwards_arrows:","[bold magenta]XQuery[/bold magenta] for [bold yellow]last 20 entries[/bold yellow]")
+                print(xrouter_emoticon,"[bold magenta]XQuery[/bold magenta] for [bold yellow]last 20 entries[/bold yellow]")
                 results = run_query(HOST, default, PROJECTID, APIKEY)
                 print(results)
         elif XQHELP and PROJECTID:
-            print(":twisted_rightwards_arrows:","[bold magenta]XQuery[/bold magenta] [bold yellow]help[/bold yellow]")
+            print(xrouter_emoticon,"[bold magenta]XQuery[/bold magenta] [bold yellow]help[/bold yellow]")
             results = run_help(HOST, PROJECTID)
             print(results)
         elif XQGRAPH and PROJECTID:
-            print(":twisted_rightwards_arrows:","[bold magenta]XQuery[/bold magenta] [bold yellow]current graph[/bold yellow]")
+            print(xrouter_emoticon,"[bold magenta]XQuery[/bold magenta] [bold yellow]current graph[/bold yellow]")
             results = run_get_graph(HOST, PROJECTID)
             print(results)
         elif XQSCHEMA and PROJECTID:
-            print(":twisted_rightwards_arrows:","[bold magenta]XQuery[/bold magenta] [bold yellow]schema[/bold yellow]")
+            print(xrouter_emoticon,"[bold magenta]XQuery[/bold magenta] [bold yellow]schema[/bold yellow]")
             results = run_get_schema(HOST, PROJECTID)
             print(results)
         else:
