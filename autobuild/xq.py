@@ -170,7 +170,7 @@ if __name__ == '__main__':
             if XQPAIR and not XQROUTER:
                 pairs = []
                 for pair in XQPAIR:
-                    if "/" not in pair and pair.count("/")!=1:
+                    if "/" not in pair or pair.count("/")!=1:
                         print(":x:",f"ignoring unknown format {pair}...")
                     else:
                         if XQPAIR.count(pair)==1:
@@ -189,7 +189,7 @@ if __name__ == '__main__':
             elif XQPAIR and XQROUTER:
                 pairs = []
                 for pair in XQPAIR:
-                    if "/" not in pair and pair.count("/")!=1:
+                    if "/" not in pair or pair.count("/")!=1:
                         print(":x:",f"ignoring unknown format {pair}...")
                     else:
                         if XQPAIR.count(pair)==1:
