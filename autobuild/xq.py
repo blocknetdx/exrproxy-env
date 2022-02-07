@@ -212,7 +212,7 @@ if __name__ == '__main__':
                 print(results)
             elif XQUERY:
                 print(xrouter_emoticon,"[bold magenta]XQuery[/bold magenta] for [bold yellow]custom query[/bold yellow]")
-                results = run_query(HOST, XQUERY, PROJECTID, APIKEY)
+                results = run_query(HOST, json.loads(XQUERY), PROJECTID, APIKEY)
                 print(results)
             else:
                 default = default_query(schema)
