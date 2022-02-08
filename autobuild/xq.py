@@ -50,14 +50,19 @@ def xfilter_query(routers, schema, limit=20):
 def xpair_filter_query(pairs, routers, schema, limit=20):
     combos = []
     for router in routers:
-        c = []
-        c.append(Template("""xquery_address_filter: {_regex: "$router"}""").substitute(router=router))
         for pair in pairs:
+            c = []
+            cc = []
+            c.append(Template("""xquery_address_filter: {_regex: "$router"}""").substitute(router=router))
+            cc.append(Template("""xquery_address_filter: {_regex: "$router"}""").substitute(router=router))
             c.append(Template("""xquery_token0_symbol: {_regex: "$token0"}, xquery_token1_symbol: {_regex: "$token1"}""").substitute(token0=pair[0],token1=pair[1]))
-            c.append(Template("""xquery_token0_symbol: {_regex: "$token0"}, xquery_token1_symbol: {_regex: "$token1"}""").substitute(token0=pair[1],token1=pair[0]))
-        c = ','.join(c)
-        c = '{'+c+'}'
-        combos.append(c)
+            cc.append(Template("""xquery_token0_symbol: {_regex: "$token0"}, xquery_token1_symbol: {_regex: "$token1"}""").substitute(token0=pair[1],token1=pair[0]))
+            c = ','.join(c)
+            c = '{'+c+'}'
+            combos.append(c)
+            cc = ','.join(cc)
+            cc = '{'+cc+'}'
+            combos.append(cc)
     return Template("""
     query XPairXAddressFilter {
       xquery(order_by: {xquery_blocknumber: desc}, where: {
