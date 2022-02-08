@@ -5,3 +5,4 @@ ipcalc
 six
 markupsafe
 icecream
+rich
