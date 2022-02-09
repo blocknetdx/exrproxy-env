@@ -6,13 +6,13 @@ from rich import print
 
 xrouter_emoticon = ":twisted_rightwards_arrows:"
 
-def default_query(schema):
+def default_query(schema, limit=20):
     return Template("""
     query MyQuery {
-      xquery(order_by: {xquery_blocknumber: desc}, limit: 20) {
+      xquery(order_by: {xquery_blocknumber: desc}, limit: $limit) {
       $schema
       }
-}""").substitute(schema=schema)
+}""").substitute(schema=schema, limit=limit)
 
 def xpair_query(pairs, schema, limit=20):
     pair_filter = []
@@ -120,7 +120,8 @@ def run_help(host, project_id):
 
 def run_query(host, query, project_id, api_key):
     headers = {'Api-Key':f'{api_key}'}
-    request = requests.post(f'http://{host}/xrs/xquery/{project_id}/indexer/', headers=headers, json={'query': query},timeout=300)
+    # request = requests.post(f'http://{host}/xrs/xquery/{project_id}/indexer/', headers=headers, json={'query': query},timeout=300)
+    request = requests.post(f'http://{host}/xquery/', headers=headers, json={'query': query},timeout=300)
     if request.status_code == 200:
         return request.json()
     else:
@@ -134,7 +135,8 @@ def run_get_graph(host, project_id):
         print("XQuery current graph failed to run by returning code of {}".format(request.status_code))
 
 def run_get_schema(host, project_id):
-    request = requests.post(f'http://{host}/xrs/xquery/{project_id}/help/schema',timeout=300)
+    # request = requests.post(f'http://{host}/xrs/xquery/{project_id}/help/schema',timeout=300)
+    request = requests.get(f'http://{host}/help/schema',timeout=300)
     if request.status_code == 200:
         return request.text
     else:
@@ -220,7 +222,8 @@ if __name__ == '__main__':
                 results = run_query(HOST, json.loads(XQUERY), PROJECTID, APIKEY)
                 print(results)
             else:
-                default = default_query(schema)
+                default = default_query(schema, XQLIMIT)
+                print(default)
                 print(xrouter_emoticon,"[bold magenta]XQuery[/bold magenta] for [bold yellow]last 20 entries[/bold yellow]")
                 results = run_query(HOST, default, PROJECTID, APIKEY)
                 print(results)
