@@ -120,8 +120,8 @@ def run_help(host, project_id):
 
 def run_query(host, query, project_id, api_key):
     headers = {'Api-Key':f'{api_key}'}
-    # request = requests.post(f'http://{host}/xrs/xquery/{project_id}/indexer/', headers=headers, json={'query': query},timeout=300)
-    request = requests.post(f'http://{host}/xquery/', headers=headers, json={'query': query},timeout=300)
+    request = requests.post(f'http://{host}/xrs/xquery/{project_id}/indexer/', headers=headers, json={'query': query},timeout=300)
+    # request = requests.post(f'http://{host}/xquery/', headers=headers, json={'query': query},timeout=300)
     if request.status_code == 200:
         return request.json()
     else:
@@ -135,8 +135,8 @@ def run_get_graph(host, project_id):
         print("XQuery current graph failed to run by returning code of {}".format(request.status_code))
 
 def run_get_schema(host, project_id):
-    # request = requests.post(f'http://{host}/xrs/xquery/{project_id}/help/schema',timeout=300)
-    request = requests.get(f'http://{host}/help/schema',timeout=300)
+    request = requests.post(f'http://{host}/xrs/xquery/{project_id}/help/schema',timeout=300)
+    # request = requests.get(f'http://{host}/help/schema',timeout=300)
     if request.status_code == 200:
         return request.text
     else:
@@ -223,7 +223,7 @@ if __name__ == '__main__':
                 print(results)
             else:
                 default = default_query(schema, XQLIMIT)
-                print(default)
+                # print(default)
                 print(xrouter_emoticon,"[bold magenta]XQuery[/bold magenta] for [bold yellow]last 20 entries[/bold yellow]")
                 results = run_query(HOST, default, PROJECTID, APIKEY)
                 print(results)
