@@ -171,6 +171,14 @@ if __name__ == '__main__':
     XQLIMIT = args.xqlimit
     XQTX = args.xqtx
 
+    if XQLIMIT:
+        if XQLIMIT < 1:
+            print(":x:",f"xqlimit too small...changed to 1")
+            XQLIMIT = 1
+        if XQLIMIT > 20:
+            print(":x:",f"xqlimit too big...changed to 20")
+            XQLIMIT = 20
+            
     if HOST:
         if PROJECTID and APIKEY:
             schema = '\n'.join([x for x in [x.split(":")[0].strip() for x in run_get_schema(HOST, PROJECTID).split('{')[1].split('}')[0].split('\n')] if x!='' and x[0]!='_'])
@@ -224,7 +232,7 @@ if __name__ == '__main__':
             else:
                 default = default_query(schema, XQLIMIT)
                 # print(default)
-                print(xrouter_emoticon,"[bold magenta]XQuery[/bold magenta] for [bold yellow]last 20 entries[/bold yellow]")
+                print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for [bold yellow]last {XQLIMIT} entries[/bold yellow]")
                 results = run_query(HOST, default, PROJECTID, APIKEY)
                 print(results)
         elif XQHELP and PROJECTID:
