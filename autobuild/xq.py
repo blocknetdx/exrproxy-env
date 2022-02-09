@@ -77,13 +77,13 @@ def xpair_filter_query(pairs, routers, schema, limit=20):
 def xaddress_query(addresses, schema, limit=20):
     c = []
     for address in addresses:
-        c.append(Template("""{xquery_to: {_regex: "$address"} }""").substitute(address=address))
-        c.append(Template("""{xquery_sender: {_regex: "$address"} }""").substitute(address=address))
-        c.append(Template("""{xquery_from: {_regex: "$address"} }""").substitute(address=address))
-        c.append(Template("""{xquery_spender: {_regex: "$address"} }""").substitute(address=address))
-        c.append(Template("""{xquery_recipient: {_regex: "$address"} }""").substitute(address=address))
-        c.append(Template("""{xquery_path: {_regex: "$address"} }""").substitute(address=address))
-        c.append(Template("""{xquery_owner: {_regex: "$address"} }""").substitute(address=address))
+        c.append(Template("""{xquery_to: {_eq: "$address"} }""").substitute(address=address))
+        c.append(Template("""{xquery_sender: {_eq: "$address"} }""").substitute(address=address))
+        c.append(Template("""{xquery_from: {_eq: "$address"} }""").substitute(address=address))
+        c.append(Template("""{xquery_spender: {_eq: "$address"} }""").substitute(address=address))
+        c.append(Template("""{xquery_recipient: {_eq: "$address"} }""").substitute(address=address))
+        # c.append(Template("""{xquery_path: {_regex: "$address"} }""").substitute(address=address))
+        c.append(Template("""{xquery_owner: {_eq: "$address"} }""").substitute(address=address))
     return Template("""
     query XAddress {
       xquery(order_by: {xquery_blocknumber: desc}, where: {
@@ -178,7 +178,7 @@ if __name__ == '__main__':
         if XQLIMIT > 20:
             print(":x:",f"xqlimit too big...changed to 20")
             XQLIMIT = 20
-            
+
     if HOST:
         if PROJECTID and APIKEY:
             schema = '\n'.join([x for x in [x.split(":")[0].strip() for x in run_get_schema(HOST, PROJECTID).split('{')[1].split('}')[0].split('\n')] if x!='' and x[0]!='_'])
