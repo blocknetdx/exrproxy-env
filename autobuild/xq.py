@@ -172,10 +172,10 @@ if __name__ == '__main__':
     XQTX = args.xqtx
 
     if XQLIMIT:
-        if XQLIMIT < 1:
+        if int(XQLIMIT) < 1:
             print(":x:",f"xqlimit too small...changed to 1")
             XQLIMIT = 1
-        if XQLIMIT > 20:
+        if int(XQLIMIT) > 20:
             print(":x:",f"xqlimit too big...changed to 20")
             XQLIMIT = 20
 
