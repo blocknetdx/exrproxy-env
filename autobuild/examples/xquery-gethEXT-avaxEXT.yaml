@@ -14,6 +14,8 @@
     - name: PAYMENT # DO NOT DELETE
       payment_tier1: 35
       payment_tier2: 200
+      discount_ablock: 20
+      discount_aablock: 20
       image: blocknetdx/eth-payment-processor:0.6.0 # DO NOT DELETE
       postgresql_data_mount_dir: /snode/eth_pymt_db # DO NOT DELETE
     # DO NOT DELETE SNODE ENTRY
