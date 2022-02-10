@@ -71,3 +71,32 @@
       image: blocknetdx/gobyte:v0.16.2.1
       config_mount_dir: /snode
       data_mount_dir: /snode
+    - name: HYDRA
+      chains:
+        - name: AVAX
+        - name: ETH
+    - name: XQUERY
+      data_mount_dir: /snode/xquery
+      graph: AVAX_ETH
+      endpoint: /indexer
+      chains:
+        - name: AVAX_PANGOLIN
+          abi: pangolinRouter.json
+          query:
+          - name: Swap
+          address:
+          - name: Pangolin_Router
+            address: '0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106'
+          historical:
+          - fromBlock: "6800000"
+        - name: ETH_UNISWAP
+          abi: uniswapRouter.json
+          query:
+          - name: Swap
+          address:
+          - name: Uniswap_Router_v2
+            address: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
+          - name: Uniswap_Router_v3
+            address: '0xe592427a0aece92de3edee1f18e0157c05861564'
+          historical:
+          - fromBlock: "13600000"

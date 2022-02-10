@@ -43,6 +43,10 @@
       data_mount_dir: /snode      
     - name: AVAX 
       host: 192.168.32.11 #examaple IP for external avax
+    - name: HYDRA
+      chains:
+        - name: AVAX
+        - name: ETH
     - name: XQUERY
       data_mount_dir: /snode/xquery
       graph: AVAX_ETH

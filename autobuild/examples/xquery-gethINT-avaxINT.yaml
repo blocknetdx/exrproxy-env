@@ -45,6 +45,10 @@
     - name: AVAX 
       image: avaplatform/avalanchego:v1.7.2
       data_mount_dir: /snode
+    - name: HYDRA
+      chains:
+        - name: AVAX
+        - name: ETH
     - name: XQUERY
       data_mount_dir: /snode/xquery
       graph: AVAX_ETH
