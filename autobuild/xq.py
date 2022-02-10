@@ -6,13 +6,13 @@ from rich import print
 
 xrouter_emoticon = ":twisted_rightwards_arrows:"
 
-def default_query(schema):
+def default_query(schema, limit=20):
     return Template("""
     query MyQuery {
-      xquery(order_by: {xquery_blocknumber: desc}, limit: 20) {
+      xquery(order_by: {xquery_blocknumber: desc}, limit: $limit) {
       $schema
       }
-}""").substitute(schema=schema)
+}""").substitute(schema=schema, limit=limit)
 
 def xpair_query(pairs, schema, limit=20):
     pair_filter = []
@@ -77,13 +77,13 @@ def xpair_filter_query(pairs, routers, schema, limit=20):
 def xaddress_query(addresses, schema, limit=20):
     c = []
     for address in addresses:
-        c.append(Template("""{xquery_to: {_regex: "$address"} }""").substitute(address=address))
-        c.append(Template("""{xquery_sender: {_regex: "$address"} }""").substitute(address=address))
-        c.append(Template("""{xquery_from: {_regex: "$address"} }""").substitute(address=address))
-        c.append(Template("""{xquery_spender: {_regex: "$address"} }""").substitute(address=address))
-        c.append(Template("""{xquery_recipient: {_regex: "$address"} }""").substitute(address=address))
-        c.append(Template("""{xquery_path: {_regex: "$address"} }""").substitute(address=address))
-        c.append(Template("""{xquery_owner: {_regex: "$address"} }""").substitute(address=address))
+        c.append(Template("""{xquery_to: {_eq: "$address"} }""").substitute(address=address))
+        c.append(Template("""{xquery_sender: {_eq: "$address"} }""").substitute(address=address))
+        c.append(Template("""{xquery_from: {_eq: "$address"} }""").substitute(address=address))
+        c.append(Template("""{xquery_spender: {_eq: "$address"} }""").substitute(address=address))
+        c.append(Template("""{xquery_recipient: {_eq: "$address"} }""").substitute(address=address))
+        # c.append(Template("""{xquery_path: {_regex: "$address"} }""").substitute(address=address))
+        c.append(Template("""{xquery_owner: {_eq: "$address"} }""").substitute(address=address))
     return Template("""
     query XAddress {
       xquery(order_by: {xquery_blocknumber: desc}, where: {
@@ -121,6 +121,7 @@ def run_help(host, project_id):
 def run_query(host, query, project_id, api_key):
     headers = {'Api-Key':f'{api_key}'}
     request = requests.post(f'http://{host}/xrs/xquery/{project_id}/indexer/', headers=headers, json={'query': query},timeout=300)
+    # request = requests.post(f'http://{host}/xquery/', headers=headers, json={'query': query},timeout=300)
     if request.status_code == 200:
         return request.json()
     else:
@@ -135,13 +136,14 @@ def run_get_graph(host, project_id):
 
 def run_get_schema(host, project_id):
     request = requests.post(f'http://{host}/xrs/xquery/{project_id}/help/schema',timeout=300)
+    # request = requests.get(f'http://{host}/help/schema',timeout=300)
     if request.status_code == 200:
         return request.text
     else:
         print("XQuery schema failed to run by returning code of {}".format(request.status_code))
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description='CLI simple interface for XQuery')
     parser.add_argument('--host', help='Host of EXR', default='127.0.0.1:80')
     parser.add_argument('--projectid', help='ID of EXR project', default=False)
     parser.add_argument('--apikey', help='API-KEY of EXR project', default=False)
@@ -168,6 +170,14 @@ if __name__ == '__main__':
     XQROUTER = args.xqrouter
     XQLIMIT = args.xqlimit
     XQTX = args.xqtx
+
+    if XQLIMIT:
+        if int(XQLIMIT) < 1:
+            print(":x:",f"xqlimit too small...changed to 1")
+            XQLIMIT = 1
+        if int(XQLIMIT) > 20:
+            print(":x:",f"xqlimit too big...changed to 20")
+            XQLIMIT = 20
 
     if HOST:
         if PROJECTID and APIKEY:
@@ -220,8 +230,9 @@ if __name__ == '__main__':
                 results = run_query(HOST, json.loads(XQUERY), PROJECTID, APIKEY)
                 print(results)
             else:
-                default = default_query(schema)
-                print(xrouter_emoticon,"[bold magenta]XQuery[/bold magenta] for [bold yellow]last 20 entries[/bold yellow]")
+                default = default_query(schema, XQLIMIT)
+                # print(default)
+                print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for [bold yellow]last {XQLIMIT} entries[/bold yellow]")
                 results = run_query(HOST, default, PROJECTID, APIKEY)
                 print(results)
         elif XQHELP and PROJECTID:
