@@ -73,17 +73,12 @@ It case of the creating a new project it takes 3 arguments:
 $ python3 exr_methods.py new_project http://127.0.0.1 exr_methods.json 
 ---------------------------------------
 Method request_project HTTP status code 200
-api_key : SgMbED-QDUjt6AFzW2SgANZeOJZhAwxpwdmm36XQpCU
-expiry_time : 2022-02-04 22:32:29 EST
-payment_amount_tier1_aablock : 1.795083
-payment_amount_tier1_ablock : 0.625
-payment_amount_tier1_eth : None
-payment_amount_tier2_aablock : 359.016596
-payment_amount_tier2_ablock : 125.0
-payment_amount_tier2_eth : 0.067994
-payment_avax_address : 0x977844F563590F4A4D90AEe07d9f0337BD18D3cc
-payment_eth_address : 0x3713e2Db20fc393e9353A4b29c710D8E19411bCF
-project_id : 99e02d11-c1a4-49ed-9ad0-4308a27dfcbe
+api_key : YR54ZEGcqyCvXcAn0Cj_eYFFzynrPDFpaREo2fa4lH4
+expiry_time : 2021-07-12 00:04:26 EST
+payment_address : 0x811D44BCBC689D50B90F3c391d7E0dB6A7BcDD69
+payment_amount_tier1 : 0.016389
+payment_amount_tier2 : 0.093652
+project_id : 18e05f7a-4445-40de-9b6b-bb24b9a56e5c
 
 ```
 
@@ -92,93 +87,28 @@ In case of the getting project data 5 arguments
 ```bash
 $ python3 exr_methods.py project --api-key N8Zk0-hBRqD81dmBDEQP5qUpf9-XKz5eVPcstPkr8C0 --project-id 6228e1ed-1c78-40ca-9813-421d0fdfbfcf  http://127.0.0.1 exr_methods.json
 ---------------------------------------
-http://127.0.0.1/xrs/evm_passthrough/AVAX/f918cfa5-1ca7-4fb2-9d14-075e4b75d5fd/ext/bc/C/rpc
 Method net_version HTTP status code 200
-43114
-
-
+3
 ---------------------------------------
-http://127.0.0.1/xrs/evm_passthrough/AVAX/f918cfa5-1ca7-4fb2-9d14-075e4b75d5fd/ext/bc/C/rpc
 Method net_peerCount HTTP status code 200
-0x0
-
-
----------------------------------------
-http://127.0.0.1/xrs/evm_passthrough/AVAX/f918cfa5-1ca7-4fb2-9d14-075e4b75d5fd/ext/bc/C/rpc
-Method eth_accounts HTTP status code 200
-error : Unauthorized User Access
-
-
----------------------------------------
-http://127.0.0.1/xrs/evm_passthrough/AVAX/f918cfa5-1ca7-4fb2-9d14-075e4b75d5fd/ext/bc/C/rpc
-Method eth_blockNumber HTTP status code 200
-0xa00458
-
-
----------------------------------------
-http://127.0.0.1/xrs/evm_passthrough/AVAX/f918cfa5-1ca7-4fb2-9d14-075e4b75d5fd/ext/bc/C/rpc
-Method eth_chainId HTTP status code 200
-0xa86a
-
-
----------------------------------------
-http://127.0.0.1/xrs/evm_passthrough/AVAX/f918cfa5-1ca7-4fb2-9d14-075e4b75d5fd/ext/bc/C/rpc
-Method eth_protocolVersion HTTP status code 200
-jsonrpc : 2.0
-id : exr
-error : {'code': -32601, 'message': 'the method eth_protocolVersion does not exist/is not available'}
-
-
----------------------------------------
-http://127.0.0.1/xrs/evm_passthrough/AVAX/f918cfa5-1ca7-4fb2-9d14-075e4b75d5fd/ext/bc/C/rpc
-Method eth_getBalance HTTP status code 200
-0x0
-
-
----------------------------------------
-http://127.0.0.1/xrs/evm_passthrough/ETH/f918cfa5-1ca7-4fb2-9d14-075e4b75d5fd
-Method net_version HTTP status code 200
-1
-
-
----------------------------------------
-http://127.0.0.1/xrs/evm_passthrough/ETH/f918cfa5-1ca7-4fb2-9d14-075e4b75d5fd
-Method net_peerCount HTTP status code 200
-0x4
-
-
----------------------------------------
-http://127.0.0.1/xrs/evm_passthrough/ETH/f918cfa5-1ca7-4fb2-9d14-075e4b75d5fd
-Method eth_accounts HTTP status code 200
-error : Unauthorized User Access
-
-
----------------------------------------
-http://127.0.0.1/xrs/evm_passthrough/ETH/f918cfa5-1ca7-4fb2-9d14-075e4b75d5fd
-Method eth_blockNumber HTTP status code 200
-0xd7c785
-
-
----------------------------------------
-http://127.0.0.1/xrs/evm_passthrough/ETH/f918cfa5-1ca7-4fb2-9d14-075e4b75d5fd
-Method eth_chainId HTTP status code 200
 0x1
-
-
 ---------------------------------------
-http://127.0.0.1/xrs/evm_passthrough/ETH/f918cfa5-1ca7-4fb2-9d14-075e4b75d5fd
+Method eth_accounts HTTP status code 200
+error : Unauthorized User Access
+---------------------------------------
+Method eth_blockNumber HTTP status code 200
+0xa2028a
+---------------------------------------
+Method eth_chainId HTTP status code 200
+0x3
+---------------------------------------
 Method eth_protocolVersion HTTP status code 200
 jsonrpc : 2.0
 id : exr
 error : {'code': -32601, 'message': 'the method eth_protocolVersion does not exist/is not available'}
-
-
 ---------------------------------------
-http://127.0.0.1/xrs/evm_passthrough/ETH/f918cfa5-1ca7-4fb2-9d14-075e4b75d5fd
 Method eth_getBalance HTTP status code 200
-0x0
-
-
+0x4563918244f40000
 ```
 Note: eth_accounts method is expected to fail with "Unauthorized User Access" That is as expected.
 

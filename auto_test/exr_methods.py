@@ -30,7 +30,6 @@ def main(url: str, methods: list, API_Key: str):
         if data:
             if 'result' in data:
                 print('---------------------------------------')
-                print(url)
                 print(f'Method {method} HTTP status code {code}')
                 if type(data['result']) == dict:
                     for i in data['result']:
@@ -40,7 +39,6 @@ def main(url: str, methods: list, API_Key: str):
                 print('\n')
             else:
                 print('---------------------------------------')
-                print(url)
                 print(f'Method {method} HTTP status code {code}')
                 for i in data:
                     print(i, ':', data[i])
@@ -80,7 +78,7 @@ if __name__ == '__main__':
         data = json.load(json_file)
 
     methods = data['methods']
-    
+    url = http_socket + '/xrs/eth_passthrough'
 
     API_Key = None
     project_id = None
@@ -88,17 +86,9 @@ if __name__ == '__main__':
     if args.command == 'project':
         API_Key = args.api_key
         project_id = args.project_id
-        chains = ['AVAX','ETH']
-        for chain in chains:
-            if chain =='ETH':
-                url = http_socket + '/xrs/evm_passthrough'+f'/{chain}'+f'/{project_id}'
-            elif chain =='AVAX':
-                url = http_socket + '/xrs/evm_passthrough'+f'/{chain}'+f'/{project_id}'+'/ext/bc/C/rpc'
-            main(url, methods, API_Key)
+        url = url + '/' + project_id
 
     elif args.command == 'new_project':
-        url = http_socket + '/xrs/projects'
         methods = {'request_project': []}
-        main(url, methods, API_Key)
 
-    
+    main(url, methods, API_Key)
