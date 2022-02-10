@@ -87,7 +87,7 @@ def processcustom(customlist):
         for i in range(len(c['daemons'])):
             name = c['daemons'][i]['name']
             #daemon configs
-            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'XQUERY', 'AVAX', 'PAYMENT']:
+            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'XQUERY', 'AVAX', 'PAYMENT', 'HYDRA']:
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
                     xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(BRANCHPATH, name))
@@ -193,10 +193,10 @@ def processcustom(customlist):
                     else:
                         customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
                         logging.info("Using internal geth")
-                    if 'evm_passthrough' not in customlist[0]['plugins']:
-                        customlist[0]['plugins'].append('evm_passthrough')
-                    if 'ETH' not in customlist[0]['hydra']:
-                        customlist[0]['hydra'].append('ETH')
+                    # if 'evm_passthrough' not in customlist[0]['plugins']:
+                    #     customlist[0]['plugins'].append('evm_passthrough')
+                    # if 'ETH' not in customlist[0]['hydra']:
+                    #     customlist[0]['hydra'].append('ETH')
                     # customlist[0]['deploy_eth'] = True if str(deploy_eth).upper() == "TRUE" else False
                     for k in ['GETH']:
                         while True:
@@ -224,10 +224,18 @@ def processcustom(customlist):
                         customlist[0]['avaxexternal'] = True
                         customlist[0][f'{name.lower()}_ip'] = c['daemons'][i]['host']
                         logging.info("Using external avax")
+                    # if 'evm_passthrough' not in customlist[0]['plugins']:
+                    #     customlist[0]['plugins'].append('evm_passthrough')
+                    # if 'AVAX' not in customlist[0]['hydra']:
+                    #     customlist[0]['hydra'].append('AVAX')
+
+                if name.upper() == 'HYDRA':
+                    logging.info('HYDRA exists')
                     if 'evm_passthrough' not in customlist[0]['plugins']:
                         customlist[0]['plugins'].append('evm_passthrough')
-                    if 'AVAX' not in customlist[0]['hydra']:
-                        customlist[0]['hydra'].append('AVAX')
+                    for j in c['daemons'][i]['chains']:
+                        logging.info(f'HYDRA - {j["name"].upper()}')
+                        customlist[0]['hydra'].append(j['name'].upper())
                     
                 if name.upper() == 'XQUERY':
                     logging.info('XQUERY exists')
