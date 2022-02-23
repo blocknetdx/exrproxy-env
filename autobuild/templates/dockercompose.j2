@@ -27,6 +27,11 @@ services:
     networks:
       backend:
         ipv4_address: {{ daemon.ip }}
+    logging:
+      driver: "json-file"
+      options:
+        max-files: 5
+        max-size: 10m
 {% endfor %}
 
   {{ blocknet_node }}:
@@ -78,6 +83,11 @@ services:
 {% elif blocknet_node == 'testtnode' %}
         ipv4_address: {{ testtnode_ip }}
 {% endif %}
+    logging:
+      driver: "json-file"
+      options:
+        max-files: 5
+        max-size: 10m
 
 {% if deploy_avax %}
   avax:
@@ -101,6 +111,11 @@ services:
     networks:
       backend:
         ipv4_address: {{ avax_ip }}
+    logging:
+      driver: "json-file"
+      options:
+        max-files: 5
+        max-size: 10m
 {% endif %}
 
 {% if deploy_eth %}
@@ -145,6 +160,11 @@ services:
     networks:
       backend:
         ipv4_address: {{ geth_ip }}
+    logging:
+      driver: "json-file"
+      options:
+        max-files: 5
+        max-size: 10m
 {% endif %}
 {% endif %}
 
@@ -192,6 +212,11 @@ services:
     networks:
       backend:
         ipv4_address: {{ payment_ip }}
+    logging:
+      driver: "json-file"
+      options:
+        max-files: 5
+        max-size: 10m
 
   postgresql:
     image: postgres
@@ -205,6 +230,11 @@ services:
     networks:
       backend:
         ipv4_address: {{ pg_ip }}
+    logging:
+      driver: "json-file"
+      options:
+        max-files: 5
+        max-size: 10m
 {% endif %}
 {% endif %}
 
@@ -251,6 +281,11 @@ services:
       frontend:
       backend:
         ipv4_address: {{ xr_proxy_ip }}
+    logging:
+      driver: "json-file"
+      options:
+        max-files: 5
+        max-size: 10m
 
 #### XQUERY ####
 {% if deploy_xquery %}
