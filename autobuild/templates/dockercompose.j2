@@ -30,7 +30,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-files: 5
+        max-file: 5
         max-size: 10m
 {% endfor %}
 
@@ -86,7 +86,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-files: 5
+        max-file: 5
         max-size: 10m
 
 {% if deploy_avax %}
@@ -114,7 +114,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-files: 5
+        max-file: 5
         max-size: 10m
 {% endif %}
 
@@ -163,7 +163,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-files: 5
+        max-file: 5
         max-size: 10m
 {% endif %}
 {% endif %}
@@ -215,7 +215,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-files: 5
+        max-file: 5
         max-size: 10m
 
   postgresql:
@@ -233,7 +233,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-files: 5
+        max-file: 5
         max-size: 10m
 {% endif %}
 {% endif %}
@@ -284,7 +284,7 @@ services:
     logging:
       driver: "json-file"
       options:
-        max-files: 5
+        max-file: 5
         max-size: 10m
 
 #### XQUERY ####

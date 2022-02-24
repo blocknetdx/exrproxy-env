@@ -36,7 +36,7 @@
     logging:
       driver: "json-file"
       options:
-        max-files: 5
+        max-file: 5
         max-size: 10m
 ####{{ chain.name.lower() }} STACK END
 {% endfor %}
@@ -62,7 +62,7 @@
     logging:
       driver: "json-file"
       options:
-        max-files: 5
+        max-file: 5
         max-size: 10m
   xquery-db-processor:
     build: ./xquery/db-processor
@@ -93,7 +93,7 @@
     logging:
       driver: "json-file"
       options:
-        max-files: 5
+        max-file: 5
         max-size: 10m
   xquery-postgres:
     image: postgres:12
@@ -111,7 +111,7 @@
     logging:
       driver: "json-file"
       options:
-        max-files: 5
+        max-file: 5
         max-size: 10m
   xquery-graphql-engine:
     image: hasura/graphql-engine:v2.0.10
@@ -133,7 +133,7 @@
     logging:
       driver: "json-file"
       options:
-        max-files: 5
+        max-file: 5
         max-size: 10m
   xquery-reverse-proxy:
     build: ./xquery/reverse-proxy
