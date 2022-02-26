@@ -1,3 +1,4 @@
 .idea/
 scripts/
 autobuild/custom.yaml
+profile/*.html

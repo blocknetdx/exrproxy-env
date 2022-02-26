@@ -19,17 +19,18 @@
       ZMQ_GATEWAY_HOST: {{ gateway_processor_ip }}
       ZMQ_GATEWAY_PORT1: {{ gateway_processor_port1 }}
       ZMQ_GATEWAY_PORT2: {{ gateway_processor_port2 }}
-#    deploy:
-#      resources:
-#        limits:
-#          cpus: "4"
-#          memory: "1G"
-#        reservations:
-#          cpus: "0.25"
-#          memory: "100M"
+    deploy:
+      resources:
+        limits:
+          cpus: "4"
+          memory: "1G"
+        reservations:
+          cpus: "0.25"
+          memory: "100M"
     volumes:
       - ${PWD}/xquery/abi/{{ chain.abi }}:/app/manager/abi.json
       - ${PWD}/{{ query_config }}:/app/manager/query.yaml
+      - ${PWD}/profile:/app/manager/profile
     networks:
       backend:
         ipv4_address: {{ chain.ip }}
