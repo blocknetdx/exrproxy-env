@@ -87,7 +87,7 @@ def processcustom(customlist):
         for i in range(len(c['daemons'])):
             name = c['daemons'][i]['name']
             #daemon configs
-            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'XQUERY', 'AVAX', 'PAYMENT', 'HYDRA']:
+            if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'TESTTNODE', 'ETH', 'XR_PROXY', 'XQUERY', 'AVAX', 'PAYMENT', 'HYDRA']:
                 try:
                     logging.info(f'fetch template for {name} from raw.git')
                     xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(BRANCHPATH, name))
