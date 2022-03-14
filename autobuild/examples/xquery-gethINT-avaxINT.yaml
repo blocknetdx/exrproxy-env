@@ -48,7 +48,7 @@
       image: avaplatform/avalanchego:v1.7.2
       data_mount_dir: /snode
     - name: HYDRA
-      free: True
+      free: False
       chains:
         - name: AVAX
         - name: ETH
