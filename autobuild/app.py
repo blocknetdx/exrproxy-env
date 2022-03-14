@@ -233,6 +233,8 @@ def processcustom(customlist):
                     logging.info('HYDRA exists')
                     if 'evm_passthrough' not in customlist[0]['plugins']:
                         customlist[0]['plugins'].append('evm_passthrough')
+                    if 'free' in c['daemons'][i].keys() and c['daemons'][i]['free'] == True:
+                        customlist[0]['plugins'].append('free_evm_passthrough')
                     for j in c['daemons'][i]['chains']:
                         logging.info(f'HYDRA - {j["name"].upper()}')
                         customlist[0]['hydra'].append(j['name'].upper())
