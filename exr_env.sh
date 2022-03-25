@@ -1,5 +1,5 @@
 #!/bin/bash
-
+BRANCH="dev-autobuilder-pom"
 ############################################################
 # Check Package Manager                                    #
 ############################################################
@@ -141,6 +141,27 @@ function builder() {
 }
 
 ############################################################
+# Repo version                                             #
+############################################################
+function branch_status() {
+	local version=$(git --no-pager log --oneline -1)
+  local a=$BRANCH b="origin/$BRANCH"
+  local base=$( git merge-base $a $b )
+  local aref=$( git rev-parse  $a )
+  local bref=$( git rev-parse  $b )
+
+  if [[ $aref == "$bref" ]]; then
+    printf "%s\033[94;1m$version \033[92;1mup-to-date\033[0m\n"
+  elif [[ $aref == "$base" ]]; then
+    printf "%s\033[94;1m$version \033[92;1mbehind\033[0m\n"
+  elif [[ $bref == "$base" ]]; then
+  	printf "%s\033[94;1m$version \033[92;1mahead\033[0m\n"
+  else
+  	printf "%s\033[94;1m$version \033[92;1mdiverged\033[0m\n"
+  fi
+}
+
+############################################################
 # Help                                                     #
 ############################################################
 Help()
@@ -218,7 +239,7 @@ while [ : ]; do
 		shift
 		;;
 	-v | --version)
-		git --no-pager log --oneline -1
+		branch_status
 		shift
 		;;
 	-b | --builder)
