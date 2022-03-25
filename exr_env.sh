@@ -31,7 +31,7 @@ function uninstalldocker() {
 		printf "%s\033[93;1mDocker found\033[0m"
 		printf "%s\n\033[93;1mThis script will stop all running docker containers\033[0m"
 		printf "%s\n\033[93;1mthen remove the currently installed version of docker.\033[0m"
-		printf "%s\n\033[93;1mDo you wish to continue (Y/n)?\033[0m"
+		printf "%s\n\033[93;1mDo you wish to continue? Press \033[92;1my \033[93;1mor \033[92;1mn\033[0m"
 		echo ""
 		read -p "" -n 1 -r
 		if [[ $REPLY =~ ^[Yy]$ ]]; then
