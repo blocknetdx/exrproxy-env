@@ -35,7 +35,10 @@ function uninstalldocker() {
 		echo ""
 		read -p "" -n 1 -r
 		if [[ $REPLY =~ ^[Yy]$ ]]; then
-			for i in $(docker ps -q); do docker stop $i; done
+			for i in $(docker ps -q); do 
+				printf "%s\033[93;1mStopping container $i\033[0m"
+				docker stop $i; 
+			done
 			docker system prune -f && docker volume prune -f && docker network prune -f
 		else
 			printf "%s\n\033[91;1mStopping this script\n\033[0m"
