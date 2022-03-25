@@ -97,8 +97,7 @@ function installdockercompose() {
 ############################################################
 function dockergroup() {
 	sudo groupadd docker
-	sudo usermod -aG docker $USER
-	newgrp docker 
+	sudo usermod -aG docker $USER 
 }
 
 ############################################################
@@ -229,6 +228,7 @@ while [ : ]; do
 		printf "%s\n\033[92;1mInstalling docker & docker-compose\n\033[0m"
 		installdocker
 		installdockercompose
+		dockergroup
 		shift
 		;;
 	-p | --python)
