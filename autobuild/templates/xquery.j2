@@ -1,7 +1,7 @@
 {% for chain in chains %}
 ####{{ chain.name.lower() }} STACK START
   xquery-event-processor-{{ chain.name.lower() | replace('_','-') }}:
-    build: ./xquery/event-processor
+    image: blocknetdx/xquery-event-processor:latest
     depends_on:
       - "xquery-graphql-engine"
       - "xquery-gateway-processor"
@@ -20,8 +20,14 @@
       ZMQ_GATEWAY_PORT1: {{ gateway_processor_port1 }}
       ZMQ_GATEWAY_PORT2: {{ gateway_processor_port2 }}
     volumes:
-      - ${PWD}/xquery/abi/{{ chain.abi }}:/app/manager/abi.json
+      - ${PWD}/abi/{{ chain.abi }}:/app/manager/abi.json
       - ${PWD}/{{ query_config }}:/app/manager/query.yaml
+      - ${PWD}/scalene_profiles:/app/manager/profile
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
     networks:
       backend:
         ipv4_address: {{ chain.ip }}
@@ -29,7 +35,7 @@
 {% endfor %}
 
   xquery-gateway-processor:
-    build: ./xquery/gateway-processor
+    image: blocknetdx/xquery-gateway-processor:latest
     depends_on:
       - "xquery-postgres"
     restart: always
@@ -43,11 +49,16 @@
     ports:
       - "{{ gateway_processor_port1 }}:{{ gateway_processor_port1 }}"
       - "{{ gateway_processor_port2 }}:{{ gateway_processor_port2 }}"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
     networks:
       backend:
         ipv4_address: {{ gateway_processor_ip }}
   xquery-db-processor:
-    build: ./xquery/db-processor
+    image: blocknetdx/xquery-db-processor:latest
     depends_on:
       - "xquery-postgres"
     restart: always
@@ -67,8 +78,13 @@
 {% endfor %}
     volumes:
 {% for chain in chains %}
-      - ${PWD}/xquery/abi/{{ chain.abi }}:/app/manager/{{ chain.abi }}
+      - ${PWD}/abi/{{ chain.abi }}:/app/manager/{{ chain.abi }}
 {% endfor %}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
     networks:
       backend:
         ipv4_address: {{ db_processor_ip }}
@@ -76,12 +92,17 @@
     image: postgres:12
     restart: always
     volumes:
-      - {{ xquery_data_mount_dir }}:/var/lib/postgresql/data
+      - {{ xquery_volume }}/xquery:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: postgrespassword
     ports:
       - "{{ postgres_port }}:{{ postgres_port }}"
     command: -p {{ postgres_port }}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
     networks:
       backend:
         ipv4_address: {{ postgres_ip }}
@@ -99,11 +120,16 @@
       HASURA_GRAPHQL_DEV_MODE: "true"
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
       HASURA_GRAPHQL_SERVER_PORT: {{ graphql_engine_port }}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
     networks:
       backend:
         ipv4_address: {{ graphql_engine_ip }}
   xquery-reverse-proxy:
-    build: ./xquery/reverse-proxy
+    image: blocknetdx/xquery-reverse-proxy:latest
     restart: always
     environment:
       PORT: {{ reverse_proxy_port }}
@@ -121,8 +147,13 @@
     volumes:
       - ${PWD}/{{ query_config }}:/app/manager/{{ query_config }}
 {% for chain in chains %}
-      - ${PWD}/xquery/abi/{{ chain.abi }}:/app/manager/{{ chain.name }}.json
+      - ${PWD}/abi/{{ chain.abi }}:/app/manager/{{ chain.name }}.json
 {% endfor %}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
     networks:
       backend:
         ipv4_address: {{ reverse_proxy_ip }}

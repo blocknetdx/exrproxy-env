@@ -3,6 +3,7 @@ import requests
 import argparse
 from string import Template
 from rich import print
+from rich.table import Table
 
 xrouter_emoticon = ":twisted_rightwards_arrows:"
 
@@ -110,6 +111,24 @@ def xtx_query(txs_hash, schema):
     }
 }""").substitute(combo=','.join(txs), schema=schema)
 
+def xblocknumber_min(chain):
+    return Template("""
+    query XBlocknumber {
+  xquery(order_by: {xquery_blocknumber: asc}, limit: 1, where: {xquery_chain_name: {_eq: "$chain"} }) {
+    xquery_blocknumber
+    xquery_timestamp
+  }
+}""").substitute(chain=chain)
+
+def xblocknumber_max(chain):
+    return Template("""
+    query XBlocknumber {
+  xquery(order_by: {xquery_blocknumber: desc}, limit: 1, where: {xquery_chain_name: {_eq: "$chain"} }) {
+    xquery_blocknumber
+    xquery_timestamp
+  }
+}""").substitute(chain=chain)
+
 
 def run_help(host, project_id):
     request = requests.post(f'http://{host}/xrs/xquery/{project_id}/help',timeout=300)
@@ -121,7 +140,7 @@ def run_help(host, project_id):
 def run_query(host, query, project_id, api_key):
     headers = {'Api-Key':f'{api_key}'}
     request = requests.post(f'http://{host}/xrs/xquery/{project_id}/indexer/', headers=headers, json={'query': query},timeout=300)
-    # request = requests.post(f'http://{host}/xquery/', headers=headers, json={'query': query},timeout=300)
+    # request = requests.post(f'http://{host}/indexer/', headers=headers, json={'query': query},timeout=300)
     if request.status_code == 200:
         return request.json()
     else:
@@ -148,14 +167,17 @@ if __name__ == '__main__':
     parser.add_argument('--projectid', help='ID of EXR project', default=False)
     parser.add_argument('--apikey', help='API-KEY of EXR project', default=False)
     parser.add_argument('--xquery', help='Query string', default=False)
-    parser.add_argument('--xqhelp', help='Display XQuery help message', action='store_true')
-    parser.add_argument('--xqgraph', help='Display XQuery current graph', action='store_true')
-    parser.add_argument('--xqschema', help='Display XQuery schema', action='store_true')
+    parser.add_argument('--xqhelp', help='Use only with --projectid to display XQuery help message', action='store_true')
+    parser.add_argument('--xqgraph', help='Use only with --projectid to display XQuery current graph', action='store_true')
+    parser.add_argument('--xqschema', help='Use only with --projectid to display XQuery schema', action='store_true')
     parser.add_argument('--xqaddress', help='Address to query for', nargs='*')
     parser.add_argument('--xqpair', help='Pairs to query for | USDC/USDT ETH/USDT', nargs='*')
     parser.add_argument('--xqrouter', help='Routers names to query for | Uniswap Pangolin', nargs='*')
     parser.add_argument('--xqtx', help='Query for TX', nargs='*')
+    parser.add_argument('--xqbmin', help='Find the minimum indexed block number for a chain', default=False)
+    parser.add_argument('--xqbmax', help='Find the maximum indexed block number for a chain', default=False)
     parser.add_argument('--xqlimit', help='Number of results', default=20)
+    parser.add_argument('--details', help='Prints possible arguments combinations', action='store_true')
 
     args = parser.parse_args()
     HOST = args.host
@@ -170,6 +192,33 @@ if __name__ == '__main__':
     XQROUTER = args.xqrouter
     XQLIMIT = args.xqlimit
     XQTX = args.xqtx
+    XQBMIN = args.xqbmin
+    XQBMAX = args.xqbmax
+    DETAILS = args.details
+
+
+    table = Table(box=None)
+    table.add_column('Arguments',justify='left', style='green', no_wrap=True)
+    table.add_column('Details',justify='left', style='yellow', no_wrap=False)
+    data = [
+        ['--help','print helper'],
+        ['--details','print this table'],
+        ['--xqlimit [bold yellow]LIMIT[/bold yellow]','number of responses, default 20'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --xqschema','print xquery db schema'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --xqgraph','print xquery current indices'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --xqhelp','print xquery help endpoints'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow]','query for last 20 queries indexed'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xquery [bold yellow]PAYLOAD[/bold yellow]','query for custom data'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqrouter [bold yellow]ROUTERS[/bold yellow]','query for custom routers'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqpair [bold yellow]PAIRS[/bold yellow]','query for custom pairs'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqpair [bold yellow]PAIRS[/bold yellow] --xqrouter [bold yellow]ROUTERS[/bold yellow]','query for custom pairs and routers'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqaddress [bold yellow]ADDRESSES[/bold yellow]','query for custom addresses'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqtx [bold yellow]TXS[/bold yellow]','query for cutom txs'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqbmin [bold yellow]CHAIN[/bold yellow]','query for minimum indexed blocknumber for a chain'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqbmax [bold yellow]CHAIN[/bold yellow]','query for maximum indexed blocknumber for a chain'],
+    ]
+    for d in data:
+        table.add_row(d[0],d[1])
 
     if XQLIMIT:
         if int(XQLIMIT) < 1:
@@ -179,10 +228,10 @@ if __name__ == '__main__':
             print(":x:",f"xqlimit too big...changed to 20")
             XQLIMIT = 20
 
-    if HOST:
-        if PROJECTID and APIKEY:
+    if HOST and not DETAILS:
+        if PROJECTID and APIKEY and not XQHELP and not XQGRAPH and not XQSCHEMA:
             schema = '\n'.join([x for x in [x.split(":")[0].strip() for x in run_get_schema(HOST, PROJECTID).split('{')[1].split('}')[0].split('\n')] if x!='' and x[0]!='_'])
-            if XQPAIR and not XQROUTER:
+            if XQPAIR and not XQROUTER and not XQADDRESS and not XQTX and not XQUERY and not XQBMIN and not XQBMAX:
                 pairs = []
                 for pair in XQPAIR:
                     if "/" not in pair or pair.count("/")!=1:
@@ -196,12 +245,12 @@ if __name__ == '__main__':
                 print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]pair[/bold yellow]' if len(XQPAIR)==1 else '[bold yellow]pairs[/bold yellow]'} {' '.join(XQPAIR)} ")
                 results = run_query(HOST, query_pairs, PROJECTID, APIKEY)
                 print(results)
-            elif not XQPAIR and XQROUTER:
+            elif not XQPAIR and XQROUTER and not XQADDRESS and not XQTX and not XQUERY and not XQBMIN and not XQBMAX:
                 query_routers = xfilter_query(XQROUTER, schema, XQLIMIT)
                 print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]router[/bold yellow]' if len(XQROUTER)==1 else '[bold yellow]routers[/bold yellow]'} {' '.join(XQROUTER)} ")
                 results = run_query(HOST, query_routers, PROJECTID, APIKEY)
                 print(results)
-            elif XQPAIR and XQROUTER:
+            elif XQPAIR and XQROUTER and not XQADDRESS and not XQTX and not XQUERY and not XQBMIN and not XQBMAX:
                 pairs = []
                 for pair in XQPAIR:
                     if "/" not in pair or pair.count("/")!=1:
@@ -215,19 +264,29 @@ if __name__ == '__main__':
                 print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]router[/bold yellow]' if len(XQROUTER)==1 else '[bold yellow]routers[/bold yellow]'} {' '.join(XQROUTER)} and {'pair' if len(XQPAIR)==1 else 'pairs'} {' '.join(XQPAIR)}")
                 results = run_query(HOST, query_pair_router, PROJECTID, APIKEY)
                 print(results)
-            elif XQADDRESS:
+            elif not XQPAIR and not XQROUTER and XQADDRESS and not XQTX and not XQUERY and not XQBMIN and not XQBMAX:
                 query_address = xaddress_query(XQADDRESS, schema, XQLIMIT)
                 print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]address[/bold yellow]' if len(XQADDRESS)==1 else '[bold yellow]addresses[/bold yellow]'} {' '.join(XQADDRESS)}")
                 results = run_query(HOST, query_address, PROJECTID, APIKEY)
                 print(results)
-            elif XQTX:
+            elif not XQPAIR and not XQROUTER and not XQADDRESS and XQTX and not XQUERY and not XQBMIN and not XQBMAX:
                 query_tx = xtx_query(XQTX, schema)
                 print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for {'[bold yellow]TX[/bold yellow]' if len(XQTX)==1 else '[bold yellow]TXs[/bold yellow]'} {' '.join(XQTX)}")
                 results = run_query(HOST, query_tx, PROJECTID, APIKEY)
                 print(results)
-            elif XQUERY:
+            elif not XQPAIR and not XQROUTER and not XQADDRESS and not XQTX and XQUERY and not XQBMIN and not XQBMAX:
                 print(xrouter_emoticon,"[bold magenta]XQuery[/bold magenta] for [bold yellow]custom query[/bold yellow]")
                 results = run_query(HOST, json.loads(XQUERY), PROJECTID, APIKEY)
+                print(results)
+            elif not XQPAIR and not XQROUTER and not XQADDRESS and not XQTX and not XQUERY and XQBMIN and not XQBMAX:
+                query_xqbmin = xblocknumber_min(XQBMIN)
+                print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for [bold yellow]MIN blocknumber {XQBMIN}[/bold yellow]")
+                results = run_query(HOST, query_xqbmin, PROJECTID, APIKEY)
+                print(results)
+            elif not XQPAIR and not XQROUTER and not XQADDRESS and not XQTX and not XQUERY and not XQBMIN and XQBMAX:
+                query_xqbmax = xblocknumber_max(XQBMAX)
+                print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for [bold yellow]MAX blocknumber {XQBMAX}[/bold yellow]")
+                results = run_query(HOST, query_xqbmax, PROJECTID, APIKEY)
                 print(results)
             else:
                 default = default_query(schema, XQLIMIT)
@@ -235,21 +294,24 @@ if __name__ == '__main__':
                 print(xrouter_emoticon,f"[bold magenta]XQuery[/bold magenta] for [bold yellow]last {XQLIMIT} entries[/bold yellow]")
                 results = run_query(HOST, default, PROJECTID, APIKEY)
                 print(results)
-        elif XQHELP and PROJECTID:
+        elif PROJECTID and not APIKEY and XQHELP and not XQGRAPH and not XQSCHEMA:
             print(xrouter_emoticon,"[bold magenta]XQuery[/bold magenta] [bold yellow]help[/bold yellow]")
             results = run_help(HOST, PROJECTID)
             print(results)
-        elif XQGRAPH and PROJECTID:
+        elif PROJECTID and not APIKEY and not XQHELP and XQGRAPH and not XQSCHEMA:
             print(xrouter_emoticon,"[bold magenta]XQuery[/bold magenta] [bold yellow]current graph[/bold yellow]")
             results = run_get_graph(HOST, PROJECTID)
             print(results)
-        elif XQSCHEMA and PROJECTID:
+        elif PROJECTID and not APIKEY and not XQHELP and not XQGRAPH and XQSCHEMA:
             print(xrouter_emoticon,"[bold magenta]XQuery[/bold magenta] [bold yellow]schema[/bold yellow]")
             results = run_get_schema(HOST, PROJECTID)
             print(results)
         else:
-            print(":x:","Missing [bold red]--projectid[/bold red] and/or [bold red]--apikey[/bold red]")
             parser.print_help()
+            print(":x:","Missing [bold red]--projectid[/bold red] and/or [bold red]--apikey[/bold red]. See [bold green]--details[/bold green].")
+            print(table)
+    elif DETAILS:
+        print(table)
     else:
         print(":x:","Missing [bold red]--host[/bold red]")
         parser.print_help()

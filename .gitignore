@@ -1,3 +1,13 @@
 .idea/
-scripts/
-autobuild/custom.yaml
+abi
+scripts/*.sh
+scripts/entrypoints/*.sh
+scripts/config/*.conf
+inputs_yaml/*.yaml
+docker-compose.yml
+xquery.yaml
+.env
+.known_hosts
+.known_volumes
+.cache
+.cache_ip

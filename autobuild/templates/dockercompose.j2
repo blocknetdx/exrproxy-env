@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 
 services:
 {% for daemon in daemons %}
@@ -16,14 +16,19 @@ services:
       RPC_PASSWORD: "${RPC_PASSWORD}"
       RPC_ALLOWIP: 172.31.0.0/20
     volumes:
-      - {{ daemon.config_mount_dir }}/{{ daemon.name }}/config:/opt/blockchain/config
-      - {{ daemon.data_mount_dir }}/{{ daemon.name }}/data:/opt/blockchain/data
-    {% if daemon.chainstate_mount_dir is defined  %}
-  - {{ daemon.chainstate_mount_dir }}/{{ daemon.name }}/data/chainstate:/opt/blockchain/data/chainstate
+      - {{ daemon.volume }}/{{ daemon.name }}/config:/opt/blockchain/config
+      - {{ daemon.volume }}/{{ daemon.name }}/data:/opt/blockchain/data
+    {% if daemon.chainstate is defined  %}
+  - {{ daemon.chainstate }}/{{ daemon.name }}/data/chainstate:/opt/blockchain/data/chainstate
     {% endif %}
   - type: bind
         source: ./scripts/entrypoints/start-{{ daemon.configName }}.sh
         target: /opt/blockchain/start-{{ daemon.configName }}.sh
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
     networks:
       backend:
         ipv4_address: {{ daemon.ip }}
@@ -44,17 +49,17 @@ services:
 {% endif %}
     volumes:
 {% if blocknet_node == 'snode' %}
-      - {{ snode_config_mount_dir }}/snode/config:/opt/blockchain/config
-      - {{ snode_data_mount_dir }}/snode/data:/opt/blockchain/data
+      - {{ snode_volume }}/snode/config:/opt/blockchain/config
+      - {{ snode_volume }}/snode/data:/opt/blockchain/data
 {% elif blocknet_node == 'tnode' %}
-      - {{ tnode_config_mount_dir }}/tnode/config:/opt/blockchain/config
-      - {{ tnode_data_mount_dir }}/tnode/data:/opt/blockchain/data
+      - {{ tnode_volume }}/tnode/config:/opt/blockchain/config
+      - {{ tnode_volume }}/tnode/data:/opt/blockchain/data
 {% elif blocknet_node == 'testsnode' %}
-      - {{ testsnode_config_mount_dir }}/testsnode/config:/opt/blockchain/config
-      - {{ testsnode_data_mount_dir }}/testsnode/data:/opt/blockchain/data
+      - {{ testsnode_volume }}/testsnode/config:/opt/blockchain/config
+      - {{ testsnode_volume }}/testsnode/data:/opt/blockchain/data
 {% elif blocknet_node == 'testtnode' %}
-      - {{ testtnode_config_mount_dir }}/testtnode/config:/opt/blockchain/config
-      - {{ testtnode_data_mount_dir }}/testtnode/data:/opt/blockchain/data
+      - {{ testtnode_volume }}/testtnode/config:/opt/blockchain/config
+      - {{ testtnode_volume }}/testtnode/data:/opt/blockchain/data
 {% endif %}
       - type: bind
         source: ./scripts
@@ -67,6 +72,11 @@ services:
         target: /opt/blockchain/data/xbridge.conf
     ports:
       - "41412:41412"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
     networks:
       backend:
 {% if blocknet_node == 'snode' %}
@@ -91,8 +101,9 @@ services:
       - --http-host=0.0.0.0
       - --index-enabled
       - --db-dir=/data
+      - --public-ip={{ avax_public_ip }}
     volumes:
-      - {{ avax_data_mount_dir }}/AVAX:/data
+      - {{ avax_volume }}/AVAX:/data
     logging:
       driver: "json-file"
       options:
@@ -109,7 +120,7 @@ services:
     image: {{ eth_image }}
     restart: unless-stopped
     volumes:
-      - {{ eth_geth_data_mount_dir }}/ETH:/chaindata
+      - {{ eth_volume }}/ETH:/chaindata
     stop_signal: SIGINT
     stop_grace_period: 2m
     command:
@@ -156,8 +167,8 @@ services:
     environment:
 {% if deploy_eth %}
       ETH_HOST: {{ geth_ip }}
-      ETH_PORT: 8546
-      ETH_HOST_TYPE: ws
+      ETH_PORT: 8545
+      ETH_HOST_TYPE: http
 {% endif %}
 {% if deploy_avax %}
       AVAX_HOST: {{ avax_ip }}
@@ -189,6 +200,11 @@ services:
       - avax
 {% endif %}
       - postgresql
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
     networks:
       backend:
         ipv4_address: {{ payment_ip }}
@@ -201,7 +217,12 @@ services:
       POSTGRES_USER: ethproxy
       POSTGRES_PASSWORD: password
     volumes:
-      - {{ payment_postgresql_data_mount_dir }}:/var/lib/postgresql/data
+      - {{ payment_volume }}/eth_pymt_db:/var/lib/postgresql/data
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
     networks:
       backend:
         ipv4_address: {{ pg_ip }}
@@ -242,11 +263,16 @@ services:
       #XQUERY_HOST: http://{{ reverse_proxy_ip }}:{{ reverse_proxy_port}}
 {% endif %}
     volumes:
-      - {{ xr_proxy_config_mount_dir }}:/opt/uwsgi/conf
-      - {{ xr_proxy_nginx_mount_dir }}:/etc/nginx/conf.d
+      - {{ xr_proxy_volume }}/xr_proxy/config:/opt/uwsgi/conf
+      - {{ xr_proxy_volume }}/xr_proxy/nginx:/etc/nginx/conf.d
       - type: bind
         source: ./scripts
         target: /opt/scripts
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
     networks:
       frontend:
       backend:
@@ -255,7 +281,7 @@ services:
 #### XQUERY ####
 {% if deploy_xquery %}
 
-{% include 'templates/xquery.j2' %}
+{% include 'autobuild/templates/xquery.j2' %}
 
 {% endif %}
 #### XQUERY ####
