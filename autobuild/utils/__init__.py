@@ -38,9 +38,9 @@ class Inquirer():
 			Token.QuestionMark: '#cc5454 bold',
 			Token.Selected: '#00ff00 bold',
 			Token.Pointer: '#673ab7 bold',
-			Token.Instruction: '',
+			Token.Instruction: '#808080 bold',
 			Token.Answer: '#f44336 bold',
-			Token.Question: '',
+			Token.Question: '#00ff00 bold underline'
 		})
 
 	def pick_checkbox(self,ask,choices):
