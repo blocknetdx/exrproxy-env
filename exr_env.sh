@@ -45,9 +45,9 @@ function uninstalldocker() {
 			exit 1;
 		fi
 	fi
-	sudo systemctl stop docker.service
-	sudo systemctl stop docker.socket
-	sudo systemctl stop containerd
+  sudo systemctl stop docker.service
+  sudo systemctl stop docker.socket
+  sudo systemctl stop containerd
 	sudo $PKM purge -y containerd.io docker-engine docker docker.io docker-ce docker-ce-cli docker-ce-rootless-extras docker-scan-plugin docker-compose
 	sudo $PKM autoremove -y --purge -y containerd.io docker-engine docker docker.io docker-ce docker-ce-cli docker-ce-rootless-extras docker-scan-plugin docker-compose
 	sudo rm -rf /var/lib/docker /etc/docker
