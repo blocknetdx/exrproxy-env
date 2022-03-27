@@ -72,6 +72,8 @@ services:
         target: /opt/blockchain/data/xbridge.conf
     ports:
       - "41412:41412"
+    expose:
+      - 41412
     logging:
       driver: "json-file"
       options:
@@ -235,6 +237,8 @@ services:
     restart: unless-stopped
     ports: 
       - "80:80"
+    expose:
+      - 80
     environment:
       RPC_USER: "${RPC_USER}"
       RPC_PASSWORD: "${RPC_PASSWORD}"
