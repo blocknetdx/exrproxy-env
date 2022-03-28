@@ -1,5 +1,5 @@
 #!/bin/bash
-BRANCH="dev-autobuilder-pom"
+BRANCH="master"
 ############################################################
 # Check Package Manager                                    #
 ############################################################
@@ -45,9 +45,9 @@ function uninstalldocker() {
 			exit 1;
 		fi
 	fi
-  sudo systemctl stop docker.service
-  sudo systemctl stop docker.socket
-  sudo systemctl stop containerd
+	sudo systemctl stop docker.service
+	sudo systemctl stop docker.socket
+	sudo systemctl stop containerd
 	sudo $PKM purge -y containerd.io docker-engine docker docker.io docker-ce docker-ce-cli docker-ce-rootless-extras docker-scan-plugin docker-compose
 	sudo $PKM autoremove -y --purge -y containerd.io docker-engine docker docker.io docker-ce docker-ce-cli docker-ce-rootless-extras docker-scan-plugin docker-compose
 	sudo rm -rf /var/lib/docker /etc/docker
@@ -181,8 +181,7 @@ Help()
 	 printf "%s\n\033[93;1m-o | --osdep      \033[97;1mInstall OS dependencies."
 	 printf "%s\n\033[93;1m-u | --update     \033[97;1mUpdate local repo."
 	 printf "%s\n\033[93;1m-g | --git        \033[97;1mInstall git."
-	 printf "%s\n\033[93;1m-D | --undocker   \033[97;1mUninstall docker and docker-compose."
-	 printf "%s\n\033[93;1m-d | --docker     \033[97;1mInstall docker and docker-compose."
+	 printf "%s\n\033[93;1m-d | --docker     \033[97;1mUninstall and Install docker and docker-compose."
 	 printf "%s\n\033[93;1m-p | --python     \033[97;1mInstall python3, python3-pip and requirements."
 	 printf "%s\n\033[93;1m-b | --builder    \033[97;1mCall builder.py with args."
 	 printf "%s\n\033[93;1m-v | --version    \033[97;1mPrint software version and exit."
@@ -199,7 +198,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-VALID_ARGS=$(getopt -o hougDdpvb: --long help,osdep,update,git,undocker,docker,python,version,builder: -- "$@")
+VALID_ARGS=$(getopt -o hougdpvb: --long help,osdep,update,git,docker,python,version,builder: -- "$@")
 if [[ $? -ne 0 ]]; then
 	exit 1;
 fi
@@ -226,12 +225,9 @@ while [ : ]; do
 		installgit
 		shift
 		;;
-	-D| --undocker)
+	-d | --docker)
 		printf "%s\n\033[92;1mUninstalling docker & docker-compose\n\033[0m"
 		uninstalldocker
-		shift
-		;;
-	-d | --docker)
 		printf "%s\n\033[92;1mInstalling docker & docker-compose\n\033[0m"
 		installdocker
 		installdockercompose

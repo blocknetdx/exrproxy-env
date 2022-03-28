@@ -121,6 +121,11 @@ services:
   geth:
     image: {{ eth_image }}
     restart: unless-stopped
+    expose:
+      - 8545
+      - 30303
+    ports: 
+      - "30303:30303"
     volumes:
       - {{ eth_volume }}/ETH:/chaindata
     stop_signal: SIGINT
