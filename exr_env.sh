@@ -188,10 +188,10 @@ function checkdockercompose() {
 # Repo version                                             #
 ############################################################
 function branch_status() {
-	printf "%s\033[94;1mChecking Docker Engine && Docker Compose\033[0m\n"
+	printf "%s\033[94;1mChecking Docker Engine && Docker Compose\033[0m"
 	checkdocker
 	checkdockercompose
-	printf "%s\033[94;1mChecking repo version\033[0m\n"
+	printf "%s\n\033[94;1mChecking repo version\033[0m\n"
 	git fetch
 	local version=$(git --no-pager log --oneline -1)
 	local a=$BRANCH b="origin/$BRANCH"
