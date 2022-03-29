@@ -194,9 +194,9 @@ class Snode():
 			return docker_client
 		except Exception as e:
 			print('[bold red]Something happened during Docker checks[/bold red]')
-			print("[bold cyan]Consider updating via:[/bold cyan]")
-			print("[bold cyan]./exr_env.sh --undocker[/bold cyan]")
-			print("[bold cyan]./exr_env.sh --docker[/bold cyan]")
+			# print("[bold cyan]Consider updating via:[/bold cyan]")
+			# print("[bold cyan]./exr_env.sh --undocker[/bold cyan]")
+			# print("[bold cyan]./exr_env.sh --docker[/bold cyan]")
 			sys.exit(0)
 
 	def check_docker(self):
@@ -204,13 +204,15 @@ class Snode():
 		output = stream.read()
 		if 'docker' not in output:
 			print("[bold cyan]Docker not installed[/bold cyan]")
-			self.install_docker()
+			print("[bold red]Install Docker Engine version v20.10.13, Docker Compose version v2.3.3 or latest.[/bold red]") # Please update via:
+			sys.exit(0)
+			# self.install_docker()
 		elif 'docker' in output:
 			proc = subprocess.check_output('docker --version',stdin=subprocess.PIPE, shell=True).decode('UTF-8')
 			if version.parse(proc.split('version ')[1].split(',')[0]) < version.parse('20.10.13'):
-				print("[bold red]Docker Engine version lower than v20.10.13. Please update via:[/bold red]")
-				print("[bold cyan]./exr_env.sh --undocker[/bold cyan]")
-				print("[bold cyan]./exr_env.sh --docker[/bold cyan]")
+				print("[bold red]Docker Engine version lower than v20.10.13. Update to continue[/bold red]") # Please update via:
+				# print("[bold cyan]./exr_env.sh --undocker[/bold cyan]")
+				# print("[bold cyan]./exr_env.sh --docker[/bold cyan]")
 				sys.exit(0)				
 			else:
 				print(f"[bold cyan]Docker Engine version {proc.split('version ')[1].split(',')[0]}[/bold cyan]")
@@ -222,22 +224,22 @@ class Snode():
 				elif 'docker-compose' in output:
 					proc = subprocess.check_output('docker-compose --version',stdin=subprocess.PIPE, shell=True).decode('UTF-8')
 					if version.parse('.'.join([str(s) for s in proc.split()[-1] if s.isdigit()])) < version.parse("2.3.3"):
-						print("[bold red]Docker Compose version lower than v2.3.3. Please update via:[/bold red]")
-						print("[bold cyan]docker-compose down[/bold cyan]")
-						print("[bold cyan]./exr_env.sh --undocker[/bold cyan]")
-						print("[bold cyan]./exr_env.sh --docker[/bold cyan]")
+						print("[bold red]Docker Compose version lower than v2.3.3. Update to continue[/bold red]") #Please update via:
+						# print("[bold cyan]docker-compose down[/bold cyan]")
+						# print("[bold cyan]./exr_env.sh --undocker[/bold cyan]")
+						# print("[bold cyan]./exr_env.sh --docker[/bold cyan]")
 						sys.exit(0)
 					else:
 						print(f"[bold cyan]docker-compose v{'.'.join([str(s) for s in proc.split()[-1] if s.isdigit()])}[/bold cyan]")
 
-	def install_docker(self):
-		answer = self.inquirer.ask_question("Do you want to install docker?")
-		if answer ==  True:
-			print('[bold cyan]To install docker type:\n./exr_env.sh --docker[/bold cyan]')
-			sys.exit(0)
-		else:
-			print("[bold cyan]Docker daemon error.\nPlease install docker, docker-compose or start the daemon to continue...[/bold cyan]")
-			sys.exit(0)
+	# def install_docker(self):
+	# 	answer = self.inquirer.ask_question("Do you want to install docker?")
+	# 	if answer ==  True:
+	# 		print('[bold cyan]To install docker type:\n./exr_env.sh --docker[/bold cyan]')
+	# 		sys.exit(0)
+	# 	else:
+	# 		print("[bold cyan]Docker daemon error.\nPlease install docker, docker-compose or start the daemon to continue...[/bold cyan]")
+	# 		sys.exit(0)
 
 	def check_running_containers(self, interval):
 		print('[bold cyan]Checking running containers...[/bold cyan]')
