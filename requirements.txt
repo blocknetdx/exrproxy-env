@@ -1,0 +1,14 @@
+jinja2==3.0.3
+pyyaml==5.4.1
+jinja2schema==0.1.4
+ipcalc==1.99.0
+six
+markupsafe
+icecream==2.1.1
+rich==11.2.0
+docker==5.0.3
+python-dotenv==0.13.0
+PyInquirer==1.0.3
+psutil==5.8.0
+gitdir==1.2.5
+packaging==20.9

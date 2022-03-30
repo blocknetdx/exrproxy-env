@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from jinja2 import Template
 import jinja2schema
 import json
@@ -12,12 +10,56 @@ import configparser
 import time
 import ipcalc
 import yaml
+from rich import print
 
+def make_executable_files(path):
+  files = os.listdir(path)
+  for x in files:
+    if x[-3::] == '.sh':
+      make_executable(f'{path}/{x}')
+  print(f'chmod +x {path}/*.sh')
 
-def write_yaml_file(data):
-  with open('xquery.yaml', 'w') as file:
-    yaml.dump(data, file, allow_unicode=True)
-    return('Wrote xquery.yaml')
+def make_executable(path):
+  mode = os.stat(path).st_mode
+  mode |= (mode & 0o444) >> 2
+  os.chmod(path, mode)
+
+def write_text_file(filename, data):
+  with open(filename,'w') as file:
+    file.write(data)
+    print(f"Wrote {filename}")
+
+def write_yaml_file(filename, data):
+  with open(filename, 'w') as file:
+    yaml.dump(data, file, allow_unicode=True, sort_keys=False)
+    print(f'Wrote {filename}')
+
+def write_json_file(filename, data):
+  with open(filename, 'w') as file:
+    json.dump(data, file, sort_keys=False)
+    print(f'Wrote {filename}')
+
+def load_yaml_file(filename):
+  print(f'Loading File: {filename}')
+  try:
+    with open(filename,'r') as fname:
+      datalist = yaml.load(fname, Loader=yaml.FullLoader)
+  except Exception as e:
+    print('#ERROR loading yaml: {}'.format(e))
+    return 'ERROR'
+  return datalist
+
+def load_text_file(filename):
+  print(f'Loading File: {filename}')
+  with open(f'{filename}','r') as file:
+    data = file.read()
+    return data
+
+def load_json_file(filename):
+  print(f'Loading File {filename}')
+  with open(f'{filename}','r') as file:
+    data = json.load(file)
+    return data
 
 def template_vars(template_path):
     #jinja2 all variables
@@ -35,9 +77,9 @@ def template_vars(template_path):
         d['daemons'] = {x:True for x in variables['properties']['daemons']['items']['required']}
         return(d)
 
-def random_ip():
+def random_ip(subnet):
   #generate raandom ip from subnet
-  all_ips = [str(x) for x in ipcalc.Network("172.31.0.0/20")]
+  all_ips = [str(x) for x in ipcalc.Network(subnet)]
   return(random.choice(all_ips))
 
 def load_template(template_url):

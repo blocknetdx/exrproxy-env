@@ -1,8 +1,0 @@
-jinja2
-pyyaml
-jinja2schema
-ipcalc
-six
-markupsafe
-icecream
-rich
