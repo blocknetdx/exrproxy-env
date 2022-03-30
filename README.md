@@ -8,7 +8,8 @@
 - `Port 80 must be opened on the host`
 
 ## getenv.xrouter.com
-**Recommended for new Servers/VM/VPS with Ubuntu**
+**Recommended for new Servers/VM/VPS with Ubuntu 20**
+
 If you have never run the  [Enterprise XRouter Environment](https://docs.blocknet.co/resources/glossary/#enterprise-xrouter)  Global Install script your server, and you don't mind using your server's  _built-in python3_, copy/paste these commands to run the  _Global Install_  script:
 ```
 curl -fsSL https://getenv.xrouter.com -o env_installer.sh
