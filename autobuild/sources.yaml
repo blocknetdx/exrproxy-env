@@ -32,7 +32,7 @@
   type: evm_chain
   image: ethereum/client-go:latest 
   volume: /snode
-  disk: 10000
+  disk: 12000
   ram: 16
   cpu: 6
 
@@ -40,7 +40,7 @@
   type: evm_chain 
   image: avaplatform/avalanchego:latest
   volume: /snode
-  disk: 400
+  disk: 512
   ram: 16
   cpu: 6
 

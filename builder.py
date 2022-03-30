@@ -48,7 +48,7 @@ parser.add_argument('--deploy', help='Autodeploy stack', default=False, action='
 parser.add_argument('--prune', help='Prune docker', default=False, action='store_true')
 parser.add_argument('--source', help='Source file', default='autobuild/sources.yaml')
 parser.add_argument('--yaml', help='Custom input yaml', default=False)
-parser.add_argument('--interval', help='Docker stopping interval till sends SIGKILL signal', default=30)
+parser.add_argument('--interval', help='Docker stopping interval till sends SIGKILL signal; default 30s', default=30)
 parser.add_argument('--branchpath', default=branchpath)
 parser.add_argument('--prunecache', help='Reinit .known_hosts, .known_volumes, .env and .cache files', action='store_true')
 parser.add_argument('--subnet', help='Subnet to configure docker-compose network', default="172.31.0.0/20")

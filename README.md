@@ -1,203 +1,103 @@
-# Requirements
+# Enterprise XRouter Environment 
+#### Requirements
 - `Docker`
 - `Docker-Compose`
 - `Servicenode Private Key`
+- `Servicenode Name`
+- `Servicenode Address`
 - `Port 80 must be opened on the host`
 
-# Autobuild steps
+## getenv.xrouter.com
+**Recommended for new Servers/VM/VPS with Ubuntu 20**
 
-1. Manually edit your environment data
-
+If you have never run the  [Enterprise XRouter Environment](https://docs.blocknet.co/resources/glossary/#enterprise-xrouter)  Global Install script on your server, and you don't mind using your server's  _built-in python3_, copy/paste these commands to run the  _Global Install_  script:
 ```
-export PUBLIC_IP=""  # Update with your public ip address
-export SN_NAME="servicenode01"  # Update with your snode name
-export SN_KEY="servicenodeprivatekey"  # Update with your snode private key
-export SN_ADDRESS="servicenodekeyaddress"  # Update with your snode address
-export RPC_USER="user"
-export RPC_PASSWORD="password"
-docker-compose -f "docker-compose.yml" up -d --build
+curl -fsSL https://getenv.xrouter.com -o env_installer.sh
+chmod +x env_installer.sh
+./env_installer.sh --install 
 ```
+Note, this script will log you out after it's finished installing everything. This is necessary to update the user's membership in the _docker_ group of Linux. Simply log in again after it logs you out.  
+Then following the steps below.
 
-2. Clone this repo - using the command below you can clone this repo with XQuery submodule
+## Deploy a EXR ENV stack via built-in scripts
+* check [Official docs](https://docs.blocknet.co/service-nodes/setup/#auto-deploy-service-node) for more details
 
-```
-git clone --recursive https://github.com/blocknetdx/exrproxy-env.git
-```
-
-```
-cd exrproxy-env
-```
-
-```
-git submodule update --init --recursive
-```
-
-3. Input file - Edit your XQuery integration input file with your desired graph 
-
-Check for reference for local nodes:
-
-```
-autobuild/examples/xquery-gethINT-avaxINT.yaml
-```
-
-To use external connections check:
-
-```
-autobuild/examples/xquery-gethEXT-avaxEXT.yaml
-```
-
-4. Change to autobuild directory
-
-```
-cd autobuild
-```
-
-5. Install python requirements if not already installed
-```
-pip3 install -r requirements.txt
-```
-
-6. Generate docker-compose stack
-
-```
-python app.py --yaml examples/xquery-gethINT-avaxINT.yaml
-```
-
-7. Change to the root folder of the repo and move/copy the generated files
-
-```
-mv autobuild/dockercompose-custom.yaml docker-compose.yml
-mv autobuild/xquery.yaml xquery.yaml
-```
-
-8. Build images
-
-```
-docker-compose build
-```
-
-9. Deploy stack
-
-```
-docker-compose -f docker-compose.yml up -d --build
-```
-
-10. Create project
-
-```
-curl http://127.0.0.1/xrs/eth_passthrough \
-                    -X POST \
-                    -H "Content-Type: application/json" \
-                    -d '{"jsonrpc":"2.0","method":"request_project","params": [],"id":1}'
-```
-
-11. With the api-key provided and after payment get your data
-
-```
-curl http://127.0.0.1/xrs/xquery/<PROJECT-ID>/help -X POST -H "Api-Key:<API-KEY>"
-```
-
-12. Test XQuery via python code
-
-Check the python script in autobuild/xq.py
-
-```
-python3 exrproxy-env/autobuild/xq.py --projectid YOUR-PROJECT-ID --apikey YOUR-API-KEY
-```
-
-
-
-# Supports external GETH host using gethexternal w/ deployscript (for use with archival node), otherwise a non geth-instance will be spun up
+### Shell
+Generate and deploy a EXR ENV stack
 ```bash
-./deploy.sh gethexternal
+./exr_env.sh --update --builder "--deploy"
+```
+Display help message
+```bash
+./exr_env.sh --help
+
+Enterprise XRouter Proxy Environment
+Powered by Blocknet.co
+
+options:
+-h | --help       Print this Help.
+-u | --update     Update local repo.
+-b | --builder    Call builder.py with args.
+-v | --version    Print software version and exit.
+```
+### Python
+Generate and deploy a EXR ENV stack
+```bash
+./builder.py --deploy
+```
+Display help message
+```
+./builder.py --help
+usage: builder.py [-h] [--nochecks] [--noenv] [--deploy] [--prune]
+                  [--source SOURCE] [--yaml YAML] [--interval INTERVAL]
+                  [--branchpath BRANCHPATH] [--prunecache] [--subnet SUBNET]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --nochecks            Don't check docker requirements
+  --noenv               Don't check if .env file exists (only for advanced
+                        users)
+  --deploy              Autodeploy stack
+  --prune               Prune docker
+  --source SOURCE       Source file
+  --yaml YAML           Custom input yaml
+  --interval INTERVAL   Docker stopping interval till sends SIGKILL signal; default 30s
+  --branchpath BRANCHPATH
+  --prunecache          Reinit .known_hosts, .known_volumes, .env and .cache
+                        files
+  --subnet SUBNET       Subnet to configure docker-compose network 
 ```
 
-# Recommended Usage
+
+## Create Project
+ #### Request Project, this creates project-id in db and gets aBlock/aaBlock/ETH address for payment.
+
 ```bash
-# Run deploy.sh
-./deploy.sh
-
-# Install Docker? [y/n] n
-# Not installing Docker...
-# Your Public IP Address: x.x.x.x
-# Servicenode Name: example
-# Servicenode Private Key: example
-# Servicenode Address: example
-
-# Please specify an user and password for the new servicenode
-# RPC Username: example
-# RPC Password: example
-```
-
-# Manual Usage
-```bash
-export PUBLIC_IP=""  # Update with your public ip address
-export SN_NAME="servicenode01"  # Update with your snode name
-export SN_KEY="servicenodeprivatekey"  # Update with your snode private key
-export SN_ADDRESS="servicenodekeyaddress"  # Update with your snode address
-export RPC_USER="user"
-export RPC_PASSWORD="password"
-docker-compose -f "docker-compose.yml" up -d --build
-```
-
-# Docker-Compose Environment Variables
-* PUBLIC_IP - Your Public IP Address
-* SN_NAME - Desired Servicenode Name
-* SN_KEY - Servicenode Private Key 
-* SN_ADDRESS - Servicenode Address
-* RPC_USER - Desired RPC Username for all daemons
-* RPC_PASSWORD - Desired RPC Password for all daemons
-
-# Auto-Build Environment Variables
-* MOUNT_DIR - Mount directory for daemons (defaults to /blockchain)
-* DEPLOY_ETH - Whether GETH and ETH-Webserver should be deployed (defaults to true)
-
-# bring down environment
-```bash
-docker-compose down
-```
-
-# Check geth accounts via console
-```bash
-function checkAllBalances() { var i =0; eth.accounts.forEach( function(e){ console.log("  eth.accounts["+i+"]: " +  e + " \tbalance: " + web3.fromWei(eth.getBalance(e), "ether") + " ether"); i++; })}; checkAllBalances();
-```
-
-# Create Project
-```bash
-Creates Hydra Project"
-    Request Hydra Project, this creates project-id in db and gets ETH address for payment.
-    Example: curl http://127.0.0.1/xrs/eth_passthrough \
+     curl http://127.0.0.1/xrs/projects \
                     -X POST \
                     -H "Content-Type: application/json" \
                     -d '{"jsonrpc":"2.0","method":"request_project","params": [],"id":1}'
                     
-    results: "error":0,"result":{"api_key":"uiF_scQgopWWhgDFT7AMbM2Vf2b66xlfnVrJe6e1gUE","expiry_time":"2020-11-19 22:17:53 EST","payment_address":"0x0x0xxx","payment_amount_tier1":0.073597,"payment_amount_tier2":0.420557,"project_id":"85f1641d-f8ab-4acb-aa00-5d19601a9dd7"}}
+    api_key : SgMbED-QDUjt6AFzW2SgANZeOJZhAwxpwdmm36XQpCU
+    expiry_time : 2022-02-04 22:32:29 EST
+    payment_amount_tier1_aablock : 1.795083
+    payment_amount_tier1_ablock : 0.625
+    payment_amount_tier1_eth : None
+    payment_amount_tier2_aablock : 359.016596
+    payment_amount_tier2_ablock : 125.0
+    payment_amount_tier2_eth : 0.067994
+    payment_avax_address : 0x977844F563590F4A4D90AEe07d9f0337BD18D3cc
+    payment_eth_address : 0x3713e2Db20fc393e9353A4b29c710D8E19411bCF
+    project_id : 99e02d11-c1a4-49ed-9ad0-4308a27dfcbe
 
 ```
 
-# Request Data/Example call
-```bash
-curl http://127.0.0.1/xrs/eth_passthrough/<project_id> \
-                    -X POST \
-                    -H "Content-Type: application/json" \
-                    -H "Api-Key: <API_Key>" \
-                    -d '{"jsonrpc":"2.0","method":"net_version","params": [],"id":1}'
-```
+## Checking stack
 
-# Pricing
-```bash
-Set these values in USD:
-      PAYMENT_AMOUNT_TIER1: 35
-      PAYMENT_AMOUNT_TIER2: 200
-https://github.com/blocknetdx/exrproxy-env/blob/master/docker-compose.yml#L83
-```
-
-# Checking stack
-
-There are three python scripts to check API in auto_test directory:
+There are three python scripts to check API in `auto_test` directory:
 
 - exr_methods.py - RPC calls to exr
-- xrouter_methods.py - RCP calls to xrouter
+- xrouter_methods.py - RPC calls to xrouter
 - snode_methods.py - RPC calls to snode 
 
 RPC methods are stored in json files. You are free to add/remove them. 
@@ -232,5 +132,3 @@ Method eth_blockNumber HTTP status code 200
 Method eth_chainId HTTP status code 200
 0x3
 ```
-
-
