@@ -1,5 +1,5 @@
 # Enterprise XRouter Environment 
-## Requirements
+#### Requirements
 - `Docker`
 - `Docker-Compose`
 - `Servicenode Private Key`
@@ -7,8 +7,20 @@
 - `Servicenode Address`
 - `Port 80 must be opened on the host`
 
+## getenv.xrouter.com
+**Recommended for new Servers/VM/VPS with Ubuntu**
+If you have never run the  [Enterprise XRouter Environment](https://docs.blocknet.co/resources/glossary/#enterprise-xrouter)  Global Install script your server, and you don't mind using your server's  _built-in python3_, copy/paste these commands to run the  _Global Install_  script:
+```
+curl -fsSL https://getenv.xrouter.com -o env_installer.sh
+chmod +x env_installer.sh
+./env_installer.sh --install 
+```
+Note, this script will log you out after it's finished installing everything. This is necessary to update the user's membership in the _docker_ group of Linux. Simply log in again after it logs you out.  
+Then following the steps below.
+
 ## Deploy a EXR ENV stack via built-in scripts
 * check [Official docs](https://docs.blocknet.co/service-nodes/setup/#auto-deploy-service-node) for more details
+
 ### Shell
 Generate and deploy a EXR ENV stack
 ```bash
@@ -48,7 +60,7 @@ optional arguments:
   --prune               Prune docker
   --source SOURCE       Source file
   --yaml YAML           Custom input yaml
-  --interval INTERVAL   Docker stopping interval till sends SIGKILL signal
+  --interval INTERVAL   Docker stopping interval till sends SIGKILL signal; default 30s
   --branchpath BRANCHPATH
   --prunecache          Reinit .known_hosts, .known_volumes, .env and .cache
                         files
@@ -84,7 +96,7 @@ optional arguments:
 There are three python scripts to check API in `auto_test` directory:
 
 - exr_methods.py - RPC calls to exr
-- xrouter_methods.py - RCP calls to xrouter
+- xrouter_methods.py - RPC calls to xrouter
 - snode_methods.py - RPC calls to snode 
 
 RPC methods are stored in json files. You are free to add/remove them. 
@@ -119,5 +131,3 @@ Method eth_blockNumber HTTP status code 200
 Method eth_chainId HTTP status code 200
 0x3
 ```
-
-
