@@ -52,18 +52,9 @@ optional arguments:
   --branchpath BRANCHPATH
   --prunecache          Reinit .known_hosts, .known_volumes, .env and .cache
                         files
-  --subnet SUBNET       Subnet to configure docker-compose network ```
-
-## Manual Usage
-### Edit `.env` file
-```bash
-PUBLIC_IP=""  # Update with your public ip address
-SN_NAME="servicenode01"  # Update with your snode name
-SN_KEY="servicenodeprivatekey"  # Update with your snode private key
-SN_ADDRESS="servicenodekeyaddress"  # Update with your snode address
-RPC_USER="user"
-RPC_PASSWORD="password"
+  --subnet SUBNET       Subnet to configure docker-compose network 
 ```
+
 
 ## Create Project
  #### Request Project, this creates project-id in db and gets aBlock/aaBlock/ETH address for payment.
