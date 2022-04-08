@@ -109,7 +109,8 @@ def help():
 		['--date', 'Format: [bold yellow]Y/M/D or M/D/Y[/bold yellow]. Change expiration date of a project in the [bold yellow]Project[/bold yellow] table'],
 		['--apicount', 'Change apicount number of a project in the [bold yellow]Project[/bold yellow] table'],
 		['--archive', 'Change the archive boolean of a project in a [bold yellow]Project[/bold yellow] table'],
-		['--active', 'Change the active boolean of a project in a [bold yellow]Project[/bold yellow] table ']
+		['--active', 'Change the active boolean of a project in a [bold yellow]Project[/bold yellow] table '],
+		['--cmd', 'Send command to [bold cyan]eth_pay_db[/bold cyan]']
 	]
 	for d in data:
 		table.add_row(*d)
@@ -136,6 +137,7 @@ def help():
 		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --apicount [bold yellow]100[/bold yellow]', 'Change [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] api count to [bold yellow]100[/bold yellow]'],
 		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --archive', 'Change [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] archive mode boolean to [bold yellow]NOT ARCHIVE MODE BOOLEAN[/bold yellow]'],
 		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --active', 'Change [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] active boolean to [bold yellow]NOT ACTIVE BOOLEAN[/bold yellow]'],
+		['--cmd [bold yellow]"select * from project"[/bold yellow]', 'Execute [bold yellow]"select * from project"[/bold yellow]']
 	]
 	for d in data:
 		table.add_row(*d)
@@ -157,6 +159,7 @@ if __name__ == '__main__':
 	parser.add_argument('--apicount', default=False)
 	parser.add_argument('--archive', action='store_true')
 	parser.add_argument('--active', action='store_true')
+	parser.add_argument('--cmd', default=False, type=str)
 
 	args = parser.parse_args()
 	HELP = args.help
@@ -172,17 +175,18 @@ if __name__ == '__main__':
 	APICOUNT = args.apicount
 	ARCHIVE = args.archive
 	ACTIVE = args.active
+	CMD = args.cmd
 
 	if HOST:
 		print('[bold cyan]Enterprise[/bold cyan] [bold green]XRouter[/bold green] [bold cyan]Environment[/bold cyan] [bold yellow]Projects[/bold yellow] [bold magenta]CLI[/bold magenta]')
-		if ALL and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE:
+		if ALL and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE and not CMD:
 			render_table('project', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
-		elif BAL and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE:
+		elif BAL and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE and not CMD:
 			render_table('payment', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
-		elif PROJECT and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE:
+		elif PROJECT and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE and not CMD:
 			render_table('project', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
 			render_table('payment', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
-		elif PROJECT and ARCHIVE or ACTIVE or APICOUNT or DATE:
+		elif PROJECT and ARCHIVE or ACTIVE or APICOUNT or DATE and not CMD:
 			if DATE:
 				if is_date(DATE):
 					string = is_date(DATE).strftime("%Y-%m-%d")
@@ -194,6 +198,8 @@ if __name__ == '__main__':
 			if ACTIVE:
 				exec_psql(f"update project set active = NOT active where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
 			render_table('project', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
+		elif CMD:
+			exec_psql(CMD, HOST, DB, USERNAME, PASSWORD)
 		else:
 			help()
 	elif HELP:
