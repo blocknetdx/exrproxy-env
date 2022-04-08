@@ -206,7 +206,7 @@ services:
 {% if deploy_avax %}
       - avax
 {% endif %}
-      - postgresql
+      - eth_pay_db
     logging:
       driver: "json-file"
       options:
@@ -216,7 +216,7 @@ services:
       backend:
         ipv4_address: {{ payment_ip }}
 
-  postgresql:
+  eth_pay_db:
     image: postgres
     restart: always
     environment:
