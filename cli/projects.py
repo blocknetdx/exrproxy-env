@@ -225,7 +225,7 @@ if __name__ == '__main__':
 			if result:
 				print(result)
 			else:
-				print(f'[bold red]Error occured when executing:\n{cmd}[/bold red]')
+				print(f'[bold red]Error occured when executing:\n{CMD}[/bold red]')
 		elif NEW:
 			newproject = request_project()
 			if newproject:
