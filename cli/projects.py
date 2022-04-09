@@ -5,7 +5,25 @@ from rich.table import Table
 from rich import print
 import argparse
 import os
+import requests
 from dateutil.parser import parse
+
+def request_project():
+	headers = {'Content-Type':'application/json'}
+	payload = '{"jsonrpc":"2.0","method":"request_project","params": [], "id":1}'
+	response = requests.post(url="http://127.0.0.1/xrs/projects",headers=headers,data=payload)
+	if response.status_code == 200:
+		if 'result' in response.json().keys():
+			project_id = response.json()['result']['project_id']
+			return project_id
+		else:
+			print('[bold red]Error occured requesting new project[/bold red]')
+			print(response.json())
+			return False
+	else:
+		print('[bold red]Error occured requesting new project[/bold red]')
+		print(response.json())
+		return False
 
 def is_date(string, fuzzy=False):
 	try:
@@ -110,7 +128,8 @@ def help():
 		['--apicount', 'Change apicount number of a project in the [bold yellow]Project[/bold yellow] table'],
 		['--archive', 'Change the archive boolean of a project in a [bold yellow]Project[/bold yellow] table'],
 		['--active', 'Change the active boolean of a project in a [bold yellow]Project[/bold yellow] table '],
-		['--cmd', 'Send command to [bold cyan]eth_pay_db[/bold cyan]']
+		['--cmd', 'Send command to [bold cyan]eth_pay_db[/bold cyan]'],
+		['--new', 'Request new Project ID and Api-Key']
 	]
 	for d in data:
 		table.add_row(*d)
@@ -137,7 +156,8 @@ def help():
 		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --apicount [bold yellow]100[/bold yellow]', 'Change [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] api count to [bold yellow]100[/bold yellow]'],
 		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --archive', 'Change [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] archive mode boolean to [bold yellow]NOT ARCHIVE MODE BOOLEAN[/bold yellow]'],
 		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --active', 'Change [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] active boolean to [bold yellow]NOT ACTIVE BOOLEAN[/bold yellow]'],
-		['--cmd [bold yellow]"select * from project"[/bold yellow]', 'Execute [bold yellow]"select * from project"[/bold yellow]']
+		['--cmd [bold yellow]"select * from project"[/bold yellow]', 'Execute [bold yellow]"select * from project"[/bold yellow]'],
+		['--new', 'Request new Project ID and Api-Key']
 	]
 	for d in data:
 		table.add_row(*d)
@@ -160,6 +180,7 @@ if __name__ == '__main__':
 	parser.add_argument('--archive', action='store_true')
 	parser.add_argument('--active', action='store_true')
 	parser.add_argument('--cmd', default=False, type=str)
+	parser.add_argument('--new', action='store_true')
 
 	args = parser.parse_args()
 	HELP = args.help
@@ -176,6 +197,7 @@ if __name__ == '__main__':
 	ARCHIVE = args.archive
 	ACTIVE = args.active
 	CMD = args.cmd
+	NEW = args.new
 
 	if HOST:
 		print('[bold cyan]Enterprise[/bold cyan] [bold green]XRouter[/bold green] [bold cyan]Environment[/bold cyan] [bold yellow]Projects[/bold yellow] [bold magenta]CLI[/bold magenta]')
@@ -199,7 +221,16 @@ if __name__ == '__main__':
 				exec_psql(f"update project set active = NOT active where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
 			render_table('project', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
 		elif CMD:
-			exec_psql(CMD, HOST, DB, USERNAME, PASSWORD)
+			result = exec_psql(CMD, HOST, DB, USERNAME, PASSWORD)
+			if result:
+				print(result)
+			else:
+				print(f'[bold red]Error occured when executing:\n{cmd}[/bold red]')
+		elif NEW:
+			newproject = request_project()
+			if newproject:
+				render_table('project', newproject, ID, HOST, DB, USERNAME, PASSWORD)
+				render_table('payment', newproject, ID, HOST, DB, USERNAME, PASSWORD)
 		else:
 			help()
 	elif HELP:
