@@ -13,4 +13,5 @@ psutil==5.8.0
 gitdir==1.2.5
 packaging==20.9
 psycopg2==2.9.3
+psycopg2-binary
 python-dateutil

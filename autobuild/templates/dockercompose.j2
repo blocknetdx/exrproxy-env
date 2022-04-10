@@ -168,7 +168,7 @@ services:
 
 {% if deploy_eth or deploy_avax %}
 {% if deploy_payment %}
-  eth_payment_api:
+  payment:
     image: {{ payment_image }}
     restart: unless-stopped
     environment:
@@ -206,7 +206,7 @@ services:
 {% if deploy_avax %}
       - avax
 {% endif %}
-      - eth_pay_db
+      - payment_db
     logging:
       driver: "json-file"
       options:
@@ -216,7 +216,7 @@ services:
       backend:
         ipv4_address: {{ payment_ip }}
 
-  eth_pay_db:
+  payment_db:
     image: postgres
     restart: always
     environment:

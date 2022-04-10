@@ -1,4 +1,7 @@
+#!/usr/bin/env python3
+
 import psycopg2 as db
+import subprocess
 import docker
 from datetime import datetime
 from rich.table import Table
@@ -116,7 +119,7 @@ def help():
 	table.add_column('Defaults',justify='left', style='bold cyan', no_wrap=False)
 	data = [
 		['--help | -h', 'Print help'],
-		['--host', "Host of [bold cyan]eth_pay_db[/bold cyan] container"],
+		['--host', "IP address of [bold cyan]payment_db[/bold cyan] container"],
 		['--username | -u', 'Username for [bold cyan]eth_pay_db[/bold cyan]', 'ethproxy'],
 		['--password | -p', 'Password for [bold cyan]eth_pay_db[/bold cyan]', 'password'],
 		['--db | -d', 'Database from [bold cyan]eth_pay_db[/bold cyan]', 'eth'],
@@ -135,6 +138,10 @@ def help():
 		table.add_row(*d)
 
 	print(table)
+	print()
+	print("[red]Use this command to get [bold cyan]payment_db[/bold cyan] IP address:[/red]")
+	print("""[red]docker inspect $(docker ps | grep payment_db | awk '{print $1}') | sed -nE '/"IPv4Address":[ \t]"[[:digit:]]/{s/[ \t]*"IPv4Address":[ \t]+"([0-9.]+)"/\1/p;}'[/red]""")
+	print()
 	print(f'[bold red]{"-"*20}[/bold red]')
 
 	table = Table(title='Arguments Combinations', title_justify='left', title_style='bold cyan', box=None)
@@ -143,7 +150,7 @@ def help():
 	table.add_column('Defaults',justify='left', style='bold cyan', no_wrap=False)
 	data = [
 		['--help | -h','Print help'],
-		['--host [bold yellow]HOST[/bold yellow]', "Host of [bold cyan]eth_pay_db[/bold cyan] container"],
+		['--host [bold yellow]IP[/bold yellow]', "IP address of [bold cyan]payment_db[/bold cyan] container"],
 		['--username [bold yellow]USERNAME[/bold yellow]', 'Username for [bold cyan]eth_pay_db[/bold cyan]', 'ethproxy'],
 		['--password [bold yellow]PASSWORD[/bold yellow]', 'Password for [bold cyan]eth_pay_db[/bold cyan]', 'password'],
 		['--db [bold yellow]DB[/bold yellow]', 'Database from [bold cyan]eth_pay_db[/bold cyan]', 'eth'],
