@@ -81,7 +81,7 @@ def get_table(table, project, id, host, database, user, password):
 	data = all_data(table, project, host, database, user, password)
 	headers = column_names(table, host, database, user, password)
 	if headers != False and data != False:
-		if id!=0:
+		if id>0 and len(data)>=id:
 			data = [data.pop(id-1)]
 		data.insert(0,headers)
 		return data
@@ -120,18 +120,18 @@ def help():
 	data = [
 		['--help | -h', 'Print help'],
 		['--host', "IP address of [bold cyan]payment_db[/bold cyan] container"],
-		['--username | -u', 'Username for [bold cyan]eth_pay_db[/bold cyan]', 'ethproxy'],
-		['--password | -p', 'Password for [bold cyan]eth_pay_db[/bold cyan]', 'password'],
-		['--db | -d', 'Database from [bold cyan]eth_pay_db[/bold cyan]', 'eth'],
+		['--username | -u', 'Username for [bold cyan]payment_db[/bold cyan]', 'ethproxy'],
+		['--password | -p', 'Password for [bold cyan]payment_db[/bold cyan]', 'password'],
+		['--db | -d', 'Database from [bold cyan]payment_db[/bold cyan]', 'eth'],
 		['--all', 'Show all projects and their details'],
 		['--balances', 'Show all payments and their details'],
 		['--id', 'Select line from table to show details for'],
 		['--project', 'Show details for project'],
 		['--date', 'Format: [bold yellow]Y/M/D or M/D/Y[/bold yellow]. Change expiration date of a project in the [bold yellow]Project[/bold yellow] table'],
 		['--apicount', 'Change apicount number of a project in the [bold yellow]Project[/bold yellow] table'],
-		['--archive', 'Change the archive boolean of a project in a [bold yellow]Project[/bold yellow] table'],
-		['--active', 'Change the active boolean of a project in a [bold yellow]Project[/bold yellow] table '],
-		['--cmd', 'Send command to [bold cyan]eth_pay_db[/bold cyan]'],
+		['--archive', 'Toggle the archive boolean of a project in [bold yellow]Project[/bold yellow] table'],
+		['--active', 'Toggle the active boolean of a project in [bold yellow]Project[/bold yellow] table '],
+		['--cmd', 'Send command to [bold cyan]payment_db[/bold cyan]'],
 		['--new', 'Request new Project ID and Api-Key']
 	]
 	for d in data:
@@ -140,7 +140,7 @@ def help():
 	print(table)
 	print()
 	print("[red]Use this command to get [bold cyan]payment_db[/bold cyan] IP address:[/red]")
-	print("""[red]docker inspect $(docker ps | grep payment_db | awk '{print $1}') | sed -nE '/"IPv4Address":[ \t]"[[:digit:]]/{s/[ \t]*"IPv4Address":[ \t]+"([0-9.]+)"/\1/p;}'[/red]""")
+	print("""[red]docker inspect $(docker ps | grep payment_db | awk '{print $1}') | sed -nE '/"IPv4Address":[ \\t]"[[:digit:]]/{s/[ \\t]*"IPv4Address":[ \\t]+"([0-9.]+)"/\\1/p;}'[/red]""")
 	print()
 	print(f'[bold red]{"-"*20}[/bold red]')
 
@@ -151,9 +151,9 @@ def help():
 	data = [
 		['--help | -h','Print help'],
 		['--host [bold yellow]IP[/bold yellow]', "IP address of [bold cyan]payment_db[/bold cyan] container"],
-		['--username [bold yellow]USERNAME[/bold yellow]', 'Username for [bold cyan]eth_pay_db[/bold cyan]', 'ethproxy'],
-		['--password [bold yellow]PASSWORD[/bold yellow]', 'Password for [bold cyan]eth_pay_db[/bold cyan]', 'password'],
-		['--db [bold yellow]DB[/bold yellow]', 'Database from [bold cyan]eth_pay_db[/bold cyan]', 'eth'],
+		['--username [bold yellow]USERNAME[/bold yellow]', 'Username for [bold cyan]payment_db[/bold cyan]', 'ethproxy'],
+		['--password [bold yellow]PASSWORD[/bold yellow]', 'Password for [bold cyan]payment_db[/bold cyan]', 'password'],
+		['--db [bold yellow]DB[/bold yellow]', 'Database from [bold cyan]payment_db[/bold cyan]', 'eth'],
 		['--all', 'Show all projects and their details'],
 		['--balances','Show all payments and their details'],
 		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow]', 'Show details for [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow]'],
@@ -161,8 +161,8 @@ def help():
 		['--balances --id [bold yellow]1[/bold yellow]','Show line [bold yellow]1[/bold yellow] of [bold yellow]Payment[/bold yellow] table'],
 		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --date [bold yellow]2022/4/8[/bold yellow]', 'Change [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] expiration date to [bold yellow]2022/4/8[/bold yellow]'],
 		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --apicount [bold yellow]100[/bold yellow]', 'Change [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] api count to [bold yellow]100[/bold yellow]'],
-		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --archive', 'Change [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] archive mode boolean to [bold yellow]NOT ARCHIVE MODE BOOLEAN[/bold yellow]'],
-		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --active', 'Change [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] active boolean to [bold yellow]NOT ACTIVE BOOLEAN[/bold yellow]'],
+		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --archive', 'Toggle [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] [bold yellow]ARCHIVE MODE BOOLEAN[/bold yellow]'],
+		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --active', 'Toggle [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] [bold yellow]ACTIVE BOOLEAN[/bold yellow]'],
 		['--cmd [bold yellow]"select * from project"[/bold yellow]', 'Execute [bold yellow]"select * from project"[/bold yellow]'],
 		['--new', 'Request new Project ID and Api-Key']
 	]
@@ -219,10 +219,12 @@ if __name__ == '__main__':
 			if DATE:
 				if is_date(DATE):
 					string = is_date(DATE).strftime("%Y-%m-%d")
+					exec_psql(f"update project set expires = COALESCE(expires, '{string}'::date) where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
 					exec_psql(f"update project set expires='{string}'::date + expires::time where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
 			if APICOUNT:
 				exec_psql(f"update project set api_token_count='{APICOUNT}' where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
 			if ARCHIVE:
+				exec_psql(f"update project set archive_mode = COALESCE(archive_mode, False) where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
 				exec_psql(f"update project set archive_mode = NOT archive_mode where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
 			if ACTIVE:
 				exec_psql(f"update project set active = NOT active where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
