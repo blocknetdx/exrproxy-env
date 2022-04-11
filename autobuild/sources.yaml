@@ -102,7 +102,7 @@
 
 - name: MUE 
   type: chain
-  image: blocknetdx/monetaryunit:v2.2.0
+  image: blocknetdx/monetaryunit:v2.3.0
   volume: /snode
   disk: 6
   ram: 5
