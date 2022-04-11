@@ -117,9 +117,9 @@ fi
 ############################################################
 # Install python requirements                              #
 ############################################################
-# function installpythonrequirements() {
-# 	pip3 install -r requirements.txt
-# }
+function installpythonrequirements() {
+	pip3 install -r requirements.txt
+}
 
 ############################################################
 # Install git                                              #
@@ -262,6 +262,7 @@ while [ : ]; do
 	-u| --update)
 		printf "%s\n\033[92;1mUpdating local repo\n\033[0m"
 		updaterepo
+		installpythonrequirements
 		shift
 		;;
 	# -g| --git)

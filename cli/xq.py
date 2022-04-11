@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import json
 import requests
 import argparse
@@ -161,23 +163,80 @@ def run_get_schema(host, project_id):
     else:
         print("XQuery schema failed to run by returning code of {}".format(request.status_code))
 
+def help():
+    print(f'[bold red]{"-"*20}[/bold red]')
+    print('[bold magenta]XQuery[/bold magenta] [bold yellow]CLI[/bold yellow] [bold cyan]light[/bold cyan]')
+    print(f'[bold red]{"-"*20}[/bold red]')
+    table = Table(box=None)
+    table.add_column('Argument',justify='left', style='green', no_wrap=False)
+    table.add_column('Help',justify='left', style='yellow', no_wrap=False)
+    table.add_column('Defaults',justify='left', style='bold cyan', no_wrap=False)
+    data = [
+        ['--help | -h', 'Print help'],
+        ['--host',"Host of [bold cyan]EXR ENV[/bold cyan]", "'127.0.0.1:80'"],
+        ['--xqlimit', 'Number of results. Works with any other argument from above', '20'],
+        ['--projectid', 'ID of [bold cyan]EXR ENV[/bold cyan] project'],
+        ['--apikey', 'Api-Key of [bold cyan]EXR ENV[/bold cyan] project'],
+        ['--xquery', 'Query payload'],
+        ['--xqhelp', 'Display [bold magenta]XQuery[/bold magenta] help message'],
+        ['--xqgraph', 'Display [bold magenta]XQuery[/bold magenta] current indices, what is being indexed'],
+        ['--xqschema', 'Display [bold magenta]XQuery[/bold magenta] database schema. Automated introspection query'],
+        ['--xqaddress', 'Address or Addresses'],
+        ['--xqpair', 'Pair or Pairs to query for | USDC/USDT ETH/USDT'],
+        ['--xqrouter', 'Router or Routers names to query for | Uniswap Pangolin'],
+        ['--xqtx', 'TX or TXs to query for'],
+        ['--xqbmin', 'Find the minimum indexed block number for a chain'],
+        ['--xqbmax', 'Find the maximum indexed block number for a chain']   
+    ]
+    for d in data:
+        table.add_row(*d)
+
+    print(table)
+    print(f'[bold red]{"-"*20}[/bold red]')
+
+    table = Table(title='Arguments Combinations', title_justify='left', title_style='bold cyan', box=None)
+    table.add_column('Arguments',justify='left', style='green', no_wrap=False)
+    table.add_column('Details',justify='left', style='yellow', no_wrap=False)
+    table.add_column('Defaults',justify='left', style='bold cyan', no_wrap=False)
+    data = [
+        ['--help | -h','Print help'],
+        ['--host [bold yellow]HOST[/bold yellow]', "Host of [bold cyan]EXR ENV[/bold cyan]", "'127.0.0.1:80'"],
+        ['--xqlimit [bold yellow]LIMIT[/bold yellow]', 'Number of results', '20'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --xqschema', 'Print [bold magenta]XQuery[/bold magenta] db schema'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --xqgraph', 'Print [bold magenta]XQuery[/bold magenta] current indices'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --xqhelp', 'Print [bold magenta]XQuery[/bold magenta] help endpoints'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow]','Query for last 20 indexed data'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xquery [bold yellow]PAYLOAD[/bold yellow]','Query for custom data'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqrouter [bold yellow]ROUTERS[/bold yellow]','Query for custom routers'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqpair [bold yellow]PAIRS[/bold yellow]','Query for custom pairs'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqpair [bold yellow]PAIRS[/bold yellow] --xqrouter [bold yellow]ROUTERS[/bold yellow]','Query for custom pairs and routers'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqaddress [bold yellow]ADDRESSES[/bold yellow]','Query for custom addresses'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqtx [bold yellow]TXS[/bold yellow]','Query for cutom txs'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqbmin [bold yellow]CHAIN[/bold yellow]','Query for minimum indexed blocknumber for a chain'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqbmax [bold yellow]CHAIN[/bold yellow]','Query for maximum indexed blocknumber for a chain'],
+    ]
+    for d in data:
+        table.add_row(*d)
+
+    print(table)
+
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='CLI simple interface for XQuery')
-    parser.add_argument('--host', help='Host of EXR', default='127.0.0.1:80')
-    parser.add_argument('--projectid', help='ID of EXR project', default=False)
-    parser.add_argument('--apikey', help='API-KEY of EXR project', default=False)
-    parser.add_argument('--xquery', help='Query string', default=False)
-    parser.add_argument('--xqhelp', help='Use only with --projectid to display XQuery help message', action='store_true')
-    parser.add_argument('--xqgraph', help='Use only with --projectid to display XQuery current graph', action='store_true')
-    parser.add_argument('--xqschema', help='Use only with --projectid to display XQuery schema', action='store_true')
-    parser.add_argument('--xqaddress', help='Address to query for', nargs='*')
-    parser.add_argument('--xqpair', help='Pairs to query for | USDC/USDT ETH/USDT', nargs='*')
-    parser.add_argument('--xqrouter', help='Routers names to query for | Uniswap Pangolin', nargs='*')
-    parser.add_argument('--xqtx', help='Query for TX', nargs='*')
-    parser.add_argument('--xqbmin', help='Find the minimum indexed block number for a chain', default=False)
-    parser.add_argument('--xqbmax', help='Find the maximum indexed block number for a chain', default=False)
-    parser.add_argument('--xqlimit', help='Number of results', default=20)
-    parser.add_argument('--details', help='Prints possible arguments combinations', action='store_true')
+    parser = argparse.ArgumentParser(description='CLI simple interface for XQuery', add_help=False)
+    parser.add_argument('--host', default='127.0.0.1:80')
+    parser.add_argument('--projectid', default=False)
+    parser.add_argument('--apikey', default=False)
+    parser.add_argument('--xquery', default=False)
+    parser.add_argument('--xqhelp', action='store_true')
+    parser.add_argument('--xqgraph', action='store_true')
+    parser.add_argument('--xqschema', action='store_true')
+    parser.add_argument('--xqaddress', nargs='*')
+    parser.add_argument('--xqpair', nargs='*')
+    parser.add_argument('--xqrouter', nargs='*')
+    parser.add_argument('--xqtx', nargs='*')
+    parser.add_argument('--xqbmin', default=False)
+    parser.add_argument('--xqbmax', default=False)
+    parser.add_argument('--xqlimit', default=20)
+    parser.add_argument('--help','-h', action='store_true')
 
     args = parser.parse_args()
     HOST = args.host
@@ -194,31 +253,8 @@ if __name__ == '__main__':
     XQTX = args.xqtx
     XQBMIN = args.xqbmin
     XQBMAX = args.xqbmax
-    DETAILS = args.details
+    HELP = args.help
 
-
-    table = Table(box=None)
-    table.add_column('Arguments',justify='left', style='green', no_wrap=True)
-    table.add_column('Details',justify='left', style='yellow', no_wrap=False)
-    data = [
-        ['--help','print helper'],
-        ['--details','print this table'],
-        ['--xqlimit [bold yellow]LIMIT[/bold yellow]','number of responses, default 20'],
-        ['--projectid [bold yellow]PROJECTID[/bold yellow] --xqschema','print xquery db schema'],
-        ['--projectid [bold yellow]PROJECTID[/bold yellow] --xqgraph','print xquery current indices'],
-        ['--projectid [bold yellow]PROJECTID[/bold yellow] --xqhelp','print xquery help endpoints'],
-        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow]','query for last 20 queries indexed'],
-        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xquery [bold yellow]PAYLOAD[/bold yellow]','query for custom data'],
-        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqrouter [bold yellow]ROUTERS[/bold yellow]','query for custom routers'],
-        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqpair [bold yellow]PAIRS[/bold yellow]','query for custom pairs'],
-        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqpair [bold yellow]PAIRS[/bold yellow] --xqrouter [bold yellow]ROUTERS[/bold yellow]','query for custom pairs and routers'],
-        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqaddress [bold yellow]ADDRESSES[/bold yellow]','query for custom addresses'],
-        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqtx [bold yellow]TXS[/bold yellow]','query for cutom txs'],
-        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqbmin [bold yellow]CHAIN[/bold yellow]','query for minimum indexed blocknumber for a chain'],
-        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqbmax [bold yellow]CHAIN[/bold yellow]','query for maximum indexed blocknumber for a chain'],
-    ]
-    for d in data:
-        table.add_row(d[0],d[1])
 
     if XQLIMIT:
         if int(XQLIMIT) < 1:
@@ -228,7 +264,7 @@ if __name__ == '__main__':
             print(":x:",f"xqlimit too big...changed to 20")
             XQLIMIT = 20
 
-    if HOST and not DETAILS:
+    if HOST and not HELP:
         if PROJECTID and APIKEY and not XQHELP and not XQGRAPH and not XQSCHEMA:
             schema = '\n'.join([x for x in [x.split(":")[0].strip() for x in run_get_schema(HOST, PROJECTID).split('{')[1].split('}')[0].split('\n')] if x!='' and x[0]!='_'])
             if XQPAIR and not XQROUTER and not XQADDRESS and not XQTX and not XQUERY and not XQBMIN and not XQBMAX:
@@ -307,11 +343,12 @@ if __name__ == '__main__':
             results = run_get_schema(HOST, PROJECTID)
             print(results)
         else:
-            parser.print_help()
-            print(":x:","Missing [bold red]--projectid[/bold red] and/or [bold red]--apikey[/bold red]. See [bold green]--details[/bold green].")
-            print(table)
-    elif DETAILS:
-        print(table)
+            # parser.print_help()
+            print(":x:","Missing [bold red]--projectid[/bold red] and/or [bold red]--apikey[/bold red]. See [bold green]--help[/bold green].")
+            help()
+    elif HELP:
+        help()
     else:
         print(":x:","Missing [bold red]--host[/bold red]")
-        parser.print_help()
+        help()
+        # parser.print_help()
