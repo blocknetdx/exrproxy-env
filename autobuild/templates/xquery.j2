@@ -1,6 +1,7 @@
 {% for chain in chains %}
-####{{ chain.name.lower() }} STACK START
-  xquery-event-processor-{{ chain.name.lower() | replace('_','-') }}:
+{% for event_type in chain.query %}
+####{{ chain.name.lower()+'_'+event_type.name.lower() }} STACK START
+  xquery-event-processor-{{ chain.name.lower() | replace('_','-') }}-{{ event_type.name.lower() }}:
     image: blocknetdx/xquery-event-processor:latest
     depends_on:
       - "xquery-graphql-engine"
@@ -9,6 +10,7 @@
     restart: always
     environment:
       NAME: {{ chain.name }}
+      EVENT_TYPE: {{ event_type.name }}
       WORKER_THREADS: 30
       CHAIN_HOST: {{ chain.rpc_host }}
       DB_HOST: {{ postgres_ip }}
@@ -30,8 +32,9 @@
         max-file: "10"
     networks:
       backend:
-        ipv4_address: {{ chain.ip }}
-####{{ chain.name.lower() }} STACK END
+        ipv4_address: {{ event_type.ip }}
+####{{ chain.name.lower()+'_'+event_type.name.lower() }} STACK END
+{% endfor %}
 {% endfor %}
 
   xquery-gateway-processor:
