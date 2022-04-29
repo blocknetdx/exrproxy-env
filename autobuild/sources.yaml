@@ -44,6 +44,14 @@
   ram: 16
   cpu: 6
 
+#- name: SYS
+#  type: evm_chain 
+#  image: blocknetdx/syscoin4:v4.3.0
+#  volume: /snode
+#  disk: 7
+#  ram: 5
+#  cpu: 4
+#
 - name: BTC 
   type: chain
   image: blocknetdx/bitcoin:v0.20.0
@@ -56,39 +64,39 @@
   type: chain
   image: blocknetdx/dash:v0.17.0.3
   volume: /snode
-  disk: 35
-  ram: 5
+  disk: 36
+  ram: 6
   cpu: 4
 
 - name: DGB 
   type: chain
   image: blocknetdx/digibyte:v7.17.2
   volume: /snode
-  disk: 30
+  disk: 31
   ram: 5
   cpu: 4
 
-- name: LTC 
+- name: DOGE 
   type: chain
-  image: blocknetdx/litecoin:v0.18.1
+  image: blocknetdx/dogecoin:v1.14.5
   volume: /snode
-  disk: 75
+  disk: 58
   ram: 5
   cpu: 4
 
-- name: PIVX 
+- name: DOGEC 
   type: chain
-  image: blocknetdx/pivx:v5.3.2
-  volume: /snode
-  disk: 23
-  ram: 5
-  cpu: 4
-
-- name: SYS 
-  type: chain
-  image: blocknetdx/syscoin4:v4.3.0
+  image: blocknetdx/dogecash:5.4.4
   volume: /snode
   disk: 4
+  ram: 5
+  cpu: 4
+
+- name: GBX 
+  type: chain
+  image: blocknetdx/gobyte:v0.16.2.1
+  volume: /snode
+  disk: 3
   ram: 5
   cpu: 4
 
@@ -100,11 +108,19 @@
   ram: 5
   cpu: 4
 
+- name: LTC 
+  type: chain
+  image: blocknetdx/litecoin:v0.18.1
+  volume: /snode
+  disk: 85
+  ram: 5
+  cpu: 4
+
 - name: MUE 
   type: chain
   image: blocknetdx/monetaryunit:v2.3.0
   volume: /snode
-  disk: 6
+  disk: 5
   ram: 5
   cpu: 4
 
@@ -112,7 +128,15 @@
   type: chain
   image: blocknetdx/phore:v1.8.0
   volume: /snode
-  disk: 7
+  disk: 8
+  ram: 5
+  cpu: 4
+
+- name: PIVX 
+  type: chain
+  image: blocknetdx/pivx:v5.3.2
+  volume: /snode
+  disk: 21
   ram: 5
   cpu: 4
 
@@ -120,15 +144,31 @@
   type: chain
   image: blocknetdx/ravencoin:v4.3.2.1
   volume: /snode
-  disk: 27
+  disk: 31
   ram: 5
   cpu: 4
 
-- name: GBX 
+- name: SCC 
   type: chain
-  image: blocknetdx/gobyte:v0.16.2.1
+  image: blocknetdx/stakecubecoin:v3.1.0
   volume: /snode
-  disk: 3
+  disk: 4
+  ram: 8
+  cpu: 4
+
+- name: SYS 
+  type: chain
+  image: blocknetdx/syscoin4:v4.3.0
+  volume: /snode
+  disk: 7
+  ram: 5
+  cpu: 4
+
+- name: UNO 
+  type: chain
+  image: blocknetdx/unobtanium:v0.11.5
+  volume: /snode
+  disk: 5
   ram: 5
   cpu: 4
 
@@ -141,79 +181,97 @@
   chains:
     - name: AVAX
     - name: ETH
+#    - name: SYS
       
-# - name: XQUERY
-#   type: app
-#   volume: /snode
-#   disk: 5
-#   ram: 16
-#   cpu: 32
-#   graph: AVAX_ETH
-#   endpoint: /indexer
-#   chains:
-#     - name: AVAX_PANGOLIN
-#       abi: pangolinRouter.json
-#       query:
-#         - name: Withdrawal
-#         - name: Deposit
-#         - name: Approval
-#         - name: Burn
-#         - name: Mint
-#         - name: Swap
-#         - name: Sync
-#         - name: Transfer
-#         - name: Approval
-#         - name: Burn
-#         - name: Mint
-#         - name: Swap
-#         - name: Sync
-#         - name: Transfer
-#       address:
-#       - name: Pangolin_Router
-#         address: '0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106'
-#       historical:
-#       - fromBlock: "57347"
-#     - name: ETH_UNISWAP_v2
-#       abi: uniswapRouter_v2.json
-#       query:
-#         - name: Withdrawal
-#         - name: Deposit
-#         - name: Approval
-#         - name: Burn
-#         - name: Mint
-#         - name: Swap
-#         - name: Sync
-#         - name: Transfer
-#         - name: Approval
-#         - name: Burn
-#         - name: Mint
-#         - name: Swap
-#         - name: Sync
-#         - name: Transfer
-#       address:
-#       - name: Uniswap_Router_v2
-#         address: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
-#       historical:
-#       - fromBlock: "10207858"
-#     - name: ETH_UNISWAP_v3
-#       abi: uniswapRouter_v3.json
-#       query:
-#         - name: Withdrawal
-#         - name: Deposit
-#         - name: Approval
-#         - name: Burn
-#         - name: Mint
-#         - name: Swap
-#         - name: Sync
-#         - name: Transfer
-#         - name: Approval
-#         - name: Burn
-#         - name: Mint
-#         - name: Swap
-#         - name: Sync
-#         - name: Transfer
-#       address:
-#       - name: Uniswap_Router_v3
-#         address: '0xe592427a0aece92de3edee1f18e0157c05861564'
-#       historical:
-#       - fromBlock: "12369634"
+#- name: XQUERY
+#  type: app
+#  volume: /snode
+#  disk: 5
+#  ram: 16
+#  cpu: 32
+#  graph: AVAX_ETH_SYS
+#  endpoint: /indexer
+#  chains:
+#    - name: AVAX_PANGOLIN
+#      abi: pangolinRouter.json
+#      query:
+#        - name: Withdrawal
+#        - name: Deposit
+#        - name: Approval
+#        - name: Burn
+#        - name: Mint
+#        - name: Swap
+#        - name: Sync
+#        - name: Transfer
+#        - name: Approval
+#        - name: Burn
+#        - name: Mint
+#        - name: Swap
+#        - name: Sync
+#        - name: Transfer
+#      address:
+#      - name: Pangolin_Router
+#        address: '0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106'
+#      historical:
+#      - fromBlock: "57347"
+#    - name: ETH_UNISWAP_v2
+#      abi: uniswapRouter_v2.json
+#      query:
+#        - name: Withdrawal
+#        - name: Deposit
+#        - name: Approval
+#        - name: Burn
+#        - name: Mint
+#        - name: Swap
+#        - name: Sync
+#        - name: Transfer
+#        - name: Approval
+#        - name: Burn
+#        - name: Mint
+#        - name: Swap
+#        - name: Sync
+#        - name: Transfer
+#      address:
+#      - name: Uniswap_Router_v2
+#        address: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
+#      historical:
+#      - fromBlock: "10207858"
+#    - name: ETH_UNISWAP_v3
+#      abi: uniswapRouter_v3.json
+#      query:
+#        - name: Withdrawal
+#        - name: Deposit
+#        - name: Approval
+#        - name: Burn
+#        - name: Mint
+#        - name: Swap
+#        - name: Sync
+#        - name: Transfer
+#        - name: Approval
+#        - name: Burn
+#        - name: Mint
+#        - name: Swap
+#        - name: Sync
+#        - name: Transfer
+#      address:
+#      - name: Uniswap_Router_v3
+#        address: '0xe592427a0aece92de3edee1f18e0157c05861564'
+#      historical:
+#      - fromBlock: "12369634"
+#    - name: SYS_PEGASYS
+#      #rpc_host: https://rpc.syscoin.org/
+#      abi: abi/pegasysRouter.json
+#      query:
+#        - name: Withdrawal
+#        - name: Deposit
+#        - name: Approval
+#        - name: Burn
+#        - name: Mint
+#        - name: Swap
+#        - name: Sync
+#        - name: Transfer
+#      address:
+#      - name: Pegasys_Router
+#        address: '0x017dAd2578372CAEE5c6CddfE35eEDB3728544C4'
+#      historical:
+#      - fromBlock: "1"
