@@ -40,7 +40,7 @@ class Inquirer():
 			Token.Pointer: '#673ab7 bold',
 			Token.Instruction: '#808080 bold',
 			Token.Answer: '#f44336 bold',
-			Token.Question: '#00ff00 bold underline'
+			Token.Question: '#00ff00 bold'
 		})
 
 	def pick_checkbox(self,ask,choices):
@@ -377,12 +377,12 @@ class Snode():
 		{
 		'name': 'RPC_USER',
 		'detail': 'Servicenode Username',
-		'question': 'Specify a Username for your Servicenode:',
+		'question': 'Specify the RPC username to use with your Servicenode:',
 		},
 		{
 		'name': 'RPC_PASSWORD',
 		'detail': 'Servicenode Password',
-		'question': 'Specify a Password for your Servicenode:',
+		'question': 'Specify the RPC password to use with your Servicenode:',
 		},
 		]
 
