@@ -236,6 +236,49 @@ services:
 {% endif %}
 {% endif %}
 
+# syscoin
+{% if deploy_sysnevm %}
+  sysnevm:
+    image: {{ sysnevm_image }}
+    restart: unless-stopped
+    expose:
+      - 8369
+      - 8545
+      - 30303
+    ports:
+      - "8369:8369"
+      - "8545:8545"
+      - "30303:30303"
+    volumes:
+      - {{ sysnevm_volume }}/sysnevm:/chaindata
+    stop_signal: SIGINT
+    stop_grace_period: 2m
+    command:
+      - --http
+      - --http.api
+      - "admin,personal,eth,net,web3"
+      - --http.addr=0.0.0.0
+      - --http.vhosts=*
+      - --http.corsdomain=*
+      - --ws
+      - --ws.origins=*
+      - --ws.addr=0.0.0.0
+      - --ws.api
+      - "personal,eth,net,web3"
+      - --graphql
+      - --graphql.corsdomain=*
+      - --graphql.vhosts=*
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
+    networks:
+      backend:
+        ipv4_address: {{ sysnevm_ip }}
+{% endif %}
+{% endif %}
+
   xr_proxy:
     image: {{ xr_proxy_image }}
     entrypoint: /opt/scripts/start-xrproxy.sh
