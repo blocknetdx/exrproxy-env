@@ -56,6 +56,11 @@ set-ph = AVAX_HOST_IP={{ avax_ip }}
 set-ph = AVAX_HOST_PORT=9650
 {% endif %}
 
+{% if deploy_nevm %}
+set-ph = NEVM_HOST_IP={{ nevm_ip }}
+set-ph = NEVM_HOST_PORT=8545
+{% endif %}
+
 
 {% if deploy_xquery %}
 set-ph = XQUERY_IP={{ reverse_proxy_ip }}

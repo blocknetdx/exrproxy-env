@@ -9,6 +9,7 @@ from rich import print
 from rich.table import Table
 from rich import pretty
 from dotenv import dotenv_values
+from icecream import ic
 import subprocess
 
 # Global vars
@@ -96,7 +97,7 @@ if KNOWN_VOLUMES not in os.listdir(os.getcwd()):
 
 # Create .cache
 if CACHE not in os.listdir(os.getcwd()):
-	data = {'ticks':[],'payment_tier1':None,'payment_tier2':None,'discount_ablock':None,'discount_aablock':None}
+	data = {'ticks':[],'payment_tier1':None,'payment_tier2':None,'discount_ablock':None,'discount_aablock':None,'discount_sysblock':None}
 	write_text_file(CACHE,json.dumps(data, indent=4, sort_keys=False))
 
 # Load config files
@@ -135,12 +136,13 @@ if __name__ == '__main__':
 
 			# Parse sources.yaml categories
 			base = [x for x in source if x['type']=='base']
-			chains = [x for x in source if x['type']=='chain']
+			chains = [x for x in source if x['type'] in ['chain','hybrid']]
+			syschain = [x for x in chains if x['name']=='SYS']
 			evm_chains = [x for x in source if x['type']=='evm_chain']
 			apps = [x for x in source if x['type']=='app']
 			print(f"[bold magenta]{'-'*50}[/bold magenta]")
 			# Start inquirer
-			chains_todeploy = snode.inquirer.pick_checkbox("What chains for XBridge do you wish to support?",[{'name':f"{str(x['name']).ljust(4,' ')} | RAM {str(x['ram']).ljust(4,' ')} GB | CPU {str(x['cpu']).ljust(4,' ')} Cores | DISK {str(x['disk']).ljust(6,' ')} GB | {x['volume'] if x['name'] not in known_volumes['volumes'].keys() else known_volumes['volumes'][x['name']]}",'checked':True if x['name'] in cache['ticks'] else False} for x in chains])
+			chains_todeploy = snode.inquirer.pick_checkbox("What chains for XBridge do you wish to support?",[{'name':f"{str(x['name']).ljust(5,' ')} | RAM {str(x['ram']).ljust(4,' ')} GB | CPU {str(x['cpu']).ljust(4,' ')} Cores | DISK {str(x['disk']).ljust(6,' ')} GB | {x['volume'] if x['name'] not in known_volumes['volumes'].keys() else known_volumes['volumes'][x['name']]}",'checked':True if x['name'] in cache['ticks'] else False} for x in chains])
 			for cd in chains_todeploy:
 				cd = cd.split(' ')[0]
 				for c in chains:
@@ -148,7 +150,7 @@ if __name__ == '__main__':
 						if c['name'] in known_volumes['volumes'].keys():
 							c['volume'] = known_volumes['volumes'][c['name']]
 						input_template[0]['daemons'].append(c)
-			print(f"[bold magenta]{'-'*50}[/bold magenta]")			
+			print(f"[bold magenta]{'-'*50}[/bold magenta]")	
 			evm_chains_todeploy = snode.inquirer.pick_checkbox("What EVM chains do you wish to support?",[{'name':f"{str(x['name']).ljust(4,' ')} | RAM {str(x['ram']).ljust(4,' ')} GB | CPU {str(x['cpu']).ljust(4,' ')} Cores | DISK {str(x['disk']).ljust(6,' ')} GB | {x['volume'] if x['name'] not in known_volumes['volumes'].keys() else known_volumes['volumes'][x['name']]}",'checked':True if x['name'] in cache['ticks'] else False} for x in evm_chains])
 			for evcd in evm_chains_todeploy:
 				evcd = evcd.split(' ')[0]
@@ -176,6 +178,9 @@ if __name__ == '__main__':
 							if evcd in known_volumes['volumes'].keys():
 								evc['volume'] = known_volumes['volumes'][evcd]
 							input_template[0]['daemons'].append(evc)
+#							if evcd == 'NEVM':
+#								if syschain[0] not in input_template[0]['daemons']:
+#									input_template[0]['daemons'].append(syschain[0])
 			write_text_file(KNOWN_HOSTS_FILE,json.dumps(known_hosts, indent=4, sort_keys=False))
 			print(f"[bold magenta]{'-'*50}[/bold magenta]")
 			if len(evm_chains_todeploy)>0:
@@ -233,6 +238,8 @@ if __name__ == '__main__':
 						b['discount_ablock'] = cache["discount_ablock"]
 					if cache["discount_aablock"]:
 						b['discount_aablock'] = cache["discount_aablock"]
+					if cache["discount_sysblock"]:
+						b['discount_sysblock'] = cache["discount_sysblock"]
 					tier1 = snode.inquirer.get_input(f'Press enter for {b["payment_tier1"]}USD tier1 amount or type a new USD price:')
 					b['payment_tier1'] = int(tier1) if tier1 !='' else b["payment_tier1"]
 					tier2 = snode.inquirer.get_input(f'Press enter for {b["payment_tier2"]}USD tier2 amount or type a new USD price:')
@@ -241,6 +248,8 @@ if __name__ == '__main__':
 					b['discount_ablock'] = int(ablock_discount) if ablock_discount !='' else b["discount_ablock"]
 					aablock_discount = snode.inquirer.get_input(f'Press enter for {b["discount_aablock"]}% aaBLOCK discount or type a new discount (e.g. 15 for 15% aaBLOCK discount):')
 					b['discount_aablock'] = int(aablock_discount) if aablock_discount !='' else b["discount_aablock"]
+					sysblock_discount = snode.inquirer.get_input(f'Press enter for {b["discount_sysblock"]}% sysBLOCK discount or type a new discount (e.g. 15 for 15% sysBLOCK discount):')
+					b['discount_sysblock'] = int(sysblock_discount) if sysblock_discount !='' else b["discount_sysblock"]
 				if b['name'] in known_volumes['volumes'].keys():
 					b['volume'] = known_volumes['volumes'][b['name']]
 				if b['name'] != 'PAYMENT':
@@ -307,6 +316,7 @@ if __name__ == '__main__':
 					cache['payment_tier2'] = daemon['payment_tier2']
 					cache['discount_ablock'] = daemon['discount_ablock']
 					cache['discount_aablock'] = daemon['discount_aablock']
+					cache['discount_sysblock'] = daemon['discount_sysblock']
 				if daemon['name'] == 'XQUERY':
 					for index in daemon['chains']:
 						cache['ticks'].append(index['name'])

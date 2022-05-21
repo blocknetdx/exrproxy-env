@@ -22,6 +22,7 @@
   payment_tier2: 200
   discount_ablock: 20
   discount_aablock: 0      
+  discount_sysblock: 10      
   image: blocknetdx/eth-payment-processor:latest
   volume: /snode
   disk: 1
@@ -44,14 +45,6 @@
   ram: 16
   cpu: 6
 
-#- name: SYS
-#  type: evm_chain 
-#  image: blocknetdx/syscoin4:v4.3.0
-#  volume: /snode
-#  disk: 7
-#  ram: 5
-#  cpu: 4
-#
 - name: BTC 
   type: chain
   image: blocknetdx/bitcoin:v0.20.0
@@ -157,12 +150,21 @@
   cpu: 4
 
 - name: SYS 
-  type: chain
+  type: hybrid
   image: blocknetdx/syscoin4:v4.3.0
   volume: /snode
   disk: 7
   ram: 5
   cpu: 4
+
+- name: NEVM
+  type: evm_chain
+  image: blocknetdx/syscoin4:v4.3.0
+  volume: /snode
+  disk: 7
+  ram: 5
+  cpu: 4
+
 
 - name: UNO 
   type: chain
@@ -181,7 +183,7 @@
   chains:
     - name: AVAX
     - name: ETH
-#    - name: SYS
+    - name: NEVM
       
 #- name: XQUERY
 #  type: app

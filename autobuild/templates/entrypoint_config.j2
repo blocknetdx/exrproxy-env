@@ -9,6 +9,27 @@ rpcallowip=172.31.0.0/20
 
 {{ walletConfig }}
 
+{% if writeNEVM %}
+# NEVM startup options
+gethcommandline=--syncmode=full
+gethcommandline=--gcmode=archive
+gethcommandline=--http
+gethcommandline=--http.addr={{ nevmIP }}
+gethcommandline=--http.api=admin,debug,eth,miner,net,personal,txpool,web3
+gethcommandline=--http.rpcprefix=/
+gethcommandline=--http.vhosts=*
+gethcommandline=--ws
+gethcommandline=--ws.addr={{ nevmIP }}
+gethcommandline=--ws.api=personal,eth,net,web3
+gethcommandline=--ws.rpcprefix=/
+gethcommandline=--ws.origins=*
+gethcommandline=--graphql
+gethcommandline=--graphql.vhosts=*
+#gethcommandline=--pprof
+#gethcommandline=--pprof.addr={{ nevmIP }}
+#gethcommandline=--metrics
+#gethcommandline=--metrics.addr={{ nevmIP }}
+{% endif %}
 
 EOL
 

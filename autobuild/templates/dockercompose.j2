@@ -8,6 +8,14 @@ services:
     expose:
       - {{ daemon.rpcPort }}
       - {{ daemon.p2pPort }}
+{% if deploy_nevm and daemon.name == 'SYS' %}
+      - 8545
+      - 30303
+    ports:
+      - "8369:8369"
+      - "8545:8545"
+      - "30303:30303"
+{% endif %}
     entrypoint: /opt/blockchain/start-{{ daemon.configName }}.sh
     command:
       - {{ daemon.binFile }}
@@ -15,11 +23,15 @@ services:
       RPC_USER: "${RPC_USER}"
       RPC_PASSWORD: "${RPC_PASSWORD}"
       RPC_ALLOWIP: 172.31.0.0/20
+{% if deploy_nevm and daemon.name == 'SYS' %}
+    stop_signal: SIGINT
+    stop_grace_period: 4m
+{% endif %}
     volumes:
       - {{ daemon.volume }}/{{ daemon.name }}/config:/opt/blockchain/config
       - {{ daemon.volume }}/{{ daemon.name }}/data:/opt/blockchain/data
     {% if daemon.chainstate is defined  %}
-  - {{ daemon.chainstate }}/{{ daemon.name }}/data/chainstate:/opt/blockchain/data/chainstate
+      - {{ daemon.chainstate }}/{{ daemon.name }}/data/chainstate:/opt/blockchain/data/chainstate
     {% endif %}
   - type: bind
         source: ./scripts/entrypoints/start-{{ daemon.configName }}.sh
@@ -166,7 +178,7 @@ services:
 {% endif %}
 {% endif %}
 
-{% if deploy_eth or deploy_avax %}
+{% if deploy_eth or deploy_avax or deploy_nevm %}
 {% if deploy_payment %}
   payment:
     image: {{ payment_image }}
@@ -182,6 +194,11 @@ services:
       AVAX_PORT: 9650
       AVAX_HOST_TYPE: http
 {% endif %}
+{% if deploy_nevm %}
+      NEVM_HOST: {{ nevm_ip }}
+      NEVM_PORT: 8545
+      NEVM_HOST_TYPE: http
+{% endif %}
 {% if avaxexternal %}
       AVAX_HOST: {{ avax_ip }}
       AVAX_PORT: 9650
@@ -191,6 +208,7 @@ services:
       PAYMENT_AMOUNT_TIER2: {{ payment_tier2 }}
       DISCOUNT_ABLOCK: {{ payment_discount_ablock }}
       DISCOUNT_AABLOCK: {{ payment_discount_aablock }}
+      DISCOUNT_SYSBLOCK: {{ payment_discount_sysblock }}
       DB_HOST: {{ pg_ip }}
       DB_USERNAME: ethproxy
       DB_PASSWORD: password
@@ -205,6 +223,9 @@ services:
 {% endif %}
 {% if deploy_avax %}
       - avax
+{% endif %}
+{% if deploy_nevm %}
+      - sys
 {% endif %}
       - payment_db
     logging:
@@ -259,7 +280,11 @@ services:
       AVAX_HOST: {{ avax_ip }}
       AVAX_IP: 9650
 {% endif %}
-{% if deploy_eth or deploy_avax %}
+{% if deploy_nevm %}
+      NEVM_HOST: {{ nevm_ip }}
+      NEVM_IP: 8545
+{% endif %}
+{% if deploy_eth or deploy_avax or deploy_nevm %}
 {% if deploy_payment %}
       PAYMENT_PROCESSOR_HOST: {{ payment_ip }}:8080
       DB_HOST: {{ pg_ip }}
