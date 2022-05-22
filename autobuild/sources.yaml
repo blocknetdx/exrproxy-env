@@ -185,95 +185,95 @@
     - name: ETH
     - name: NEVM
       
-#- name: XQUERY
-#  type: app
-#  volume: /snode
-#  disk: 5
-#  ram: 16
-#  cpu: 32
-#  graph: AVAX_ETH_SYS
-#  endpoint: /indexer
-#  chains:
-#    - name: AVAX_PANGOLIN
-#      abi: pangolinRouter.json
-#      query:
-#        - name: Withdrawal
-#        - name: Deposit
-#        - name: Approval
-#        - name: Burn
-#        - name: Mint
-#        - name: Swap
-#        - name: Sync
-#        - name: Transfer
-#        - name: Approval
-#        - name: Burn
-#        - name: Mint
-#        - name: Swap
-#        - name: Sync
-#        - name: Transfer
-#      address:
-#      - name: Pangolin_Router
-#        address: '0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106'
-#      historical:
-#      - fromBlock: "57347"
-#    - name: ETH_UNISWAP_v2
-#      abi: uniswapRouter_v2.json
-#      query:
-#        - name: Withdrawal
-#        - name: Deposit
-#        - name: Approval
-#        - name: Burn
-#        - name: Mint
-#        - name: Swap
-#        - name: Sync
-#        - name: Transfer
-#        - name: Approval
-#        - name: Burn
-#        - name: Mint
-#        - name: Swap
-#        - name: Sync
-#        - name: Transfer
-#      address:
-#      - name: Uniswap_Router_v2
-#        address: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
-#      historical:
-#      - fromBlock: "10207858"
-#    - name: ETH_UNISWAP_v3
-#      abi: uniswapRouter_v3.json
-#      query:
-#        - name: Withdrawal
-#        - name: Deposit
-#        - name: Approval
-#        - name: Burn
-#        - name: Mint
-#        - name: Swap
-#        - name: Sync
-#        - name: Transfer
-#        - name: Approval
-#        - name: Burn
-#        - name: Mint
-#        - name: Swap
-#        - name: Sync
-#        - name: Transfer
-#      address:
-#      - name: Uniswap_Router_v3
-#        address: '0xe592427a0aece92de3edee1f18e0157c05861564'
-#      historical:
-#      - fromBlock: "12369634"
-#    - name: SYS_PEGASYS
-#      #rpc_host: https://rpc.syscoin.org/
-#      abi: abi/pegasysRouter.json
-#      query:
-#        - name: Withdrawal
-#        - name: Deposit
-#        - name: Approval
-#        - name: Burn
-#        - name: Mint
-#        - name: Swap
-#        - name: Sync
-#        - name: Transfer
-#      address:
-#      - name: Pegasys_Router
-#        address: '0x017dAd2578372CAEE5c6CddfE35eEDB3728544C4'
-#      historical:
-#      - fromBlock: "1"
+- name: XQUERY
+  type: app
+  volume: /snode
+  disk: 5
+  ram: 16
+  cpu: 32
+  graph: AVAX_ETH_SYS
+  endpoint: /indexer
+  chains:
+    - name: AVAX_PANGOLIN
+      abi: pangolinRouter.json
+      query:
+        - name: Withdrawal
+        - name: Deposit
+        - name: Approval
+        - name: Burn
+        - name: Mint
+        - name: Swap
+        - name: Sync
+        - name: Transfer
+        - name: Approval
+        - name: Burn
+        - name: Mint
+        - name: Swap
+        - name: Sync
+        - name: Transfer
+      address:
+      - name: Pangolin_Router
+        address: '0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106'
+      historical:
+      - fromBlock: "57347"
+    - name: ETH_UNISWAP_v2
+      abi: uniswapRouter_v2.json
+      query:
+        - name: Withdrawal
+        - name: Deposit
+        - name: Approval
+        - name: Burn
+        - name: Mint
+        - name: Swap
+        - name: Sync
+        - name: Transfer
+        - name: Approval
+        - name: Burn
+        - name: Mint
+        - name: Swap
+        - name: Sync
+        - name: Transfer
+      address:
+      - name: Uniswap_Router_v2
+        address: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
+      historical:
+      - fromBlock: "10207858"
+    - name: ETH_UNISWAP_v3
+      abi: uniswapRouter_v3.json
+      query:
+        - name: Withdrawal
+        - name: Deposit
+        - name: Approval
+        - name: Burn
+        - name: Mint
+        - name: Swap
+        - name: Sync
+        - name: Transfer
+        - name: Approval
+        - name: Burn
+        - name: Mint
+        - name: Swap
+        - name: Sync
+        - name: Transfer
+      address:
+      - name: Uniswap_Router_v3
+        address: '0xe592427a0aece92de3edee1f18e0157c05861564'
+      historical:
+      - fromBlock: "12369634"
+    - name: NEVM_PEGASYS
+      #rpc_host: https://rpc.syscoin.org/
+      abi: abi/pegasysRouter.json
+      query:
+        - name: Withdrawal
+        - name: Deposit
+        - name: Approval
+        - name: Burn
+        - name: Mint
+        - name: Swap
+        - name: Sync
+        - name: Transfer
+      address:
+      - name: Pegasys_Router
+        address: '0x017dAd2578372CAEE5c6CddfE35eEDB3728544C4'
+      historical:
+      - fromBlock: "1"
