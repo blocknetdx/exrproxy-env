@@ -2,7 +2,7 @@
 {% for event_type in chain.query %}
 ####{{ chain.name.lower()+'_'+event_type.name.lower() }} STACK START
   xquery-event-processor-{{ chain.name.lower() | replace('_','-') }}-{{ event_type.name.lower() }}:
-    image: blocknetdx/xquery-event-processor:latest
+    image: blocknetdx/xquery-event-processor:{{ xquery_tag }}
     depends_on:
       - "xquery-graphql-engine"
       - "xquery-gateway-processor"
@@ -38,7 +38,7 @@
 {% endfor %}
 
   xquery-gateway-processor:
-    image: blocknetdx/xquery-gateway-processor:latest
+    image: blocknetdx/xquery-gateway-processor:{{ xquery_tag }}
     depends_on:
       - "xquery-postgres"
     restart: always
@@ -61,7 +61,7 @@
       backend:
         ipv4_address: {{ gateway_processor_ip }}
   xquery-db-processor:
-    image: blocknetdx/xquery-db-processor:latest
+    image: blocknetdx/xquery-db-processor:{{ xquery_tag }}
     depends_on:
       - "xquery-postgres"
     restart: always
@@ -132,7 +132,7 @@
       backend:
         ipv4_address: {{ graphql_engine_ip }}
   xquery-reverse-proxy:
-    image: blocknetdx/xquery-reverse-proxy:latest
+    image: blocknetdx/xquery-reverse-proxy:{{ xquery_tag }}
     restart: always
     environment:
       PORT: {{ reverse_proxy_port }}

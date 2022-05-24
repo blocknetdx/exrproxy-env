@@ -63,6 +63,7 @@ optional arguments:
   --yaml YAML           Custom input yaml
   --interval INTERVAL   Docker stopping interval till sends SIGKILL signal; default 30s
   --branchpath BRANCHPATH
+  --xquerytag TAG 
   --prunecache          Reinit .known_hosts, .known_volumes, .env and .cache
                         files
   --subnet SUBNET       Subnet to configure docker-compose network 

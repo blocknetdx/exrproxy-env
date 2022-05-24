@@ -191,7 +191,7 @@
   disk: 5
   ram: 16
   cpu: 32
-  graph: AVAX_ETH_SYS
+  graph: AVAX_ETH_NEVM
   endpoint: /indexer
   chains:
     - name: AVAX_PANGOLIN
@@ -262,7 +262,7 @@
       - fromBlock: "12369634"
     - name: NEVM_PEGASYS
       #rpc_host: https://rpc.syscoin.org/
-      abi: abi/pegasysRouter.json
+      abi: pegasysRouter.json
       query:
         - name: Withdrawal
         - name: Deposit
