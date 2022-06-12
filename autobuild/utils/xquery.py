@@ -25,16 +25,15 @@ def xq_template(used_ip, subnet, query, data):
 				if 'SYS' in name:
 					item['rpc_host'] = f"http://{data['nevm_ip']}:8545"
 				item['query'] = [dict(t) for t in {tuple(d.items()) for d in item['query']}]
-				for event in item['query']:
-					if f'{name}_{event["name"]}' in used_ip['ip'].keys():
-						event['ip'] = used_ip['ip'][f'{name}_{event["name"]}']
-					else:
-						while True:
-							custom_ip = random_ip(subnet)
-							if custom_ip not in used_ip['ip'].values():
-								event['ip'] = custom_ip
-								used_ip['ip'][f'{name}_{event["name"]}'] = custom_ip
-								break
+				if name in used_ip['ip'].keys():
+					item['ip'] = used_ip['ip'][name]
+				else:
+					while True:
+						custom_ip = random_ip(subnet)
+						if custom_ip not in used_ip['ip'].values():
+							item['ip'] = custom_ip
+							used_ip['ip'][name] = custom_ip
+							break
 				final_data['chains'].append(item)
 		elif key0 == 'graph':
 			final_data[key0] = item0
