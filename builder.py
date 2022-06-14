@@ -99,7 +99,7 @@ if KNOWN_VOLUMES not in os.listdir(os.getcwd()):
 
 # Create .cache
 if CACHE not in os.listdir(os.getcwd()):
-	data = {'ticks':[],'payment_tier1':None,'payment_tier2':None,'discount_ablock':None,'discount_aablock':None,'discount_sysblock':None}
+	data = {'version':'1','ticks':[],'payment_tier1':None,'payment_tier2':None,'discount_ablock':None,'discount_aablock':None,'discount_sysblock':None}
 	write_text_file(CACHE,json.dumps(data, indent=4, sort_keys=False))
 
 # Load config files
@@ -109,6 +109,11 @@ source = load_yaml_file(SOURCE)
 known_hosts = json.loads(load_text_file(KNOWN_HOSTS_FILE))
 known_volumes = json.loads(load_text_file(KNOWN_VOLUMES))
 cache = json.loads(load_text_file(CACHE))
+
+# Upgrade cache if necessary
+if 'version' not in cache:
+	cache['version'] = 1
+	cache['discount_sysblock'] = 10
 
 if __name__ == '__main__':
 	print(hw_table)
@@ -180,9 +185,6 @@ if __name__ == '__main__':
 							if evcd in known_volumes['volumes'].keys():
 								evc['volume'] = known_volumes['volumes'][evcd]
 							input_template[0]['daemons'].append(evc)
-#							if evcd == 'NEVM':
-#								if syschain[0] not in input_template[0]['daemons']:
-#									input_template[0]['daemons'].append(syschain[0])
 			write_text_file(KNOWN_HOSTS_FILE,json.dumps(known_hosts, indent=4, sort_keys=False))
 			print(f"[bold magenta]{'-'*50}[/bold magenta]")
 			if len(evm_chains_todeploy)>0:
@@ -310,7 +312,7 @@ if __name__ == '__main__':
 				write_yaml_file(f'inputs_yaml/{now}.yaml',input_template)
 			else:
 				write_yaml_file(f'inputs_yaml/{config_name}.yaml',input_template)
-			cache = {'ticks':[],'payment_tier1':None,'payment_tier2':None,'discount_ablock':None,'discount_aablock':None}
+			cache = {'ticks':[],'payment_tier1':None,'payment_tier2':None,'discount_ablock':None,'discount_aablock':None,'discount_sysblock':None,'version':'1'}
 			for daemon in input_template[0]['daemons']:
 				cache['ticks'].append(daemon['name'])
 				if daemon['name'] == 'PAYMENT':
