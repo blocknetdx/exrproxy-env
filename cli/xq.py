@@ -211,7 +211,7 @@ def help():
         ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqpair [bold yellow]PAIRS[/bold yellow]','Query for custom pairs'],
         ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqpair [bold yellow]PAIRS[/bold yellow] --xqrouter [bold yellow]ROUTERS[/bold yellow]','Query for custom pairs and routers'],
         ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqaddress [bold yellow]ADDRESSES[/bold yellow]','Query for custom addresses'],
-        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqtx [bold yellow]TXS[/bold yellow]','Query for cutom txs'],
+        ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqtx [bold yellow]TXS[/bold yellow]','Query for custom txs'],
         ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqbmin [bold yellow]CHAIN[/bold yellow]','Query for minimum indexed blocknumber for a chain'],
         ['--projectid [bold yellow]PROJECTID[/bold yellow] --apikey [bold yellow]APIKEY[/bold yellow] --xqbmax [bold yellow]CHAIN[/bold yellow]','Query for maximum indexed blocknumber for a chain'],
     ]
