@@ -234,16 +234,11 @@ if __name__ == '__main__':
 			for b in base:				
 				if b['name'] == 'PAYMENT' and any([[True for x in [deploy['name'] for deploy in input_template[0]['daemons']] if x==xx] for xx in [echain['name'] for echain in evm_chains]]):
 					print(f"[bold magenta]{'-'*50}[/bold magenta]")
-					if cache["payment_tier1"]:
-						b['payment_tier1'] = cache["payment_tier1"]
-					if cache["payment_tier2"]:
-						b['payment_tier2'] = cache["payment_tier2"]
-					if cache["discount_ablock"]:
-						b['discount_ablock'] = cache["discount_ablock"]
-					if cache["discount_aablock"]:
-						b['discount_aablock'] = cache["discount_aablock"]
-					if cache["discount_sysblock"]:
-						b['discount_sysblock'] = cache["discount_sysblock"]
+					b['payment_tier1'] = cache["payment_tier1"] if cache["payment_tier1"] != None else 35
+					b['payment_tier2'] = cache["payment_tier2"] if cache["payment_tier2"] != None else 200
+					b['discount_ablock'] = cache["discount_ablock"] if cache["discount_ablock"] != None else 20
+					b['discount_aablock'] = cache["discount_aablock"] if cache["discount_aablock"] != None else 0
+					b['discount_sysblock'] = cache["discount_sysblock"] if cache["discount_sysblock"] != None else 10
 					tier1 = snode.inquirer.get_input(f'Press enter for {b["payment_tier1"]}USD tier1 amount or type a new USD price:')
 					b['payment_tier1'] = int(tier1) if tier1 !='' else b["payment_tier1"]
 					tier2 = snode.inquirer.get_input(f'Press enter for {b["payment_tier2"]}USD tier2 amount or type a new USD price:')
