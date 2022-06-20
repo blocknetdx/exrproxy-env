@@ -329,7 +329,6 @@ if __name__ == '__main__':
 
 		input_template_args[0]['daemons'] = input_template[0]['daemons']
 		input_template_args[0]['xquery_tag'] = XQUERYTAG
-        ic(BRANCHPATH)
 		data_with_ips = processcustom(input_template_args, SUBNET, BRANCHPATH)
 		processconfigs(data_with_ips, BRANCHPATH)
 		
