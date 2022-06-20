@@ -30,7 +30,6 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 	used_ip = json.loads(load_text_file(os.getcwd()+'/'+IPS_CACHE))
 
 	print('Processing custom input...')
-	# print(customlist)
 	to_del_index = []
 	daemons_list = []
 	configFiles = {}
@@ -45,11 +44,12 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 		else:
 			binFiles[blockchain['ticker']] = blockchain['conf_name'].split('.conf')[0] + 'd'
 
+	customlist[0]['deploy_nevm'] = False
 	for c in customlist:
 		for i in range(len(c['daemons'])):
 			name = c['daemons'][i]['name']
 			#daemon configs
-			if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'XQUERY', 'AVAX', 'PAYMENT', 'HYDRA']:
+			if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'XQUERY', 'AVAX', 'PAYMENT', 'HYDRA', 'NEVM']:
 				try:
 					print(f'fetch template for {name} from raw.git')
 					xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(BRANCHPATH, name))
@@ -89,6 +89,8 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 								c['daemons'][i]['ip'] = custom_ip
 								used_ip['ip'][name] = custom_ip
 								break
+					if name == 'SYS':
+						nevm_ip = c['daemons'][i]['ip']
 					daemons_list.append(name.upper())
 					rpc_threads += 1
 				except Exception as e:
@@ -177,6 +179,17 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 						customlist[0]['avaxexternal'] = True
 						customlist[0][f'{name.lower()}_ip'] = c['daemons'][i]['host']
 						print("Using external avax")
+				if name.upper() == 'NEVM':
+					if 'image' in list(c['daemons'][i]):
+						customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
+						customlist[0]['deploy_nevm'] = True
+						print("Using internal nevm")
+						customlist[0]['nevm_ip'] = nevm_ip
+					else:
+						customlist[0]['deploy_nevm'] = False
+						customlist[0]['nevmexternal'] = True
+						customlist[0][f'{name.lower()}_ip'] = c['daemons'][i]['host']
+						print("Using external nevm")
 
 				if name.upper() == 'HYDRA':
 					print('HYDRA exists')
@@ -238,7 +251,6 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 		else:
 			c['rpcthreads'] = 8
 
-
 		custom_template_fname = 'autobuild/templates/{}'.format(c['j2template'])
 		with open(custom_template_fname,'r') as file:
 			template_string = file.read()
@@ -275,10 +287,17 @@ def processconfigs(datalist, BRANCHPATH):
 			name = daemon['name']
 			if name.upper() not in ['TNODE', 'SNODE', 'TESTSNODE', 'TESTTNODE', 'ETH', 'XR_PROXY']:
 				XBRIDGE_CONF += "{},".format(name)
-				#template_wc = Template(autoconfig.load_template(autoconfig.wallet_config(BRANCHPATH))).render(daemon)
 				template_wc = Template(autoconfig.load_template(autoconfig.wallet_config(BRANCHPATH))).render(p2pPort=daemon['p2pPort'],rpcPort=daemon['rpcPort'],legacy=daemon['legacy'],deprecatedrpc=daemon['deprecatedrpc'],)
+				if name == 'SYS' and datalist[0]['deploy_nevm'] is True:
+					write_nevm = True
+					nevm_ip = datalist[0]['nevm_ip']
+				else:	 
+					write_nevm = False
+					nevm_ip = '0.0.0.0'
 				rendered_data_ec = custom_template_ec.render({'walletConfig': template_wc,
-															  'configName': daemon['configName']})
+															  'configName': daemon['configName'],
+															  'writeNEVM': write_nevm,
+															  'nevmIP': nevm_ip})
 				config_name = './scripts/entrypoints/start-{}.sh'.format(daemon['configName'])
 				print('Creating File: {}'.format(config_name))
 				autoconfig.save_config(rendered_data_ec, config_name)

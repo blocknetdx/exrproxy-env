@@ -9,10 +9,10 @@ from rich import print
 from rich.table import Table
 from rich import pretty
 from dotenv import dotenv_values
+from icecream import ic
 import subprocess
 
 # Global vars
-branchpath = re.sub(r'(^(?!.*/$).*)',r'\1/','https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master')
 KNOWN_HOSTS_FILE = '.known_hosts'
 KNOWN_VOLUMES = '.known_volumes'
 ENV_FILE = '.env'
@@ -49,7 +49,8 @@ parser.add_argument('--prune', help='Prune docker', default=False, action='store
 parser.add_argument('--source', help='Source file', default='autobuild/sources.yaml')
 parser.add_argument('--yaml', help='Custom input yaml', default=False)
 parser.add_argument('--interval', help='Docker stopping interval till sends SIGKILL signal; default 30s', default=30)
-parser.add_argument('--branchpath', default=branchpath)
+parser.add_argument('--branchpath', default='https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master')
+parser.add_argument('--xquerytag', help="Override XQuery images tag", default='latest')
 parser.add_argument('--prunecache', help='Reinit .known_hosts, .known_volumes, .env and .cache files', action='store_true')
 parser.add_argument('--subnet', help='Subnet to configure docker-compose network', default="172.31.0.0/20")
 
@@ -60,7 +61,9 @@ CHECKS = args.nochecks
 ENV = args.noenv
 DEPLOY = args.deploy
 PRUNE = args.prune
-BRANCHPATH = args.branchpath
+BRANCHPATH = re.sub(r'(^(?!.*/$).*)',r'\1/',args.branchpath)
+
+XQUERYTAG = args.xquerytag
 STOP_INTERVAL = int(args.interval)
 PRUNE_CACHE = args.prunecache
 SUBNET = args.subnet
@@ -96,7 +99,7 @@ if KNOWN_VOLUMES not in os.listdir(os.getcwd()):
 
 # Create .cache
 if CACHE not in os.listdir(os.getcwd()):
-	data = {'ticks':[],'payment_tier1':None,'payment_tier2':None,'discount_ablock':None,'discount_aablock':None}
+	data = {'version':'1','ticks':[],'payment_tier1':None,'payment_tier2':None,'discount_ablock':None,'discount_aablock':None,'discount_sysblock':None}
 	write_text_file(CACHE,json.dumps(data, indent=4, sort_keys=False))
 
 # Load config files
@@ -106,6 +109,11 @@ source = load_yaml_file(SOURCE)
 known_hosts = json.loads(load_text_file(KNOWN_HOSTS_FILE))
 known_volumes = json.loads(load_text_file(KNOWN_VOLUMES))
 cache = json.loads(load_text_file(CACHE))
+
+# Upgrade cache if necessary
+if 'version' not in cache:
+	cache['version'] = 1
+	cache['discount_sysblock'] = None
 
 if __name__ == '__main__':
 	print(hw_table)
@@ -135,12 +143,13 @@ if __name__ == '__main__':
 
 			# Parse sources.yaml categories
 			base = [x for x in source if x['type']=='base']
-			chains = [x for x in source if x['type']=='chain']
+			chains = [x for x in source if x['type'] in ['chain','hybrid']]
+			syschain = [x for x in chains if x['name']=='SYS']
 			evm_chains = [x for x in source if x['type']=='evm_chain']
 			apps = [x for x in source if x['type']=='app']
 			print(f"[bold magenta]{'-'*50}[/bold magenta]")
 			# Start inquirer
-			chains_todeploy = snode.inquirer.pick_checkbox("What chains for XBridge do you wish to support?",[{'name':f"{str(x['name']).ljust(4,' ')} | RAM {str(x['ram']).ljust(4,' ')} GB | CPU {str(x['cpu']).ljust(4,' ')} Cores | DISK {str(x['disk']).ljust(6,' ')} GB | {x['volume'] if x['name'] not in known_volumes['volumes'].keys() else known_volumes['volumes'][x['name']]}",'checked':True if x['name'] in cache['ticks'] else False} for x in chains])
+			chains_todeploy = snode.inquirer.pick_checkbox("What chains for XBridge do you wish to support?",[{'name':f"{str(x['name']).ljust(5,' ')} | RAM {str(x['ram']).ljust(4,' ')} GB | CPU {str(x['cpu']).ljust(4,' ')} Cores | DISK {str(x['disk']).ljust(6,' ')} GB | {x['volume'] if x['name'] not in known_volumes['volumes'].keys() else known_volumes['volumes'][x['name']]}",'checked':True if x['name'] in cache['ticks'] else False} for x in chains])
 			for cd in chains_todeploy:
 				cd = cd.split(' ')[0]
 				for c in chains:
@@ -148,7 +157,7 @@ if __name__ == '__main__':
 						if c['name'] in known_volumes['volumes'].keys():
 							c['volume'] = known_volumes['volumes'][c['name']]
 						input_template[0]['daemons'].append(c)
-			print(f"[bold magenta]{'-'*50}[/bold magenta]")			
+			print(f"[bold magenta]{'-'*50}[/bold magenta]")	
 			evm_chains_todeploy = snode.inquirer.pick_checkbox("What EVM chains do you wish to support?",[{'name':f"{str(x['name']).ljust(4,' ')} | RAM {str(x['ram']).ljust(4,' ')} GB | CPU {str(x['cpu']).ljust(4,' ')} Cores | DISK {str(x['disk']).ljust(6,' ')} GB | {x['volume'] if x['name'] not in known_volumes['volumes'].keys() else known_volumes['volumes'][x['name']]}",'checked':True if x['name'] in cache['ticks'] else False} for x in evm_chains])
 			for evcd in evm_chains_todeploy:
 				evcd = evcd.split(' ')[0]
@@ -225,14 +234,11 @@ if __name__ == '__main__':
 			for b in base:				
 				if b['name'] == 'PAYMENT' and any([[True for x in [deploy['name'] for deploy in input_template[0]['daemons']] if x==xx] for xx in [echain['name'] for echain in evm_chains]]):
 					print(f"[bold magenta]{'-'*50}[/bold magenta]")
-					if cache["payment_tier1"]:
-						b['payment_tier1'] = cache["payment_tier1"]
-					if cache["payment_tier2"]:
-						b['payment_tier2'] = cache["payment_tier2"]
-					if cache["discount_ablock"]:
-						b['discount_ablock'] = cache["discount_ablock"]
-					if cache["discount_aablock"]:
-						b['discount_aablock'] = cache["discount_aablock"]
+					if cache["payment_tier1"] != None: b['payment_tier1'] = cache["payment_tier1"] 
+					if cache["payment_tier2"] != None: b['payment_tier2'] = cache["payment_tier2"] 
+					if cache["discount_ablock"] != None: b['discount_ablock'] = cache["discount_ablock"] 
+					if cache["discount_aablock"] != None: b['discount_aablock'] = cache["discount_aablock"] 
+					if cache["discount_sysblock"] != None: b['discount_sysblock'] = cache["discount_sysblock"] 
 					tier1 = snode.inquirer.get_input(f'Press enter for {b["payment_tier1"]}USD tier1 amount or type a new USD price:')
 					b['payment_tier1'] = int(tier1) if tier1 !='' else b["payment_tier1"]
 					tier2 = snode.inquirer.get_input(f'Press enter for {b["payment_tier2"]}USD tier2 amount or type a new USD price:')
@@ -241,6 +247,8 @@ if __name__ == '__main__':
 					b['discount_ablock'] = int(ablock_discount) if ablock_discount !='' else b["discount_ablock"]
 					aablock_discount = snode.inquirer.get_input(f'Press enter for {b["discount_aablock"]}% aaBLOCK discount or type a new discount (e.g. 15 for 15% aaBLOCK discount):')
 					b['discount_aablock'] = int(aablock_discount) if aablock_discount !='' else b["discount_aablock"]
+					sysblock_discount = snode.inquirer.get_input(f'Press enter for {b["discount_sysblock"]}% sysBLOCK discount or type a new discount (e.g. 15 for 15% sysBLOCK discount):')
+					b['discount_sysblock'] = int(sysblock_discount) if sysblock_discount !='' else b["discount_sysblock"]
 				if b['name'] in known_volumes['volumes'].keys():
 					b['volume'] = known_volumes['volumes'][b['name']]
 				if b['name'] != 'PAYMENT':
@@ -299,7 +307,7 @@ if __name__ == '__main__':
 				write_yaml_file(f'inputs_yaml/{now}.yaml',input_template)
 			else:
 				write_yaml_file(f'inputs_yaml/{config_name}.yaml',input_template)
-			cache = {'ticks':[],'payment_tier1':None,'payment_tier2':None,'discount_ablock':None,'discount_aablock':None}
+			cache = {'ticks':[],'payment_tier1':None,'payment_tier2':None,'discount_ablock':None,'discount_aablock':None,'discount_sysblock':None,'version':'1'}
 			for daemon in input_template[0]['daemons']:
 				cache['ticks'].append(daemon['name'])
 				if daemon['name'] == 'PAYMENT':
@@ -307,6 +315,7 @@ if __name__ == '__main__':
 					cache['payment_tier2'] = daemon['payment_tier2']
 					cache['discount_ablock'] = daemon['discount_ablock']
 					cache['discount_aablock'] = daemon['discount_aablock']
+					cache['discount_sysblock'] = daemon['discount_sysblock']
 				if daemon['name'] == 'XQUERY':
 					for index in daemon['chains']:
 						cache['ticks'].append(index['name'])
@@ -319,6 +328,8 @@ if __name__ == '__main__':
 				sys.exit(0)
 
 		input_template_args[0]['daemons'] = input_template[0]['daemons']
+		input_template_args[0]['xquery_tag'] = XQUERYTAG
+        ic(BRANCHPATH)
 		data_with_ips = processcustom(input_template_args, SUBNET, BRANCHPATH)
 		processconfigs(data_with_ips, BRANCHPATH)
 		

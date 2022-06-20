@@ -40,7 +40,11 @@ def exec_psql(cmd, host, database, user, password):
 		conn.autocommit = True
 		cursor = conn.cursor()
 		cursor.execute(cmd)
-		results = cursor.fetchall()
+		op,_=cmd.lower().split(maxsplit=1)
+		if op == 'select':
+			results = cursor.fetchall()
+		else:
+			results = f'{cursor.rowcount} row(s) affected'
 		conn.close()
 		return results
 	except Exception as e:
@@ -131,7 +135,7 @@ def help():
 		['--apicount', 'Change apicount number of a project in the [bold yellow]Project[/bold yellow] table'],
 		['--archive', 'Toggle the archive boolean of a project in [bold yellow]Project[/bold yellow] table'],
 		['--active', 'Toggle the active boolean of a project in [bold yellow]Project[/bold yellow] table '],
-		['--cmd', 'Send command to [bold cyan]payment_db[/bold cyan]'],
+		['--cmd', 'Send SQL to [bold cyan]payment_db[/bold cyan]'],
 		['--new', 'Request new Project ID and Api-Key']
 	]
 	for d in data:
