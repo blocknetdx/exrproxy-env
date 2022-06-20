@@ -13,7 +13,6 @@ from icecream import ic
 import subprocess
 
 # Global vars
-branchpath = re.sub(r'(^(?!.*/$).*)',r'\1/','https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master')
 KNOWN_HOSTS_FILE = '.known_hosts'
 KNOWN_VOLUMES = '.known_volumes'
 ENV_FILE = '.env'
@@ -50,7 +49,7 @@ parser.add_argument('--prune', help='Prune docker', default=False, action='store
 parser.add_argument('--source', help='Source file', default='autobuild/sources.yaml')
 parser.add_argument('--yaml', help='Custom input yaml', default=False)
 parser.add_argument('--interval', help='Docker stopping interval till sends SIGKILL signal; default 30s', default=30)
-parser.add_argument('--branchpath', default=branchpath)
+parser.add_argument('--branchpath', default='https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master')
 parser.add_argument('--xquerytag', help="Override XQuery images tag", default='latest')
 parser.add_argument('--prunecache', help='Reinit .known_hosts, .known_volumes, .env and .cache files', action='store_true')
 parser.add_argument('--subnet', help='Subnet to configure docker-compose network', default="172.31.0.0/20")
@@ -62,7 +61,8 @@ CHECKS = args.nochecks
 ENV = args.noenv
 DEPLOY = args.deploy
 PRUNE = args.prune
-BRANCHPATH = args.branchpath
+BRANCHPATH = re.sub(r'(^(?!.*/$).*)',r'\1/',args.branchpath)
+
 XQUERYTAG = args.xquerytag
 STOP_INTERVAL = int(args.interval)
 PRUNE_CACHE = args.prunecache
