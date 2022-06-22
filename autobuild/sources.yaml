@@ -205,12 +205,6 @@
         - name: Swap
         - name: Sync
         - name: Transfer
-        - name: Approval
-        - name: Burn
-        - name: Mint
-        - name: Swap
-        - name: Sync
-        - name: Transfer
       address:
       - name: Pangolin_Router
         address: '0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106'
@@ -227,12 +221,6 @@
         - name: Swap
         - name: Sync
         - name: Transfer
-        - name: Approval
-        - name: Burn
-        - name: Mint
-        - name: Swap
-        - name: Sync
-        - name: Transfer
       address:
       - name: Uniswap_Router_v2
         address: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
@@ -243,12 +231,6 @@
       query:
         - name: Withdrawal
         - name: Deposit
-        - name: Approval
-        - name: Burn
-        - name: Mint
-        - name: Swap
-        - name: Sync
-        - name: Transfer
         - name: Approval
         - name: Burn
         - name: Mint

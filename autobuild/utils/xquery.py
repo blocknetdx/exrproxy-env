@@ -22,7 +22,7 @@ def xq_template(used_ip, subnet, query, data):
 					item['rpc_host'] = f"http://{data['avax_ip']}:9650/ext/bc/C/rpc"
 				if 'ETH' in name:
 					item['rpc_host'] = f"http://{data['geth_ip']}:8545"
-				if 'SYS' in name:
+				if 'NEVM' in name:
 					item['rpc_host'] = f"http://{data['nevm_ip']}:8545"
 				item['query'] = [dict(t) for t in {tuple(d.items()) for d in item['query']}]
 				if name in used_ip['ip'].keys():

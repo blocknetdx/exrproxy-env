@@ -88,11 +88,11 @@ if __name__ == '__main__':
     if args.command == 'project':
         API_Key = args.api_key
         project_id = args.project_id
-        chains = ['AVAX','ETH', 'SYS']
+        chains = ['AVAX','ETH','NEVM']
         for chain in chains:
             if chain =='ETH':
                 url = http_socket + '/xrs/evm_passthrough'+f'/{chain}'+f'/{project_id}'
-            elif chain =='SYS':
+            elif chain =='NEVM':
                 url = http_socket + '/xrs/evm_passthrough'+f'/{chain}'+f'/{project_id}'
             elif chain =='AVAX':
                 url = http_socket + '/xrs/evm_passthrough'+f'/{chain}'+f'/{project_id}'+'/ext/bc/C/rpc'
