@@ -154,7 +154,7 @@ def help():
 	table.add_column('Defaults',justify='left', style='bold cyan', no_wrap=False)
 	data = [
 		['--help | -h','Print help'],
-		['--host [bold yellow]IP[/bold yellow]', "IP address of [bold cyan]payment_db[/bold cyan] container"],
+		['--host [bold yellow]IP[/bold yellow]', "IP address of [bold cyan]payment_db[/bold cyan] container - Required w/ all other params"],
 		['--username [bold yellow]USERNAME[/bold yellow]', 'Username for [bold cyan]payment_db[/bold cyan]', 'ethproxy'],
 		['--password [bold yellow]PASSWORD[/bold yellow]', 'Password for [bold cyan]payment_db[/bold cyan]', 'password'],
 		['--db [bold yellow]DB[/bold yellow]', 'Database from [bold cyan]payment_db[/bold cyan]', 'eth'],
