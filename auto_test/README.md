@@ -231,21 +231,24 @@ python3 xquery_unit_test.py --projectid YOUR-PROJECT-ID
 XQuery Help HTTP status code 200
 
 Powered by
-  https://blocknet.co
-  https://xquery.io
-
-Current Graph
-  http://127.0.0.1/xrs/xquery/YOUR-PROJECT-ID/help/graph
+    https://blocknet.co
+    https://xquery.io
 
 List available endpoints
-  http://127.0.0.1/xrs/xquery/YOUR-PROJECT-ID/help
+    http://<NODE-URL>/xrs/xquery/<PROJECT-ID>/help
+    e.g. curl -X POST http://<NODE-URL>/xrs/xquery/<PROJECT-ID>/help 
 
-GraphQL endpoint
-  http://127.0.0.1/xrs/xquery/YOUR-PROJECT-ID/indexer/
+Current Graph
+    http://<NODE-URL>/xrs/xquery/<PROJECT-ID>/help/graph
+    e.g. curl -X POST http://<NODE-URL>/xrs/xquery/<PROJECT-ID>/help/graph | jq
 
 GraphQL data types
-  http://127.0.0.1/xrs/xquery/YOUR-PROJECT-ID/help/schema
+    http://<NODE-URL>/xrs/xquery/<PROJECT-ID>/help/schema
+    e.g. curl -X POST http://<NODE-URL>/xrs/xquery/<PROJECT-ID>/help/schema
 
+GraphQL endpoint
+    http://<NODE-URL>/xrs/xquery/<PROJECT-ID>/indexer/
+    e.g. See https://api.blocknet.co/#indexer-example
 
 
 
