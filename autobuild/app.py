@@ -193,6 +193,7 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 
 				if name.upper() == 'HYDRA':
 					print('HYDRA exists')
+					customlist[0]['plugins'].append('evm_passthrough')
 					if 'free' in c['daemons'][i].keys() and c['daemons'][i]['free'] == True:
 						customlist[0]['plugins'].append('free_evm_passthrough')
 					for j in c['daemons'][i]['chains']:
@@ -205,6 +206,7 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 					customlist[0]['deploy_xquery'] = True
 					query = dict(c['daemons'][i])
 					del query['name']
+					customlist[0]['plugins'].append('xquery')
 					for xq_chain in query['chains']:
 						customlist[0]['plugins'].append(f'xquery_{xq_chain["name"].lower()}')
 					autoconfig.write_yaml_file('xquery.yaml',query)
