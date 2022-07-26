@@ -246,8 +246,8 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 		for i in to_del_index:
 			del c['daemons'][i]
 
-		if rpc_threads > 8:
-			c['rpcthreads'] = rpc_threads
+		if rpc_threads > 4:
+			c['rpcthreads'] = rpc_threads * 2
 		else:
 			c['rpcthreads'] = 8
 
