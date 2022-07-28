@@ -47,8 +47,8 @@
       ZMQ_GATEWAY_PORT1: {{ gateway_processor_port1 }}
       ZMQ_GATEWAY_PORT2: {{ gateway_processor_port2 }}
     ports:
-      - "{{ gateway_processor_port1 }}:{{ gateway_processor_port1 }}"
-      - "{{ gateway_processor_port2 }}:{{ gateway_processor_port2 }}"
+      #- "{{ gateway_processor_port1 }}:{{ gateway_processor_port1 }}"
+      #- "{{ gateway_processor_port2 }}:{{ gateway_processor_port2 }}"
     logging:
       driver: "json-file"
       options:

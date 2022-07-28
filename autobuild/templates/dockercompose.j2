@@ -13,8 +13,8 @@ services:
       - 30303
     ports:
       - "8369:8369"
-      - "8545:8545"
-      - "30303:30303"
+      #- "8545:8545"
+      #- "30303:30303"
 {% endif %}
     entrypoint: /opt/blockchain/start-{{ daemon.configName }}.sh
     command:
@@ -118,6 +118,8 @@ services:
   avax:
     image: {{ avax_image }}
     restart: unless-stopped
+    ports:
+      - "9651:9651"
     expose:
       - 9650
       - 9651
@@ -238,7 +240,7 @@ services:
       - avax
 {% endif %}
 {% if deploy_nevm %}
-      - sys
+      - SYS
 {% endif %}
       - payment_db
     logging:
