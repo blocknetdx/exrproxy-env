@@ -193,20 +193,22 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 
 				if name.upper() == 'HYDRA':
 					print('HYDRA exists')
-					if 'evm_passthrough' not in customlist[0]['plugins']:
-						customlist[0]['plugins'].append('evm_passthrough')
+					customlist[0]['plugins'].append('evm_passthrough')
 					if 'free' in c['daemons'][i].keys() and c['daemons'][i]['free'] == True:
 						customlist[0]['plugins'].append('free_evm_passthrough')
 					for j in c['daemons'][i]['chains']:
 						print(f'HYDRA - {j["name"].upper()}')
 						customlist[0]['hydra'].append(j['name'].upper())
+						customlist[0]['plugins'].append(f'evm_passthrough_{j["name"].lower()}')
 					
 				if name.upper() == 'XQUERY':
 					print('XQUERY exists')
-					customlist[0]['plugins'].append('xquery')
 					customlist[0]['deploy_xquery'] = True
 					query = dict(c['daemons'][i])
 					del query['name']
+					customlist[0]['plugins'].append('xquery')
+					for xq_chain in query['chains']:
+						customlist[0]['plugins'].append(f'xquery_{xq_chain["name"].lower()}')
 					autoconfig.write_yaml_file('xquery.yaml',query)
 					used_ip, qtemplate = xq_template(used_ip, SUBNET, query, customlist[0])
 					for key, item in qtemplate.items():
