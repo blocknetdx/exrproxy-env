@@ -216,7 +216,7 @@ class Snode():
 			# self.install_docker()
 		elif 'docker' in output:
 			proc = subprocess.check_output('docker --version',stdin=subprocess.PIPE, shell=True).decode('UTF-8')
-			if version.parse(proc.split('version ')[1].split(',')[0]) < version.parse('20.10.13'):
+			if version.parse(re.search(r"\d+[.]\d+[.]*\d*", proc).group()) < version.parse('20.10.13'):
 				print("[bold red]Docker Engine version lower than v20.10.13. Update to continue[/bold red]") # Please update via:
 				# print("[bold cyan]./exr_env.sh --undocker[/bold cyan]")
 				# print("[bold cyan]./exr_env.sh --docker[/bold cyan]")
@@ -230,7 +230,7 @@ class Snode():
 					sys.exit(0)
 				elif 'docker-compose' in output:
 					proc = subprocess.check_output('docker-compose --version',stdin=subprocess.PIPE, shell=True).decode('UTF-8')
-					if version.parse('.'.join([str(s) for s in proc.split()[-1] if s.isdigit()])) < version.parse("2.3.3"):
+					if version.parse(re.search(r"\d+[.]\d+[.]*\d*", proc).group()) < version.parse("2.3.3"):
 						print("[bold red]Docker Compose version lower than v2.3.3. Update to continue[/bold red]") #Please update via:
 						# print("[bold cyan]docker-compose down[/bold cyan]")
 						# print("[bold cyan]./exr_env.sh --undocker[/bold cyan]")
