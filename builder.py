@@ -143,12 +143,15 @@ if __name__ == '__main__':
 
 			# Parse sources.yaml categories
 			base = [x for x in source if x['type']=='base']
+			snode_in_base = 'SNODE' in [x['name'] for x in base] # set this flag true if SNODE deployed (not TNODE, TESTSNODE or TESTTNODE)
 			chains = [x for x in source if x['type'] in ['chain','hybrid']]
+			utxo_plugins = [x for x in source if x['type'] == 'utxo_plugin']
 			syschain = [x for x in chains if x['name']=='SYS']
 			evm_chains = [x for x in source if x['type']=='evm_chain']
 			apps = [x for x in source if x['type']=='app']
 			print(f"[bold magenta]{'-'*50}[/bold magenta]")
 			# Start inquirer
+			utxo_plugins_todeploy = ['BLOCK']
 			chains_todeploy = snode.inquirer.pick_checkbox("What chains for XBridge do you wish to support?",[{'name':f"{str(x['name']).ljust(5,' ')} | RAM {str(x['ram']).ljust(4,' ')} GB | CPU {str(x['cpu']).ljust(4,' ')} Cores | DISK {str(x['disk']).ljust(6,' ')} GB | {x['volume'] if x['name'] not in known_volumes['volumes'].keys() else known_volumes['volumes'][x['name']]}",'checked':True if x['name'] in cache['ticks'] else False} for x in chains])
 			for cd in chains_todeploy:
 				cd = cd.split(' ')[0]
@@ -157,6 +160,9 @@ if __name__ == '__main__':
 						if c['name'] in known_volumes['volumes'].keys():
 							c['volume'] = known_volumes['volumes'][c['name']]
 						input_template[0]['daemons'].append(c)
+						if c['name'] in snode.supported_utxo_plugin_chains:
+							utxo_plugins_todeploy.append(c['name'])
+
 			print(f"[bold magenta]{'-'*50}[/bold magenta]")	
 			evm_chains_todeploy = snode.inquirer.pick_checkbox("What EVM chains do you wish to support?",[{'name':f"{str(x['name']).ljust(4,' ')} | RAM {str(x['ram']).ljust(4,' ')} GB | CPU {str(x['cpu']).ljust(4,' ')} Cores | DISK {str(x['disk']).ljust(6,' ')} GB | {x['volume'] if x['name'] not in known_volumes['volumes'].keys() else known_volumes['volumes'][x['name']]}",'checked':True if x['name'] in cache['ticks'] else False} for x in evm_chains])
 			for evcd in evm_chains_todeploy:
@@ -173,7 +179,7 @@ if __name__ == '__main__':
 						else:
 							location = snode.inquirer.get_input(f"Press enter to use {evcd} internally or type external IP Address:")
 						if location not in ['',' ','Internally']:
-							external = {"name":evcd,"host":location}
+							external = {"name":evcd,"type":"evm_chain","host":location}
 							if not evcd in known_hosts['hosts'].keys():
 								known_hosts['hosts'][evcd] = [location]
 							elif location not in known_hosts['hosts'][evcd]:
@@ -199,7 +205,7 @@ if __name__ == '__main__':
 							print(f'{name} ignored... No selection.')
 						else:
 							if name == 'HYDRA':
-								hydra_config = {'name':name,'free':False, 'chains':[{'name':x} for x in app_chains]}
+								hydra_config = {'name':name,'free':False, 'type':app['type'], 'chains':[{'name':x} for x in app_chains]}
 								# free_access = snode.inquirer.ask_question(f"Do you wish to support FREE access to {name}?",default=False)
 								# if free_access != True:
 								# 	hydra_config['free'] = True
@@ -255,6 +261,19 @@ if __name__ == '__main__':
 					input_template[0]['daemons'].append(b)
 				elif any([[True for x in [deploy['name'] for deploy in input_template[0]['daemons']] if x==xx] for xx in [echain['name'] for echain in evm_chains]]):
 					input_template[0]['daemons'].append(b)
+
+			if snode_in_base:
+				# Add support for utxo plugins
+				# This section must be AFTER SNODE is appended to input_template[0]['daemons'] so SNODE container gets assigned an IP address BEFORE utxo plugin containers are constructed
+				print(f"[bold magenta]{'-'*50}[/bold magenta]")	
+				utxo_plugins_check = snode.inquirer.ask_question(f"Do you wish to support {utxo_plugins[0]['name']} | RAM {utxo_plugins[0]['ram']} GB | CPU {utxo_plugins[0]['cpu']} Cores | DISK {utxo_plugins[0]['disk']} GB ?", default=True if utxo_plugins[0]['name'] in cache['ticks'] else False)
+				if utxo_plugins_check:
+					if utxo_plugins[0]['name'] in known_volumes['volumes'].keys():
+						utxo_plugins[0]['volume'] = known_volumes['volumes'][utxo_plugins[0]['name']]
+					utxo_plugins[0]['chains'] = [{'name':x} for x in utxo_plugins_todeploy]
+					print("Deploying ", utxo_plugins[0]['name'], " support for the following chains: ", utxo_plugins_todeploy)
+					input_template[0]['daemons'].append(utxo_plugins[0])
+
 			print(f"[bold magenta]{'-'*50}[/bold magenta]")		
 			answer = snode.inquirer.ask_question('Do you wish to change install locations?', default=False)
 			if answer == True:
@@ -329,6 +348,7 @@ if __name__ == '__main__':
 
 		input_template_args[0]['daemons'] = input_template[0]['daemons']
 		input_template_args[0]['xquery_tag'] = XQUERYTAG
+		input_template_args[0]['subnet'] = SUBNET
 		data_with_ips = processcustom(input_template_args, SUBNET, BRANCHPATH)
 		processconfigs(data_with_ips, BRANCHPATH)
 		

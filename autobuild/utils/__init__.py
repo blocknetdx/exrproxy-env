@@ -1,3 +1,4 @@
+import re
 from rich import print
 from rich.table import Table
 import math
@@ -27,7 +28,7 @@ input_template_args = [{
 	'deploy_eth': False,
 	'gethexternal': False,
 	'eth_testnet': False,
-	'syncmode': 'light'
+	'syncmode': 'full'
 }]
 
 
@@ -93,6 +94,12 @@ class Snode():
 		self.inquirer = Inquirer()
 		self.envfile = envfile
 		self.config = dotenv.dotenv_values(self.envfile)
+		get_utxo_plugin_code_response = requests.get('https://raw.githubusercontent.com/blocknetdx/utxo-plugin/main/main.py')
+		if get_utxo_plugin_code_response.status_code != 200:
+			raise Exception("EROR: Failed to get list of supported UTXO Plugin chains from https://raw.githubusercontent.com/blocknetdx/utxo-plugin/main/main.py.")
+		coin_map = re.search("coin_map([^}]|\n)+}", get_utxo_plugin_code_response.text)
+		self.supported_utxo_plugin_chains = re.findall(r"\"(.+)\"", coin_map.group())
+		#print("Supported UTXO Plugin Chains: ", self.supported_utxo_plugin_chains)
 
 	def get_sudo(self):
 		granted = False

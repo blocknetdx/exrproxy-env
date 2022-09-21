@@ -22,7 +22,7 @@ services:
     environment:
       RPC_USER: "${RPC_USER}"
       RPC_PASSWORD: "${RPC_PASSWORD}"
-      RPC_ALLOWIP: 172.31.0.0/20
+      RPC_ALLOWIP: {{ subnet }}
     stop_signal: SIGINT
 {% if daemon.name == 'SYS' %}
     stop_grace_period: 20m
@@ -327,13 +327,31 @@ services:
       backend:
         ipv4_address: {{ xr_proxy_ip }}
 
-#### XQUERY ####
+{% if False %}
+#### EXCLUDE_FROM_VARIABLE_INFER ####
+{% endif %}
+
 {% if deploy_xquery %}
+#### START XQUERY STACK ####
 
 {% include 'autobuild/templates/xquery.j2' %}
 
+
+#### END XQUERY STACK ####
 {% endif %}
-#### XQUERY ####
+
+{% if deploy_utxo %}
+#### START UTXO STACK ####
+
+{% include 'autobuild/templates/utxo.j2' %}
+
+
+#### END UTXO STACK ####
+{% endif %}
+
+{% if False %}
+#### EXCLUDE_FROM_VARIABLE_INFER ####
+{% endif %}
 
 networks:
   frontend:
@@ -350,7 +368,7 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.31.0.0/20
+        - subnet: {{ subnet }}
     driver_opts:
       com.docker.network.bridge.enable_icc: "true"
       com.docker.network.bridge.enable_ip_masquerade: "true"

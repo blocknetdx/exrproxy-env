@@ -8,6 +8,7 @@ from jinja2 import Environment, FileSystemLoader, Template, BaseLoader
 from autobuild.utils.autoconfig import *
 import autobuild.utils.autoconfig as autoconfig
 from autobuild.utils.xquery import xq_template
+from autobuild.utils.utxo import utxo_template
 from icecream import ic, install
 from rich import print
 
@@ -23,6 +24,7 @@ J2_ENV2 = Environment(loader=BaseLoader(),
 
 OUTPUT_PATH = './'
 IPS_CACHE = '.cache_ip'
+UTXO_PLUGIN_METHODS = ['getutxos','getrawtransaction','getrawmempool','getblockcount','sendrawtransaction','gettransaction','getblock','getblockhash','heights','fees','getbalance','gethistory','ping']
 
 def processcustom(customlist, SUBNET, BRANCHPATH):
 	if IPS_CACHE not in os.listdir(os.getcwd()):
@@ -48,8 +50,9 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 	for c in customlist:
 		for i in range(len(c['daemons'])):
 			name = c['daemons'][i]['name']
+			type = c['daemons'][i]['type']
 			#daemon configs
-			if name.upper() not in ['SNODE', 'TNODE', 'TESTSNODE', 'ETH', 'XR_PROXY', 'XQUERY', 'AVAX', 'PAYMENT', 'HYDRA', 'NEVM']:
+			if type in ['chain', 'hybrid']:
 				try:
 					print(f'fetch template for {name} from raw.git')
 					xbridge_text = autoconfig.load_template(autoconfig.chain_lookup(BRANCHPATH, name))
@@ -213,17 +216,42 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 					used_ip, qtemplate = xq_template(used_ip, SUBNET, query, customlist[0])
 					for key, item in qtemplate.items():
 						c[key] = item
+
+				if name.upper() == 'UTXO_PLUGIN':
+					print('UTXO_PLUGIN exists')
+					customlist[0]['deploy_utxo'] = True
+					customlist[0]['utxo_plugin_volume'] = c['daemons'][i]['volume']
+					customlist[0]['utxo_plugin_image'] = c['daemons'][i]['utxo_plugin_image']
+					customlist[0]['plugin_adapter_image'] = c['daemons'][i]['plugin_adapter_image']
+					if name in used_ip['ip'].keys():
+						customlist[0]['plugin_adapter_ip'] = used_ip['ip'][name]
+					else:
+						while True:
+							custom_ip = autoconfig.random_ip(SUBNET)
+							if custom_ip not in used_ip['ip'].values():
+								customlist[0]['plugin_adapter_ip'] = custom_ip
+								used_ip['ip']['plugin_adapter_ip'] = custom_ip
+								break
+
+#					utxo_plugin = dict(c['daemons'][i])
+					customlist[0]['plugins'] += UTXO_PLUGIN_METHODS
+					customlist[0]['utxo_plugin_methods'] = UTXO_PLUGIN_METHODS
+					used_ip, utxotemplate = utxo_template(used_ip, SUBNET, c['daemons'][i], customlist[0])
+					for key, item in utxotemplate.items():
+						c[key] = item
+
 				#volumes paths configs
 				for j in list(c['daemons'][i]):
 					if j not in ['name','image']:
 						mount_dir = f'{name.lower()}_{j}'
 						customlist[0][mount_dir] = os.environ.get(mount_dir.upper(),c['daemons'][i][j])
+
 		write_text_file(IPS_CACHE,json.dumps(used_ip, indent=4, sort_keys=False))
 		#check for missed configs
 		#loading template vars
 		template_vars = autoconfig.template_vars('autobuild/templates/{}'.format(c['j2template']))
-		# print(template_vars)
-		# print(c['daemons'])
+		# print("template_vars:",template_vars)
+		# print("c['daemons']:",c['daemons'])
 		# print(daemons_list)
 		# for index, var in enumerate(c['daemons']):
 		#     #check if fake daemon or not (SNODE ETH XR_PROXY)

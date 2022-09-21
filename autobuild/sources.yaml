@@ -165,7 +165,6 @@
   ram: 5
   cpu: 4
 
-
 - name: UNO 
   type: chain
   image: blocknetdx/unobtanium:v0.11.5
@@ -173,6 +172,15 @@
   disk: 5
   ram: 5
   cpu: 4
+
+- name: UTXO_PLUGIN
+  type: utxo_plugin
+  utxo_plugin_image: blocknetdx/utxo-plugin:latest
+  plugin_adapter_image: blocknetdx/plugin-adapter:latest
+  volume: /snode
+  disk: 200
+  ram: 32
+  cpu: 8
 
 - name: HYDRA
   type: app
