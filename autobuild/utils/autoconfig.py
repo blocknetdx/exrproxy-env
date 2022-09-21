@@ -65,7 +65,7 @@ def template_vars(template_path):
     #jinja2 all variables
     with open(template_path) as file:
         contents = file.read()
-        contents = str(contents.split('#### XQUERY ####')[0])+str(contents.split('#### XQUERY ####')[-1])
+        contents = str(contents.split('#### EXCLUDE_FROM_VARIABLE_INFER ####')[0])+str(contents.split('#### EXCLUDE_FROM_VARIABLE_INFER ####')[-1])
         variables = jinja2schema.infer(contents)
         variables = jinja2schema.to_json_schema(variables)
         if 'chainstate_mount_dir' in variables['properties']['daemons']['items']['required']:
