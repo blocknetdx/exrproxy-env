@@ -177,6 +177,9 @@
   type: utxo_plugin
   utxo_plugin_image: blocknetdx/utxo-plugin:latest
   plugin_adapter_image: blocknetdx/plugin-adapter:latest
+  exclude_chains: # The utxo-plugin module doesn't yet work for the following chains:
+    - PHR
+    - LBC
   volume: /snode
   disk: 200
   ram: 32
