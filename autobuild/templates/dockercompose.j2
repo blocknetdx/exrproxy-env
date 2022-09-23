@@ -11,11 +11,9 @@ services:
 {% if deploy_nevm and daemon.name == 'SYS' %}
       - 8545
       - 30303
-    ports:
-      - "8369:8369"
-      #- "8545:8545"
-      #- "30303:30303"
 {% endif %}
+    ports:
+      - "{{ daemon.p2pPort }}:{{ daemon.p2pPort }}"
     entrypoint: /opt/blockchain/start-{{ daemon.configName }}.sh
     command:
       - {{ daemon.binFile }}
