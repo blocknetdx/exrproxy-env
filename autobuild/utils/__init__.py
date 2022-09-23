@@ -210,13 +210,14 @@ class Snode():
 			# self.install_docker()
 		elif 'docker' in output:
 			proc = subprocess.check_output('docker --version',stdin=subprocess.PIPE, shell=True).decode('UTF-8')
-			if version.parse(re.search(r"\d+[.]\d+[.]*\d*", proc).group()) < version.parse('20.10.13'):
+			d_version = version.parse(re.search(r"\d+[.]\d+[.]*\d*", proc).group())
+			if d_version < version.parse('20.10.13'):
 				print("[bold red]Docker Engine version lower than v20.10.13. Update to continue[/bold red]") # Please update via:
 				# print("[bold cyan]./exr_env.sh --undocker[/bold cyan]")
 				# print("[bold cyan]./exr_env.sh --docker[/bold cyan]")
 				sys.exit(0)				
 			else:
-				print(f"[bold cyan]Docker Engine version {proc.split('version ')[1].split(',')[0]}[/bold cyan]")
+				print(f"[bold cyan]Docker Engine version {d_version}[/bold cyan]")
 				stream = os.popen("which docker-compose")
 				output = stream.read()
 				if 'docker-compose' not in output:
@@ -224,14 +225,15 @@ class Snode():
 					sys.exit(0)
 				elif 'docker-compose' in output:
 					proc = subprocess.check_output('docker-compose --version',stdin=subprocess.PIPE, shell=True).decode('UTF-8')
-					if version.parse(re.search(r"\d+[.]\d+[.]*\d*", proc).group()) < version.parse("2.3.3"):
+					dc_version = version.parse(re.search(r"\d+[.]\d+[.]*\d*", proc).group())
+					if dc_version < version.parse("2.3.3"):
 						print("[bold red]Docker Compose version lower than v2.3.3. Update to continue[/bold red]") #Please update via:
 						# print("[bold cyan]docker-compose down[/bold cyan]")
 						# print("[bold cyan]./exr_env.sh --undocker[/bold cyan]")
 						# print("[bold cyan]./exr_env.sh --docker[/bold cyan]")
 						sys.exit(0)
 					else:
-						print(f"[bold cyan]docker-compose v{'.'.join([str(s) for s in proc.split()[-1] if s.isdigit()])}[/bold cyan]")
+						print(f"[bold cyan]docker-compose v{dc_version}[/bold cyan]")
 
 	# def install_docker(self):
 	# 	answer = self.inquirer.ask_question("Do you want to install docker?")
