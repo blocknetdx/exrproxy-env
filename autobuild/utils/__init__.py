@@ -15,7 +15,8 @@ import psutil
 import pathlib
 import re
 from packaging import version
-from PyInquirer import style_from_dict, Token, prompt
+from PyInquirer import style_from_dict, Token
+from PyInquirer.prompt import prompt
 
 input_template = [{
 	'daemons': []
