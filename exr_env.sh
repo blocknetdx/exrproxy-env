@@ -119,6 +119,18 @@ fi
 ############################################################
 function installpythonrequirements() {
 	pip3 install -r requirements.txt
+
+	# Fix prompt_toolkit/styles/from_dict.py lib if it's broken
+	pkgs=$(python3 -m site | awk -F"'" '/site-packages/{print $2; exit}')
+	echo "Searching $pkgs for broken lib file..."
+	broken_lib=${pkgs}/prompt_toolkit/styles/from_dict.py
+	if grep -q "from collections import Mapping" ${broken_lib}; then
+		echo "prompt_toolkit/styles/from_dict.py contains broken lib ref; fixing it..."
+		cp ${broken_lib} ${broken_lib}.bak
+		awk '/from collections import Mapping/{gsub(/collections/, "collections.abc")};{print}' ${broken_lib}.bak > ${broken_lib}
+	else
+		echo "prompt_toolkit/styles/from_dict.py doesn't exist or isn't broken; skipping fixing it..."
+	fi
 }
 
 ############################################################
@@ -242,7 +254,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-VALID_ARGS=$(getopt -o hougdpvb: --long help,osdep,update,git,docker,python,version,builder: -- "$@")
+VALID_ARGS=$(getopt -o hougdpvb: --long help,update,version,builder: -- "$@")
 if [[ $? -ne 0 ]]; then
 	exit 1;
 fi
@@ -254,38 +266,12 @@ while [ : ]; do
 		Help
 		shift
 		;;
-	# -o | --osdep)
-	# 	printf "%s\n\033[92;1mInstalling OS dependencies\n\033[0m"
-	# 	installosdependencies
-	# 	shift
-	# 	;;
 	-u| --update)
 		printf "%s\n\033[92;1mUpdating local repo\n\033[0m"
 		updaterepo
 		installpythonrequirements
 		shift
 		;;
-	# -g| --git)
-	# 	printf "%s\n\033[92;1mInstalling git\n\033[0m"
-	# 	installgit
-	# 	shift
-	# 	;;
-	# -d | --docker)
-	# 	printf "%s\n\033[92;1mUninstalling docker & docker-compose\n\033[0m"
-	# 	uninstalldocker
-	# 	printf "%s\n\033[92;1mInstalling docker & docker-compose\n\033[0m"
-	# 	installdocker
-	# 	installdockercompose
-	# 	dockergroup
-	# 	shift
-	# 	;;
-	# -p | --python)
-	# 	printf "%s\n\033[92;1mInstalling python3 and python3-pip\n\033[0m"
-	# 	printf "%s\n\033[92;1mInstalling python3 requirements\n\033[0m"
-	# 	installpython
-	# 	installpythonrequirements
-	# 	shift
-	# 	;;
 	-v | --version)
 		branch_status
 		shift
