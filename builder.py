@@ -160,7 +160,7 @@ if __name__ == '__main__':
 						if c['name'] in known_volumes['volumes'].keys():
 							c['volume'] = known_volumes['volumes'][c['name']]
 						input_template[0]['daemons'].append(c)
-						if c['name'] in snode.supported_utxo_plugin_chains:
+						if c['name'] in snode.supported_utxo_plugin_chains and c['name'] not in utxo_plugins[0]['exclude_chains']:
 							utxo_plugins_todeploy.append(c['name'])
 
 			print(f"[bold magenta]{'-'*50}[/bold magenta]")	
@@ -262,7 +262,7 @@ if __name__ == '__main__':
 				elif any([[True for x in [deploy['name'] for deploy in input_template[0]['daemons']] if x==xx] for xx in [echain['name'] for echain in evm_chains]]):
 					input_template[0]['daemons'].append(b)
 
-			if snode_in_base:
+			if snode_in_base: # this flag true if SNODE deployed (not TNODE, TESTSNODE or TESTTNODE)
 				# Add support for utxo plugins
 				# This section must be AFTER SNODE is appended to input_template[0]['daemons'] so SNODE container gets assigned an IP address BEFORE utxo plugin containers are constructed
 				print(f"[bold magenta]{'-'*50}[/bold magenta]")	
