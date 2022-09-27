@@ -17,7 +17,7 @@
     stop_signal: SIGINT
     stop_grace_period: 5m
     volumes:
-      - {{ utxo_plugin_volume }}/utxoplugin-db/{{ chain.name.upper() }}:/app/plugins/utxoplugin-{{ chain.name.upper() }}
+      - {{ utxo_plugin_volume }}/utxo_plugin/{{ chain.name.upper() }}:/app/plugins/utxoplugin-{{ chain.name.upper() }}
     logging:
       driver: "json-file"
       options:
