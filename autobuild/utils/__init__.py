@@ -77,6 +77,16 @@ class Inquirer():
 				}]
 		answer = prompt(que, style=self.style)
 		return answer['input']
+	
+	def get_password(self,ask):
+		que = [
+				{
+					'type': 'password',
+					'name': 'input',
+					'message': ask,
+				}]
+		answer = prompt(que, style=self.style)
+		return answer['input']
 
 	def pick_one(self, ask, choices):
 		que = [
@@ -99,7 +109,7 @@ class Snode():
 	def get_sudo(self):
 		granted = False
 		while not granted:
-			sudo_pass = self.inquirer.get_input('Type your sudo pass:')
+			sudo_pass = self.inquirer.get_password('Type your sudo pass:')
 			proc = subprocess.Popen(['sudo', '-S', 'echo', 'VERIFIED'], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate(input='{}\n'.format(sudo_pass).encode())
 			for response in proc:
 				if 'VERIFIED' in response.decode('UTF-8'):
