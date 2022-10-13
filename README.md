@@ -10,9 +10,7 @@
 ## getenv.xrouter.com
 **Recommended for new Servers/VM/VPS with Ubuntu 20**
 
-If you have never run the  [Enterprise XRouter
-Environment](https://docs.blocknet.org/resources/glossary/#enterprise-xrouter)
-Global Install script on your server, or if you have not run it since
+If you have never run the  [Enterprise XRouter Environment](https://docs.blocknet.org/resources/glossary/#enterprise-xrouter) Global Install script on your server, or if you have not run it since
 1 Oct, 2022, copy/paste these commands to run the  _Global Install_  script:
 ```
 curl -fsSL https://raw.githubusercontent.com/blocknetdx/exrproxy-env-scripts/main/env_installer.sh -o env_installer.sh
