@@ -10,7 +10,10 @@
 ## getenv.xrouter.com
 **Recommended for new Servers/VM/VPS with Ubuntu 20**
 
-If you have never run the  [Enterprise XRouter Environment](https://docs.blocknet.co/resources/glossary/#enterprise-xrouter)  Global Install script on your server, and you don't mind using your server's  _built-in python3_, copy/paste these commands to run the  _Global Install_  script:
+If you have never run the  [Enterprise XRouter
+Environment](https://docs.blocknet.org/resources/glossary/#enterprise-xrouter)
+Global Install script on your server, or if you have not run it since
+1 Oct, 2022, copy/paste these commands to run the  _Global Install_  script:
 ```
 curl -fsSL https://raw.githubusercontent.com/blocknetdx/exrproxy-env-scripts/main/env_installer.sh -o env_installer.sh
 chmod +x env_installer.sh
@@ -20,7 +23,7 @@ Note, this script will log you out after it's finished installing everything. Th
 Then following the steps below.
 
 ## Deploy a EXR ENV stack via built-in scripts
-* check [Official docs](https://docs.blocknet.co/service-nodes/setup/#auto-deploy-service-node) for more details
+* check [Official docs](https://docs.blocknet.org/service-nodes/setup/#auto-deploy-service-node) for more details
 
 ### Shell
 Generate and deploy a EXR ENV stack
@@ -71,27 +74,8 @@ optional arguments:
 
 
 ## Create Project
- #### Request Project, this creates project-id in db and gets aBlock/aaBlock/ETH address for payment.
 
-```bash
-     curl http://127.0.0.1/xrs/projects \
-                    -X POST \
-                    -H "Content-Type: application/json" \
-                    -d '{"jsonrpc":"2.0","method":"request_project","params": [],"id":1}'
-                    
-    api_key : SgMbED-QDUjt6AFzW2SgANZeOJZhAwxpwdmm36XQpCU
-    expiry_time : 2022-02-04 22:32:29 EST
-    payment_amount_tier1_aablock : 1.795083
-    payment_amount_tier1_ablock : 0.625
-    payment_amount_tier1_eth : None
-    payment_amount_tier2_aablock : 359.016596
-    payment_amount_tier2_ablock : 125.0
-    payment_amount_tier2_eth : 0.067994
-    payment_avax_address : 0x977844F563590F4A4D90AEe07d9f0337BD18D3cc
-    payment_eth_address : 0x3713e2Db20fc393e9353A4b29c710D8E19411bCF
-    project_id : 99e02d11-c1a4-49ed-9ad0-4308a27dfcbe
-
-```
+See [Request Project API](https://api.blocknet.org/#request_project)
 
 ## Checking stack
 
