@@ -12,7 +12,7 @@
 
 If you have never run the  [Enterprise XRouter Environment](https://docs.blocknet.co/resources/glossary/#enterprise-xrouter)  Global Install script on your server, and you don't mind using your server's  _built-in python3_, copy/paste these commands to run the  _Global Install_  script:
 ```
-curl -fsSL https://getenv.xrouter.com -o env_installer.sh
+curl -fsSL https://raw.githubusercontent.com/blocknetdx/exrproxy-env-scripts/main/env_installer.sh -o env_installer.sh
 chmod +x env_installer.sh
 ./env_installer.sh --install 
 ```
