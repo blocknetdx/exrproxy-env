@@ -7,21 +7,41 @@
 - `Servicenode Address`
 - `Port 80 must be opened on the host`
 
-## getenv.xrouter.com
+## env_installer.sh
 **Recommended for new Servers/VM/VPS with Ubuntu 20**
 
-If you have never run the  [Enterprise XRouter Environment](https://docs.blocknet.org/resources/glossary/#enterprise-xrouter) Global Install script on your server, or if you have not run it since
-1 Oct, 2022, copy/paste these commands to run the  _Global Install_  script:
+If you have never run the  [Enterprise XRouter Environment](https://docs.blocknet.org/resources/glossary/#enterprise-xrouter) _Global Install_ script on your server, or if you have not run it since 1 Oct, 2022, copy/paste these commands to run the  _Global Install_  script:
 ```
 curl -fsSL https://raw.githubusercontent.com/blocknetdx/exrproxy-env-scripts/main/env_installer.sh -o env_installer.sh
 chmod +x env_installer.sh
 ./env_installer.sh --install 
 ```
-Note, this script will log you out after it's finished installing everything. This is necessary to update the user's membership in the _docker_ group of Linux. Simply log in again after it logs you out.  
+(It is required to run this _Global Install_ again after 1 October, 2022 to accommodate a Python dependency broken by a 3rd party.)
+If the _Global Install_ Script detects docker/docker-compose is already
+installed, it simply won't install new version(s). If it detect
+the `~/exrproxy-env` directory already exists, it will update
+it. If it detects `~/exrproxy-env` does not already exist, it will
+clone it from the Github repository and thereby create it.<br>
+
+Note: The _Global Install_ script only configures the Python
+environment for the exrproxy-env located in the user's home
+directory. If you have the `exrproxy-env` directory located elsewhere,
+you'll will need to switch to using it in the home directory or engage
+in some manual tweaking.
+
+__IMPORTANT: This Global Install Script will log you out after it's
+finished with phase 1 of the install. This is necessary to update
+the user's membership in the *docker* group of Linux and to activate the python
+version control system (*pyenv*). Simply log in again after it logs you out,
+then issue the following command again to complete phase 2 of the install:__
+```
+./env_installer.sh --install
+```
+
 Then following the steps below.
 
 ## Deploy a EXR ENV stack via built-in scripts
-* check [Official docs](https://docs.blocknet.org/service-nodes/setup/#auto-deploy-service-node) for more details
+* check [Official docs](https://docs.blocknet.org/service-nodes/setup/#deploy-enterprise-xrouter-environment) for more details
 
 ### Shell
 Generate and deploy a EXR ENV stack
