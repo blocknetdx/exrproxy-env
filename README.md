@@ -18,7 +18,7 @@ chmod +x env_installer.sh
 ```
 (It is required to run this _Global Install_ again after 1 October, 2022 to accommodate a Python dependency broken by a 3rd party.)
 If the _Global Install_ Script detects docker/docker-compose is already
-installed, it simply won't install new version(s). If it detect
+installed, it simply won't install new version(s). If it detects
 the `~/exrproxy-env` directory already exists, it will update
 it. If it detects `~/exrproxy-env` does not already exist, it will
 clone it from the Github repository and thereby create it.<br>
