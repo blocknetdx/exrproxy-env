@@ -11,6 +11,7 @@ from rich import pretty
 from dotenv import dotenv_values
 from icecream import ic
 import subprocess
+import decimal
 
 # Global vars
 KNOWN_HOSTS_FILE = '.known_hosts'
@@ -240,15 +241,15 @@ if __name__ == '__main__':
 					if cache["discount_aablock"] != None: b['discount_aablock'] = cache["discount_aablock"] 
 					if cache["discount_sysblock"] != None: b['discount_sysblock'] = cache["discount_sysblock"] 
 					tier1 = snode.inquirer.get_input(f'Press enter for {b["payment_tier1"]}USD tier1 amount or type a new USD price:')
-					b['payment_tier1'] = int(tier1) if tier1 !='' else b["payment_tier1"]
+					b['payment_tier1'] = decimal(tier1) if tier1 !='' else b["payment_tier1"]
 					tier2 = snode.inquirer.get_input(f'Press enter for {b["payment_tier2"]}USD tier2 amount or type a new USD price:')
-					b['payment_tier2'] = int(tier2) if tier2 !='' else b["payment_tier2"]
+					b['payment_tier2'] = decimal(tier2) if tier2 !='' else b["payment_tier2"]
 					ablock_discount = snode.inquirer.get_input(f'Press enter for {b["discount_ablock"]}% aBLOCK discount or type a new discount (e.g. 15 for 15% aBLOCK discount):')
-					b['discount_ablock'] = int(ablock_discount) if ablock_discount !='' else b["discount_ablock"]
+					b['discount_ablock'] = decimal(ablock_discount) if ablock_discount !='' else b["discount_ablock"]
 					aablock_discount = snode.inquirer.get_input(f'Press enter for {b["discount_aablock"]}% aaBLOCK discount or type a new discount (e.g. 15 for 15% aaBLOCK discount):')
-					b['discount_aablock'] = int(aablock_discount) if aablock_discount !='' else b["discount_aablock"]
+					b['discount_aablock'] = decimal(aablock_discount) if aablock_discount !='' else b["discount_aablock"]
 					sysblock_discount = snode.inquirer.get_input(f'Press enter for {b["discount_sysblock"]}% sysBLOCK discount or type a new discount (e.g. 15 for 15% sysBLOCK discount):')
-					b['discount_sysblock'] = int(sysblock_discount) if sysblock_discount !='' else b["discount_sysblock"]
+					b['discount_sysblock'] = decimal(sysblock_discount) if sysblock_discount !='' else b["discount_sysblock"]
 				if b['name'] in known_volumes['volumes'].keys():
 					b['volume'] = known_volumes['volumes'][b['name']]
 				if b['name'] != 'PAYMENT':
