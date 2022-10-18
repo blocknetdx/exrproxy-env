@@ -70,11 +70,11 @@ set-ph = XQUERY_PORT={{ reverse_proxy_port }}
 {% if deploy_utxo %}
 {% for utxo_plugin_method in utxo_plugin_methods %}
 
-set-ph = RPC_getutxos_HOSTIP=plugin-adapter
-set-ph = RPC_getutxos_PORT=5000
-set-ph = RPC_getutxos_USER=${RPC_USER}
-set-ph = RPC_getutxos_PASS=${RPC_PASSWORD}
-set-ph = RPC_getutxos_METHOD={{ utxo_plugin_method }}
+set-ph = RPC_{{ utxo_plugin_method }}_HOSTIP=plugin-adapter
+set-ph = RPC_{{ utxo_plugin_method }}_PORT=5000
+set-ph = RPC_{{ utxo_plugin_method }}_USER=${RPC_USER}
+set-ph = RPC_{{ utxo_plugin_method }}_PASS=${RPC_PASSWORD}
+set-ph = RPC_{{ utxo_plugin_method }}_METHOD={{ utxo_plugin_method }}
 
 {% endfor %}
 {% endif %}
