@@ -24,7 +24,7 @@ J2_ENV2 = Environment(loader=BaseLoader(),
 
 OUTPUT_PATH = './'
 IPS_CACHE = '.cache_ip'
-UTXO_PLUGIN_METHODS = ['getutxos','getrawtransaction','getrawmempool','getblockcount','sendrawtransaction','gettransaction','getblock','getblockhash','heights','fees','getbalance','gethistory','ping']
+UTXO_PLUGIN_METHODS = ['getutxos','getrawtransaction','getrawmempool','getblockcount','sendrawtransaction','gettransaction','getblock','getblockhash','heights','fees','getbalance','getaddresshistory','ping']
 
 def processcustom(customlist, SUBNET, BRANCHPATH):
 	if IPS_CACHE not in os.listdir(os.getcwd()):
