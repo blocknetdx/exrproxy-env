@@ -67,6 +67,19 @@ set-ph = XQUERY_IP={{ reverse_proxy_ip }}
 set-ph = XQUERY_PORT={{ reverse_proxy_port }}
 {% endif %}
 
+{% if deploy_utxo %}
+{% for utxo_plugin_method in utxo_plugin_methods %}
+
+set-ph = RPC_{{ utxo_plugin_method }}_HOSTIP=plugin-adapter
+set-ph = RPC_{{ utxo_plugin_method }}_PORT=5000
+set-ph = RPC_{{ utxo_plugin_method }}_USER=${RPC_USER}
+set-ph = RPC_{{ utxo_plugin_method }}_PASS=${RPC_PASSWORD}
+set-ph = RPC_{{ utxo_plugin_method }}_METHOD={{ utxo_plugin_method }}
+
+{% endfor %}
+{% endif %}
+
+
 EOL
 # ensure supervisord runs at pid1
 exec supervisord -c /etc/supervisord.conf

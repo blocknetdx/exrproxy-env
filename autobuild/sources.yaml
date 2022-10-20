@@ -169,9 +169,21 @@
   type: evm_chain
   image: blocknetdx/syscoin4:v4.3.0
   volume: /snode
-  disk: 0
+  disk: 11
   ram: 5
   cpu: 4
+
+- name: UTXO_PLUGIN
+  type: utxo_plugin
+  utxo_plugin_image: blocknetdx/utxo-plugin:latest
+  plugin_adapter_image: blocknetdx/plugin-adapter:latest
+  exclude_chains: # The utxo-plugin module doesn't yet work for the following chains:
+    - PHR
+    - LBC
+  volume: /snode
+  disk: 200
+  ram: 32
+  cpu: 8
 
 - name: HYDRA
   type: app

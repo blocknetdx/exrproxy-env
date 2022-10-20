@@ -1,0 +1,52 @@
+{% for chain in full_utxo_plugin_chains %}
+
+  utxo-plugin-{{ chain.name.upper() }}:
+    image: {{ utxo_plugin_image }}
+    restart: unless-stopped 
+    environment:
+      PLUGIN_COIN: {{ chain.name.upper() }}
+      PLUGIN_PORT: 8000
+      DB_ENGINE: 'rocksdb'
+      NETWORK: 'mainnet'
+      SKIP_COMPACT: 'true'
+      DAEMON_ADDR: {{ chain.daemon_addr }}
+      DAEMON_RPC_PORT: {{ chain.rpc_port }}
+      RPC_USER: "${RPC_USER}"
+      RPC_PASSWORD: "${RPC_PASSWORD}"
+      RPC_ALLOWIP: {{ subnet }}
+    stop_signal: SIGINT
+    stop_grace_period: 5m
+    volumes:
+      - {{ utxo_plugin_volume }}/utxo_plugin/{{ chain.name.upper() }}:/app/plugins/utxoplugin-{{ chain.name.upper() }}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
+    depends_on:
+      - {{ chain.depends_on }}
+    networks:
+      backend:
+        ipv4_address: {{ chain.ip }}
+
+{% endfor %}
+
+  plugin-adapter:
+    image: {{ plugin_adapter_image }}
+    restart: unless-stopped
+    environment:
+      UTXO_PLUGIN_LIST: {{ adapter_utxo_plugin_list }}
+    stop_signal: SIGINT
+    stop_grace_period: 5m
+    depends_on:
+{% for chain in full_utxo_plugin_chains %}
+      - utxo-plugin-{{ chain.name }}
+{% endfor %}
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
+    networks:
+      backend:
+        ipv4_address: {{ plugin_adapter_ip }}
