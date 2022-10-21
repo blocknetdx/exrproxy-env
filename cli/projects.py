@@ -144,7 +144,7 @@ def help():
 	print(table)
 	print()
 	print("[red]Use this command to get [bold cyan]payment_db[/bold cyan] IP address:[/red]")
-	print("""[red]docker inspect $(docker ps | grep payment_db | awk '{print $1}') | sed -nE '/"IPv4Address":[ \\t]"[[:digit:]]/{s/[ \\t]*"IPv4Address":[ \\t]+"([0-9.]+)"/\\1/p;}'[/red]""")
+	print("""[red]docker inspect exrproxy-env-payment_db-1 | awk -F'"' '/IPv4Address/{print $4}'[/red]""")
 	print()
 	print(f'[bold red]{"-"*20}[/bold red]')
 
