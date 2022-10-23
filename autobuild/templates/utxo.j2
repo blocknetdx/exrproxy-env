@@ -37,7 +37,7 @@
     environment:
       UTXO_PLUGIN_LIST: {{ adapter_utxo_plugin_list }}
     stop_signal: SIGINT
-    stop_grace_period: 5m
+    stop_grace_period: 10s
     depends_on:
 {% for chain in full_utxo_plugin_chains %}
       - utxo-plugin-{{ chain.name }}
