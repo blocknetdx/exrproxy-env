@@ -31,7 +31,7 @@ services:
       - {{ daemon.volume }}/{{ daemon.name }}/config:/opt/blockchain/config
       - {{ daemon.volume }}/{{ daemon.name }}/data:/opt/blockchain/data
     {% if daemon.chainstate is defined  %}
-      - {{ daemon.chainstate }}/{{ daemon.name }}/data/chainstate:/opt/blockchain/data/chainstate
+  - {{ daemon.chainstate }}/{{ daemon.name }}/data/chainstate:/opt/blockchain/data/chainstate
     {% endif %}
   - type: bind
         source: ./scripts/entrypoints/start-{{ daemon.configName }}.sh
