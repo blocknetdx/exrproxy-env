@@ -254,7 +254,7 @@ Help()
 # Process the input options. Add options as needed.        #
 ############################################################
 # Get the options
-VALID_ARGS=$(getopt -o hougdpvb: --long help,update,version,builder: -- "$@")
+VALID_ARGS=$(getopt -o huvb: --long help,update,version,builder: -- "$@")
 if [[ $? -ne 0 ]]; then
 	exit 1;
 fi
