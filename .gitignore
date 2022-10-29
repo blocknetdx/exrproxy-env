@@ -11,3 +11,4 @@ xquery.yaml
 .known_volumes
 .cache
 .cache_ip
+.python-version
