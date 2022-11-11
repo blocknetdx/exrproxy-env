@@ -99,7 +99,7 @@ if KNOWN_VOLUMES not in os.listdir(os.getcwd()):
 
 # Create .cache
 if CACHE not in os.listdir(os.getcwd()):
-	data = {'version':'1','ticks':[],'payment_tier1':None,'payment_tier2':None,'discount_ablock':None,'discount_aablock':None,'discount_sysblock':None}
+	data = {'version':'1','ticks':[],'payment_xquery':None,'payment_tier1':None,'payment_tier2':None,'discount_ablock':None,'discount_aablock':None,'discount_sysblock':None}
 	write_text_file(CACHE,json.dumps(data, indent=4, sort_keys=False))
 
 # Load config files
@@ -113,7 +113,10 @@ cache = json.loads(load_text_file(CACHE))
 # Upgrade cache if necessary
 if 'version' not in cache:
 	cache['version'] = 1
+if 'discount_sysblock' not in cache:
 	cache['discount_sysblock'] = None
+if 'payment_xquery' not in cache:
+	cache['payment_xquery'] = None
 
 if __name__ == '__main__':
 	print(hw_table)
@@ -149,6 +152,7 @@ if __name__ == '__main__':
 			syschain = [x for x in chains if x['name']=='SYS']
 			evm_chains = [x for x in source if x['type']=='evm_chain']
 			apps = [x for x in source if x['type']=='app']
+			apps_deployed = []
 			print(f"[bold magenta]{'-'*50}[/bold magenta]")
 			# Start inquirer
 			utxo_plugins_todeploy = ['BLOCK']
@@ -193,8 +197,8 @@ if __name__ == '__main__':
 							input_template[0]['daemons'].append(evc)
 			write_text_file(KNOWN_HOSTS_FILE,json.dumps(known_hosts, indent=4, sort_keys=False))
 			print(f"[bold magenta]{'-'*50}[/bold magenta]")
+			eth_deployed_hydra = False
 			if len(evm_chains_todeploy)>0:
-				apps_counts = 0
 				for app in apps:
 					name = app['name']
 					app_check = snode.inquirer.ask_question(f"Do you wish to support {app['name']} | RAM {app['ram']} GB | CPU {app['cpu']} Cores | DISK {app['disk']} GB ?", default=True if app['name'] in cache['ticks'] else False)
@@ -205,11 +209,13 @@ if __name__ == '__main__':
 							print(f'{name} ignored... No selection.')
 						else:
 							if name == 'HYDRA':
+								if 'ETH' in app_chains:
+									eth_deployed_hydra = True
 								hydra_config = {'name':name,'free':False, 'type':app['type'], 'chains':[{'name':x} for x in app_chains]}
 								# free_access = snode.inquirer.ask_question(f"Do you wish to support FREE access to {name}?",default=False)
 								# if free_access != True:
 								# 	hydra_config['free'] = True
-								apps_counts += 1
+								apps_deployed.append('HYDRA')
 								input_template[0]['daemons'].append(hydra_config)
 							if name == 'XQUERY':
 								indices = []
@@ -228,9 +234,9 @@ if __name__ == '__main__':
 									app['chains'] = indices
 									if name in known_volumes['volumes'].keys():
 										app['volume'] = known_volumes['volumes'][name]
-									apps_counts += 1
+									apps_deployed.append('XQUERY')
 									input_template[0]['daemons'].append(app)
-				if apps_counts == 0:
+				if len(apps_deployed) == 0:
 					print('[bold red]No EVM chain app configured. Removing EVM chains...[/bold red]')
 					for evm in evm_chains:
 						for entry in input_template[0]['daemons']:
@@ -238,28 +244,39 @@ if __name__ == '__main__':
 								input_template[0]['daemons'].remove(entry)
 								print(f'Removed [bold red]{evm["name"]}[/bold red]')
 			for b in base:				
-				if b['name'] == 'PAYMENT' and any([[True for x in [deploy['name'] for deploy in input_template[0]['daemons']] if x==xx] for xx in [echain['name'] for echain in evm_chains]]):
+				if b['name'] == 'PAYMENT' and len(apps_deployed) > 0:
 					print(f"[bold magenta]{'-'*50}[/bold magenta]")
+					if cache["payment_xquery"] != None: b['payment_xquery'] = cache["payment_xquery"]
 					if cache["payment_tier1"] != None: b['payment_tier1'] = cache["payment_tier1"] 
 					if cache["payment_tier2"] != None: b['payment_tier2'] = cache["payment_tier2"] 
 					if cache["discount_ablock"] != None: b['discount_ablock'] = cache["discount_ablock"] 
 					if cache["discount_aablock"] != None: b['discount_aablock'] = cache["discount_aablock"] 
 					if cache["discount_sysblock"] != None: b['discount_sysblock'] = cache["discount_sysblock"] 
-					tier1 = snode.inquirer.get_input(f'Press enter for {b["payment_tier1"]}USD tier1 amount or type a new USD price:')
-					b['payment_tier1'] = int(tier1) if tier1 !='' else b["payment_tier1"]
-					tier2 = snode.inquirer.get_input(f'Press enter for {b["payment_tier2"]}USD tier2 amount or type a new USD price:')
-					b['payment_tier2'] = int(tier2) if tier2 !='' else b["payment_tier2"]
+					if 'XQUERY' in apps_deployed:
+						xquery = snode.inquirer.get_input(f'Press enter to charge USD ${b["payment_xquery"]} for 6,000,000 XQuery API calls or type a new USD price:')
+						b['payment_xquery'] = float(xquery) if xquery !='' else b["payment_xquery"]
+					else:
+						b['payment_xquery'] = -1
+					if 'HYDRA' in apps_deployed:
+						tier1 = snode.inquirer.get_input(f'Press enter to charge USD ${b["payment_tier1"]} for 6,000,000 Hydra tier1 API calls or type a new USD price:')
+						b['payment_tier1'] = float(tier1) if tier1 !='' else b["payment_tier1"]
+						if eth_deployed_hydra:
+							tier2 = snode.inquirer.get_input(f'Press enter to charge USD ${b["payment_tier2"]} for 6,000,000 Hydra tier2 API calls or type a new USD price:')
+							b['payment_tier2'] = float(tier2) if tier2 !='' else b["payment_tier2"]
+						else:
+							b['payment_tier2'] = -1
+					else:
+						b['payment_tier1'] = -1
+						b['payment_tier2'] = -1
 					ablock_discount = snode.inquirer.get_input(f'Press enter for {b["discount_ablock"]}% aBLOCK discount or type a new discount (e.g. 15 for 15% aBLOCK discount):')
-					b['discount_ablock'] = int(ablock_discount) if ablock_discount !='' else b["discount_ablock"]
+					b['discount_ablock'] = float(ablock_discount) if ablock_discount !='' else b["discount_ablock"]
 					aablock_discount = snode.inquirer.get_input(f'Press enter for {b["discount_aablock"]}% aaBLOCK discount or type a new discount (e.g. 15 for 15% aaBLOCK discount):')
-					b['discount_aablock'] = int(aablock_discount) if aablock_discount !='' else b["discount_aablock"]
+					b['discount_aablock'] = float(aablock_discount) if aablock_discount !='' else b["discount_aablock"]
 					sysblock_discount = snode.inquirer.get_input(f'Press enter for {b["discount_sysblock"]}% sysBLOCK discount or type a new discount (e.g. 15 for 15% sysBLOCK discount):')
-					b['discount_sysblock'] = int(sysblock_discount) if sysblock_discount !='' else b["discount_sysblock"]
+					b['discount_sysblock'] = float(sysblock_discount) if sysblock_discount !='' else b["discount_sysblock"]
 				if b['name'] in known_volumes['volumes'].keys():
 					b['volume'] = known_volumes['volumes'][b['name']]
-				if b['name'] != 'PAYMENT':
-					input_template[0]['daemons'].append(b)
-				elif any([[True for x in [deploy['name'] for deploy in input_template[0]['daemons']] if x==xx] for xx in [echain['name'] for echain in evm_chains]]):
+				if b['name'] != 'PAYMENT' or len(apps_deployed) > 0:
 					input_template[0]['daemons'].append(b)
 
 			if snode_in_base: # this flag true if SNODE deployed (not TNODE, TESTSNODE or TESTTNODE)
@@ -326,12 +343,13 @@ if __name__ == '__main__':
 				write_yaml_file(f'inputs_yaml/{now}.yaml',input_template)
 			else:
 				write_yaml_file(f'inputs_yaml/{config_name}.yaml',input_template)
-			cache = {'ticks':[],'payment_tier1':None,'payment_tier2':None,'discount_ablock':None,'discount_aablock':None,'discount_sysblock':None,'version':'1'}
+			cache = {'ticks':[],'payment_xquery':None,'payment_tier1':None,'payment_tier2':None,'discount_ablock':None,'discount_aablock':None,'discount_sysblock':None,'version':'1'}
 			for daemon in input_template[0]['daemons']:
 				cache['ticks'].append(daemon['name'])
 				if daemon['name'] == 'PAYMENT':
-					cache['payment_tier1'] = daemon['payment_tier1']
-					cache['payment_tier2'] = daemon['payment_tier2']
+					cache['payment_xquery'] = daemon['payment_xquery'] if daemon['payment_xquery'] >= 0 else None
+					cache['payment_tier1'] = daemon['payment_tier1'] if daemon['payment_tier1'] >= 0 else None
+					cache['payment_tier2'] = daemon['payment_tier2'] if daemon['payment_tier2'] >= 0 else None
 					cache['discount_ablock'] = daemon['discount_ablock']
 					cache['discount_aablock'] = daemon['discount_aablock']
 					cache['discount_sysblock'] = daemon['discount_sysblock']
