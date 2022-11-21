@@ -122,6 +122,10 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 				#deploy payment configs
 				if name.upper() == 'PAYMENT':
 					customlist[0][f'{name.lower()}_image'] = c['daemons'][i]['image']
+					if 'payment_xquery' in list(c['daemons'][i]):
+						customlist[0][f'{name.lower()}_xquery'] = c['daemons'][i]['payment_xquery']
+					else:
+						customlist[0][f'{name.lower()}_xquery'] = 35
 					if 'payment_tier1' in list(c['daemons'][i]):
 						customlist[0][f'{name.lower()}_tier1'] = c['daemons'][i]['payment_tier1']
 					else:

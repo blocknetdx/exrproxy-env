@@ -18,6 +18,7 @@
 
 - name: PAYMENT
   type: base
+  payment_xquery: 35
   payment_tier1: 35
   payment_tier2: 200
   discount_ablock: 20
