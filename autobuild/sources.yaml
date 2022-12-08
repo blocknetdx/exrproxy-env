@@ -181,6 +181,8 @@
   exclude_chains: # The utxo-plugin module doesn't yet work for the following chains:
     - PHR
     - LBC
+    - RVN
+    - DGB
   volume: /snode
   disk: 200
   ram: 32
