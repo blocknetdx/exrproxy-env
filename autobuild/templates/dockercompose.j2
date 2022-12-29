@@ -307,9 +307,6 @@ services:
       DB_DATABASE: eth
 {% endif %}
 {% endif %}
-{% if deploy_xquery %}
-      #XQUERY_HOST: http://{{ reverse_proxy_ip }}:{{ reverse_proxy_port}}
-{% endif %}
     volumes:
       - {{ xr_proxy_volume }}/xr_proxy/config:/opt/uwsgi/conf
       - {{ xr_proxy_volume }}/xr_proxy/nginx:/etc/nginx/conf.d
@@ -322,7 +319,6 @@ services:
         max-size: "2m"
         max-file: "10"
     networks:
-      frontend:
       backend:
         ipv4_address: {{ xr_proxy_ip }}
 
@@ -353,15 +349,6 @@ services:
 {% endif %}
 
 networks:
-  frontend:
-    driver: bridge
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.41.0.0/24
-    driver_opts:
-      com.docker.network.bridge.enable_icc: "true"
-      com.docker.network.bridge.enable_ip_masquerade: "true"
   backend:
     driver: bridge
     ipam:
@@ -371,3 +358,9 @@ networks:
     driver_opts:
       com.docker.network.bridge.enable_icc: "true"
       com.docker.network.bridge.enable_ip_masquerade: "true"
+
+{% if deploy_xquery %}
+# volume for XQUERY:
+volumes:
+  alembic-versions:
+{% endif %}

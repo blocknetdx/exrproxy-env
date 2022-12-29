@@ -63,8 +63,8 @@ set-ph = NEVM_HOST_PORT=8545
 
 
 {% if deploy_xquery %}
-set-ph = XQUERY_IP={{ reverse_proxy_ip }}
-set-ph = XQUERY_PORT={{ reverse_proxy_port }}
+set-ph = HASURA_IP={{ hasura_ip }}
+set-ph = HASURA_PORT={{ hasura_port }}
 {% endif %}
 
 {% if deploy_utxo %}

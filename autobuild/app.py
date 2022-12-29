@@ -214,8 +214,13 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 					query = dict(c['daemons'][i])
 					del query['name']
 					customlist[0]['plugins'].append('xquery')
-					for xq_chain in query['chains']:
-						customlist[0]['plugins'].append(f'xquery_{xq_chain["name"].lower()}')
+
+					# These following two lines add names like "xquery_pangolin", "xquery_pegasys" to plugins list
+					# so the specific dexes (e.g. pangolin, pegasys) supported by xquery on this SNode are broadcast to
+					# the Blocknet P2P network.
+					for xq_dex in query['dexs']:
+						customlist[0]['plugins'].append(f'xquery_{xq_dex["name"].lower()}')
+
 					autoconfig.write_yaml_file('xquery.yaml',query)
 					used_ip, qtemplate = xq_template(used_ip, SUBNET, query, customlist[0])
 					for key, item in qtemplate.items():
