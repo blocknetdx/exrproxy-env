@@ -24,7 +24,7 @@ def xq_template(used_ip, subnet, query, data):
 				if 'AVAX' in name:
 					item['rpc_host'] = f"http://{data['avax_ip']}:9650/ext/bc/C/rpc"
 					if 'PANGOLIN' in name:
-						item['schema_name'] = 'png'
+						item['schema_name'] = 'xgraph_png'
 				if 'ETH' in name:
 					item['rpc_host'] = f"http://{data['geth_ip']}:8545"
 					if 'UNISWAP' in name:
@@ -35,7 +35,7 @@ def xq_template(used_ip, subnet, query, data):
 				if 'NEVM' in name:
 					item['rpc_host'] = f"http://{data['nevm_ip']}:8545"
 					if 'PEGASYS' in name:
-						item['schema_name'] = 'psys'
+						item['schema_name'] = 'xgraph_psys'
 				if name in used_ip['ip'].keys():
 					item['ip'] = used_ip['ip'][name]
 				else:
