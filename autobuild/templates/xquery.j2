@@ -74,7 +74,7 @@
         ipv4_address: {{ redis_ip }}
 
   xq-graphql:
-    image: hasura/graphql-engine:v2.15.0
+    image: hasura/graphql-engine:latest
     restart: unless-stopped
     tty: true
     # Uncomment the following 2 lines to expose hasura graphql on port 8080 of the host machine
