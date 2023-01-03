@@ -1,3 +1,4 @@
+import os
 import ipaddress
 from autobuild.utils.autoconfig import random_ip
 
@@ -8,23 +9,33 @@ def xq_template(used_ip, subnet, query, data):
 	# ips = [str(ip) for ip in ipaddress.IPv4Network(subnet)][2::]
 	hasura_port = 8080
 	postgres_port = 5432
-	gateway_port1 = 5555
-	gateway_port2 = 5556
-	reverse_proxy_port = 81
-	
+	redis_port = 6379
+    
 	final_data = {}
-	final_data['chains'] = []
+	final_data['dexs'] = []
 	for key0, item0 in query.items():
-		if key0 == 'chains':
+		if key0 == 'dexs':
+			redis_db = 0
 			for item in item0:
-				name = item['name']
+				item['redis_db'] = redis_db
+				item['alembic_sleep'] = int(redis_db * 15) # make sure two xq-engine containers don't run alembic concurrently
+				redis_db += 1
+				name = item['name'].upper()
 				if 'AVAX' in name:
 					item['rpc_host'] = f"http://{data['avax_ip']}:9650/ext/bc/C/rpc"
+					if 'PANGOLIN' in name:
+						item['schema_name'] = 'xgraph_png'
 				if 'ETH' in name:
 					item['rpc_host'] = f"http://{data['geth_ip']}:8545"
+					if 'UNISWAP' in name:
+						if 'V2' in name:
+							item['schema_name'] = 'univ2'
+						if 'V3' in name:
+							item['schema_name'] = 'univ3'
 				if 'NEVM' in name:
 					item['rpc_host'] = f"http://{data['nevm_ip']}:8545"
-				item['query'] = [dict(t) for t in {tuple(d.items()) for d in item['query']}]
+					if 'PEGASYS' in name:
+						item['schema_name'] = 'xgraph_psys'
 				if name in used_ip['ip'].keys():
 					item['ip'] = used_ip['ip'][name]
 				else:
@@ -34,11 +45,8 @@ def xq_template(used_ip, subnet, query, data):
 							item['ip'] = custom_ip
 							used_ip['ip'][name] = custom_ip
 							break
-				final_data['chains'].append(item)
-		elif key0 == 'graph':
-			final_data[key0] = item0
-		elif key0 == 'endpoint':
-			final_data[key0] = item0
+
+				final_data['dexs'].append(item)
 
 	if 'postgres_ip' in used_ip['ip'].keys():
 		final_data['postgres_ip'] = used_ip['ip']['postgres_ip']
@@ -50,46 +58,29 @@ def xq_template(used_ip, subnet, query, data):
 				used_ip['ip']['postgres_ip'] = custom_ip
 				break
 	final_data['postgres_port'] = str(postgres_port)
-	if 'gateway_processor_ip' in used_ip['ip'].keys():
-		final_data['gateway_processor_ip'] = used_ip['ip']['gateway_processor_ip']
+
+	if 'redis_ip' in used_ip['ip'].keys():
+		final_data['redis_ip'] = used_ip['ip']['redis_ip']
 	else:
 		while True:
 			custom_ip = random_ip(subnet)
 			if custom_ip not in used_ip['ip'].values():
-				final_data['gateway_processor_ip'] = custom_ip
-				used_ip['ip']['gateway_processor_ip'] = custom_ip
+				final_data['redis_ip'] = custom_ip
+				used_ip['ip']['redis_ip'] = custom_ip
 				break
-	final_data['gateway_processor_port1'] = str(gateway_port1)
-	final_data['gateway_processor_port2'] = str(gateway_port2)
-	if 'db_processor_ip' in used_ip['ip'].keys():
-		final_data['db_processor_ip'] = used_ip['ip']['db_processor_ip']
+	final_data['redis_port'] = str(redis_port)
+
+	if 'hasura_ip' in used_ip['ip'].keys():
+		final_data['hasura_ip'] = used_ip['ip']['hasura_ip']
 	else:
 		while True:
 			custom_ip = random_ip(subnet)
 			if custom_ip not in used_ip['ip'].values():
-				final_data['db_processor_ip'] = custom_ip
-				used_ip['ip']['db_processor_ip'] = custom_ip
+				final_data['hasura_ip'] = custom_ip
+				used_ip['ip']['hasura_ip'] = custom_ip
 				break
-	if 'graphql_engine_ip' in used_ip['ip'].keys():
-		final_data['graphql_engine_ip'] = used_ip['ip']['graphql_engine_ip']
-	else:
-		while True:
-			custom_ip = random_ip(subnet)
-			if custom_ip not in used_ip['ip'].values():
-				final_data['graphql_engine_ip'] = custom_ip
-				used_ip['ip']['graphql_engine_ip'] = custom_ip
-				break
-	final_data['graphql_engine_port'] = str(hasura_port)
-	if 'reverse_proxy_ip' in used_ip['ip'].keys():
-		final_data['reverse_proxy_ip'] = used_ip['ip']['reverse_proxy_ip']
-	else:
-		while True:
-			custom_ip = random_ip(subnet)
-			if custom_ip not in used_ip['ip'].values():
-				final_data['reverse_proxy_ip'] = custom_ip
-				used_ip['ip']['reverse_proxy_ip'] = custom_ip
-				break
-	final_data['reverse_proxy_port'] = reverse_proxy_port
-	final_data['query_config'] = 'xquery.yaml'
+	final_data['hasura_port'] = str(hasura_port)
+
+	final_data['xq_num_workers'] = os.cpu_count()
 	
 	return [used_ip, final_data]

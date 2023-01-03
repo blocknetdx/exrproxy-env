@@ -1,28 +1,30 @@
-{% for chain in chains %}
-####{{ chain.name.lower() }} STACK START
-  xquery-event-processor-{{ chain.name.lower() | replace('_','-') }}:
-    image: blocknetdx/xquery-event-processor:{{ xquery_tag }}
+{% for dex in dexs %}
+####{{ dex.name.lower() }} STACK START
+  xq-engine-{{ dex.name.lower() | replace('_','-') }}:
+    image: blocknetdx/xq-engine:{{ xquery_tag }}
     depends_on:
-      - "xquery-graphql-engine"
-      - "xquery-gateway-processor"
-      - "xquery-db-processor"
-    restart: always
+      - "xq-graphql"
+      - "xq-db"
+    restart: unless-stopped
     environment:
-      NAME: {{ chain.name }}
-      WORKER_THREADS: 30
-      CHAIN_HOST: {{ chain.rpc_host }}
+      DEX: {{ dex.name }}
+      XQ_NUM_WORKERS: {{ xq_num_workers }}
+      API_URL: {{ dex.rpc_host }}
       DB_HOST: {{ postgres_ip }}
       DB_PORT: {{ postgres_port }}
       DB_USERNAME: postgres
-      DB_PASSWORD: postgrespassword
+      DB_PASSWORD: password
       DB_DATABASE: postgres
-      ZMQ_GATEWAY_HOST: {{ gateway_processor_ip }}
-      ZMQ_GATEWAY_PORT1: {{ gateway_processor_port1 }}
-      ZMQ_GATEWAY_PORT2: {{ gateway_processor_port2 }}
+      DB_SCHEMA: {{ dex.schema_name }}
+      REDIS_HOST: {{ redis_ip }}
+      REDIS_DATABASE: {{ dex.redis_db }}
+      XQ_NUM_WORKERS: {{ xq_num_workers }}
+      NUM_SAFETY_BLOCKS: {{ dex.num_safety_blocks }}
+      TARGET_SLEEP_TIME: {{ dex.target_sleep_time }}
+      ALEMBIC_SLEEP: {{ dex.alembic_sleep }} # Each xq-engine sleeps different time before running alembic - avoids db contention
+      HASURA_IP: {{ hasura_ip }}
     volumes:
-      - ${PWD}/abi/{{ chain.abi }}:/app/manager/abi.json
-      - ${PWD}/{{ query_config }}:/app/manager/query.yaml
-      - ${PWD}/scalene_profiles:/app/manager/profile
+      - alembic-versions:/app/xq-engine/alembic/versions
     logging:
       driver: "json-file"
       options:
@@ -30,74 +32,22 @@
         max-file: "10"
     networks:
       backend:
-        ipv4_address: {{ chain.ip }}
-####{{ chain.name.lower() }} STACK END
-{% endfor %}
+        ipv4_address: {{ dex.ip }}
+####{{ dex.name.lower() }} STACK END
 
-  xquery-gateway-processor:
-    image: blocknetdx/xquery-gateway-processor:{{ xquery_tag }}
-    depends_on:
-      - "xquery-postgres"
-    restart: always
-    environment:
-      DB_HOST: {{ postgres_ip }}
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgrespassword
-      DB_DATABASE: postgres
-      ZMQ_GATEWAY_PORT1: {{ gateway_processor_port1 }}
-      ZMQ_GATEWAY_PORT2: {{ gateway_processor_port2 }}
-    #ports:
-      #- "{{ gateway_processor_port1 }}:{{ gateway_processor_port1 }}"
-      #- "{{ gateway_processor_port2 }}:{{ gateway_processor_port2 }}"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "2m"
-        max-file: "10"
-    networks:
-      backend:
-        ipv4_address: {{ gateway_processor_ip }}
-  xquery-db-processor:
-    image: blocknetdx/xquery-db-processor:{{ xquery_tag }}
-    depends_on:
-      - "xquery-postgres"
-    restart: always
-    environment:
-      ZMQ_GATEWAY_HOST: {{ gateway_processor_ip }}
-      ZMQ_GATEWAT_PORT1: {{ gateway_processor_port1 }}
-      ZMQ_GATEWAT_PORT2: {{ gateway_processor_port2 }}
-      DB_HOST: {{ postgres_ip }}
-      DB_PORT: {{ postgres_port }}
-      DB_USERNAME: postgres
-      DB_PASSWORD: postgrespassword
-      DB_DATABASE: postgres
-      HASURA_HOST: {{ graphql_engine_ip }}
-      HASURA_PORT: {{ graphql_engine_port }}
-{% for chain in chains %}
-      CHAIN_ABI_{{ chain.name }}: {{ chain.abi }}
 {% endfor %}
+  xq-db:
+    image: postgres:15.0
+    restart: unless-stopped
     volumes:
-{% for chain in chains %}
-      - ${PWD}/abi/{{ chain.abi }}:/app/manager/{{ chain.abi }}
-{% endfor %}
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "2m"
-        max-file: "10"
-    networks:
-      backend:
-        ipv4_address: {{ db_processor_ip }}
-  xquery-postgres:
-    image: postgres:12
-    restart: always
-    volumes:
-      - {{ xquery_volume }}/xquery:/var/lib/postgresql/data
+      - {{ xquery_volume }}/xq:/var/lib/postgresql/data
+    tty: true
     environment:
-      POSTGRES_PASSWORD: postgrespassword
-    ports:
-      - "{{ postgres_port }}:{{ postgres_port }}"
-    command: -p {{ postgres_port }}
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: password
+    stop_signal: SIGINT
+    stop_grace_period: 10s
     logging:
       driver: "json-file"
       options:
@@ -106,49 +56,41 @@
     networks:
       backend:
         ipv4_address: {{ postgres_ip }}
-  xquery-graphql-engine:
-    image: hasura/graphql-engine:v2.0.10
-    hostname: graphql-engine
+
+  xq-redis:
+    image: redis:7.0
+    restart: unless-stopped
+    tty: true
+    command: redis-server --save 20 1 --loglevel warning --requirepass "password"
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "2m"
+        max-file: "10"
+    networks:
+      backend:
+        ipv4_address: {{ redis_ip }}
+
+  xq-graphql:
+    image: hasura/graphql-engine:latest
+    restart: unless-stopped
+    tty: true
+    # Uncomment the following 2 lines to expose hasura graphql on port 8080 of the host machine
     #ports:
-    #  - "{{ graphql_engine_port }}:{{ graphql_engine_port }}"
-    depends_on:
-      - "xquery-postgres"
-    restart: always
+    #  - "{{ hasura_port }}:{{ hasura_port }}"
     environment:
-      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:postgrespassword@{{ postgres_ip }}:{{ postgres_port }}/postgres
-      HASURA_GRAPHQL_ENABLE_CONSOLE: "true" # set to "false" to disable console
+      HASURA_GRAPHQL_DATABASE_URL: postgres://postgres:password@{{ postgres_ip }}:{{ postgres_port }}/postgres
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_STRINGIFY_NUMERIC_TYPES: "true"
       HASURA_GRAPHQL_DEV_MODE: "true"
       HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
-      HASURA_GRAPHQL_SERVER_PORT: {{ graphql_engine_port }}
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "2m"
-        max-file: "10"
-    networks:
-      backend:
-        ipv4_address: {{ graphql_engine_ip }}
-  xquery-reverse-proxy:
-    image: blocknetdx/xquery-reverse-proxy:{{ xquery_tag }}
-    restart: always
-    environment:
-      PORT: {{ reverse_proxy_port }}
-      CHAIN_ENDPOINT: {{ endpoint }}
-      CHAIN_HASURA: {{ graphql_engine_ip}}
-      CHAIN_HASURA_PORT: {{ graphql_engine_port }}
-      QUERY_CONFIG: {{ query_config }}
-{% for chain in chains %}
-      CHAIN_ABI_{{ chain.name }}: {{ chain.name }}.json
-{% endfor %}
+      HASURA_GRAPHQL_SERVER_PORT: {{ hasura_port }}
+    stop_signal: SIGINT
+    stop_grace_period: 10s
     depends_on:
-{% for chain in chains %}
-      - "xquery-event-processor-{{ chain.name.lower() | replace('_','-') }}"
-{% endfor %}
-    volumes:
-      - ${PWD}/{{ query_config }}:/app/manager/{{ query_config }}
-{% for chain in chains %}
-      - ${PWD}/abi/{{ chain.abi }}:/app/manager/{{ chain.name }}.json
-{% endfor %}
+      - xq-db
     logging:
       driver: "json-file"
       options:
@@ -156,4 +98,4 @@
         max-file: "10"
     networks:
       backend:
-        ipv4_address: {{ reverse_proxy_ip }}
+        ipv4_address: {{ hasura_ip }}

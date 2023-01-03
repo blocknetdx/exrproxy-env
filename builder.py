@@ -75,13 +75,6 @@ if PRUNE_CACHE:
 	os.remove(ENV_FILE)
 	os.remove(CACHE)
 
-# Redownload abi dir from XQuery
-if ABI in os.listdir(os.getcwd()):
-	proc = subprocess.Popen(['rm', '-rf', 'abi'], shell=False)
-	proc.wait()
-proc = subprocess.Popen(['gitdir', 'https://github.com/blocknetdx/XQuery/tree/master/abi'], shell=False)
-proc.wait()
-
 # Create .env
 if ENV_FILE not in os.listdir(os.getcwd()):
 	data = "PUBLIC_IP=\nSN_NAME=\nSN_KEY=\nSN_ADDRESS=\nRPC_USER=\nRPC_PASSWORD="
@@ -220,18 +213,21 @@ if __name__ == '__main__':
 							if name == 'XQUERY':
 								indices = []
 								for evm_chain in app_chains:
-									indexers = snode.inquirer.pick_checkbox(f'Select which indices you want for {evm_chain}:',[{'name':'_'.join(x['name'].split('_')[1::]),'checked':True if x['name'] in cache['ticks'] else False} for x in app['chains'] if evm_chain in x['name']])
+									if len([x for x in app['dexs'] if evm_chain in x['name']]) > 0:
+										indexers = snode.inquirer.pick_checkbox(f'Select which indices you want for {evm_chain}:',[{'name':'_'.join(x['name'].split('_')[1::]),'checked':True if x['name'] in cache['ticks'] else False} for x in app['dexs'] if evm_chain in x['name']])
+									else:
+										indexers = []
 									if len(indexers) == 0:
 										print(f'{evm_chain} ignored for {name}...No selection.')
 									else:
-										for index in app['chains']:
+										for index in app['dexs']:
 											for i in indexers:
 												if i in index['name']:
 													indices.append(index)
 								if len(indices) == 0:
 									print(f'{name} ignored... No selection.')
 								else:
-									app['chains'] = indices
+									app['dexs'] = indices
 									if name in known_volumes['volumes'].keys():
 										app['volume'] = known_volumes['volumes'][name]
 									apps_deployed.append('XQUERY')
@@ -354,7 +350,7 @@ if __name__ == '__main__':
 					cache['discount_aablock'] = daemon['discount_aablock']
 					cache['discount_sysblock'] = daemon['discount_sysblock']
 				if daemon['name'] == 'XQUERY':
-					for index in daemon['chains']:
+					for index in daemon['dexs']:
 						cache['ticks'].append(index['name'])
 			write_text_file(CACHE,json.dumps(cache, indent=4, sort_keys=False))
 		else:
