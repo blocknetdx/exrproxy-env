@@ -38,6 +38,7 @@
 {% endfor %}
   xq-db:
     image: postgres:15.0
+    shm_size: 1g
     restart: unless-stopped
     volumes:
       - {{ xquery_volume }}/xq:/var/lib/postgresql/data
