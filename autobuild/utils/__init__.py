@@ -187,9 +187,9 @@ class Snode():
 		print("[bold red]Closing...[/bold red]")
 		sys.exit(0)
 
-	def checks(self, interval):
+	def checks(self):
 		self.client = self.get_client()
-		self.check_running_containers(interval)
+		self.check_running_containers()
 
 	def docker_prune(self):
 		print('[bold cyan]Checking docker daemon...[/bold cyan]')
@@ -262,35 +262,33 @@ class Snode():
 	# 		print("[bold cyan]Docker daemon error.\nPlease install docker, docker-compose or start the daemon to continue...[/bold cyan]")
 	# 		sys.exit(0)
 
-	def check_running_containers(self, interval):
+	def check_running_containers(self):
 		print('[bold cyan]Checking running containers...[/bold cyan]')
 		try:
 			containers = self.client.containers.list()
 			for c in containers:
 				if self.dirname in c.name:
-					self.question_containers(interval)
+					self.question_containers()
 					break
 		except Exception as e:
 			print(f"Unable to check if [bold cyan]{self.dirname}[/bold cyan] containers are running...\n[bold red]Please stop and remove all {self.dirname} containers to continue[/bold red]")
 			sys.exit(0)
 
-	def question_containers(self, interval):
-		answer = self.inquirer.ask_question(f'(Will not delete synced blockchain data). Do you want to stop running and remove all {self.dirname} related containers/networks/volumes?')
+	def question_containers(self):
+		answer = self.inquirer.ask_question(f'Do you want to stop running and remove all {self.dirname} related containers/networks/volumes? (Will not delete synced blockchain data.) ')
 		if answer == True:
-			self.stop_containers(interval)
+			self.stop_containers()
 		else:
 			print(f"Current [bold cyan]{self.dirname}[/bold cyan] containers/networks/volumes need to be stopped and removed to continue")
 			sys.exit(0)
 
-	def stop_containers(self, interval):
+	def stop_containers(self):
 		print(f"Stopping [bold cyan]{self.dirname}[/bold cyan] containers")
-		containers = self.client.containers.list()
-		for c in containers:
-			if self.dirname in c.name:
-				print(f"Stopping [bold yellow]{c.name}[/bold yellow]...")
-				c.stop(timeout=interval)
-				print(f'Waiting to stop [bold yellow]{c.name}[/bold yellow]')
-				c.wait()
+		exit_code = subprocess.call("docker-compose down", shell=True)
+		# Error if exit_code not 0
+		if exit_code != 0:
+			print("An error occurred while stopping running containers.")
+			sys.exit(exit_code)
 		self.prune_containers()
 		self.prune_networks()
 		self.prune_volumes()
