@@ -18,7 +18,7 @@ def xq_template(used_ip, subnet, query, data):
 			redis_db = 0
 			for item in item0:
 				item['redis_db'] = redis_db
-				item['alembic_sleep'] = int(redis_db * 15) # make sure two xq-engine containers don't run alembic concurrently
+				item['alembic_sleep'] = int(redis_db * 60) # make sure two xq-engine containers don't run alembic concurrently
 				redis_db += 1
 				name = item['name'].upper()
 				if 'AVAX' in name:

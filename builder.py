@@ -48,7 +48,6 @@ parser.add_argument('--deploy', help='Autodeploy stack', default=False, action='
 parser.add_argument('--prune', help='Prune docker', default=False, action='store_true')
 parser.add_argument('--source', help='Source file', default='autobuild/sources.yaml')
 parser.add_argument('--yaml', help='Custom input yaml', default=False)
-parser.add_argument('--interval', help='Docker stopping interval till sends SIGKILL signal; default 30s', default=30)
 parser.add_argument('--branchpath', default='https://raw.githubusercontent.com/blocknetdx/blockchain-configuration-files/master')
 parser.add_argument('--xquerytag', help="Override XQuery images tag", default='latest')
 parser.add_argument('--prunecache', help='Reinit .known_hosts, .known_volumes, .env and .cache files', action='store_true')
@@ -64,7 +63,6 @@ PRUNE = args.prune
 BRANCHPATH = re.sub(r'(^(?!.*/$).*)',r'\1/',args.branchpath)
 
 XQUERYTAG = args.xquerytag
-STOP_INTERVAL = int(args.interval)
 PRUNE_CACHE = args.prunecache
 SUBNET = args.subnet
 
@@ -125,7 +123,7 @@ if __name__ == '__main__':
 		# Requirements checks
 		if not CHECKS:
 			print(f"[bold magenta]{'-'*50}[/bold magenta]")
-			snode.checks(STOP_INTERVAL)
+			snode.checks()
 		# Set env vars
 		if not ENV:
 			print(f"[bold magenta]{'-'*50}[/bold magenta]")

@@ -358,9 +358,3 @@ networks:
     driver_opts:
       com.docker.network.bridge.enable_icc: "true"
       com.docker.network.bridge.enable_ip_masquerade: "true"
-
-{% if deploy_xquery %}
-# volume for XQUERY:
-volumes:
-  alembic-versions:
-{% endif %}
