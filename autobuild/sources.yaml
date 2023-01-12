@@ -202,7 +202,7 @@
 - name: XQUERY
   type: app
   volume: /snode
-  disk: 5
+  disk: 15
   ram: 16
   cpu: 32
   dexs:
