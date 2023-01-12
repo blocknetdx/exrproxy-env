@@ -24,7 +24,7 @@
       ALEMBIC_SLEEP: {{ dex.alembic_sleep }} # Each xq-engine sleeps different time before running alembic - avoids db contention
       HASURA_IP: {{ hasura_ip }}
     volumes:
-      - {{ xquery_volume }}/xq/alembic:/app/xq-engine/alembic/versions
+      - {{ xquery_volume }}/xquery/alembic:/app/xq-engine/alembic/versions
     logging:
       driver: "json-file"
       options:
@@ -41,7 +41,7 @@
     shm_size: 1g
     restart: unless-stopped
     volumes:
-      - {{ xquery_volume }}/xq/db:/var/lib/postgresql/data
+      - {{ xquery_volume }}/xquery/db:/var/lib/postgresql/data
     tty: true
     environment:
       POSTGRES_USER: postgres
