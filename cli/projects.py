@@ -11,6 +11,11 @@ import os
 import requests
 from dateutil.parser import parse
 
+def get_payment_db_ip():
+	inspect_out = subprocess.check_output(f'docker inspect exrproxy-env-payment_db-1',stdin=subprocess.PIPE, shell=True) 
+	lines = inspect_out.decode("UTF-8").split("\n")
+	return [line for line in lines if "IPv4Address" in line][0].split('"')[3]
+
 def request_project():
 	headers = {'Content-Type':'application/json'}
 	payload = '{"jsonrpc":"2.0","method":"request_project","params": [], "id":1}'
@@ -115,7 +120,7 @@ def render_table(table, project, id, host, database, user, password):
 			print(table)
 			print()
 
-def help():
+def help(host_ip):
 	print(f'[bold red]{"-"*20}[/bold red]')
 	table = Table(box=None)
 	table.add_column('Argument',justify='left', style='green', no_wrap=False)
@@ -123,7 +128,7 @@ def help():
 	table.add_column('Defaults',justify='left', style='bold cyan', no_wrap=False)
 	data = [
 		['--help | -h', 'Print help'],
-		['--host', "IP address of [bold cyan]payment_db[/bold cyan] container"],
+		['--host', "IP address of [bold cyan]payment_db[/bold cyan] container", host_ip],
 		['--username | -u', 'Username for [bold cyan]payment_db[/bold cyan]', 'ethproxy'],
 		['--password | -p', 'Password for [bold cyan]payment_db[/bold cyan]', 'password'],
 		['--db | -d', 'Database from [bold cyan]payment_db[/bold cyan]', 'eth'],
@@ -143,9 +148,6 @@ def help():
 
 	print(table)
 	print()
-	print("[red]Use this command to get [bold cyan]payment_db[/bold cyan] IP address:[/red]")
-	print("""[red]docker inspect exrproxy-env-payment_db-1 | awk -F'"' '/IPv4Address/{print $4}'[/red]""")
-	print()
 	print(f'[bold red]{"-"*20}[/bold red]')
 
 	table = Table(title='Arguments Combinations', title_justify='left', title_style='bold cyan', box=None)
@@ -154,7 +156,7 @@ def help():
 	table.add_column('Defaults',justify='left', style='bold cyan', no_wrap=False)
 	data = [
 		['--help | -h','Print help'],
-		['--host [bold yellow]IP[/bold yellow]', "IP address of [bold cyan]payment_db[/bold cyan] container - Required w/ all other params"],
+		['--host [bold yellow]IP[/bold yellow]', "IP address of [bold cyan]payment_db[/bold cyan] container", host_ip],
 		['--username [bold yellow]USERNAME[/bold yellow]', 'Username for [bold cyan]payment_db[/bold cyan]', 'ethproxy'],
 		['--password [bold yellow]PASSWORD[/bold yellow]', 'Password for [bold cyan]payment_db[/bold cyan]', 'password'],
 		['--db [bold yellow]DB[/bold yellow]', 'Database from [bold cyan]payment_db[/bold cyan]', 'eth'],
@@ -178,7 +180,7 @@ def help():
 if __name__ == '__main__':
 	parser = argparse.ArgumentParser(description='CLI simple interface for managing EXR ENV projects', add_help=False)
 	parser.add_argument('--help','-h', action='store_true')
-	parser.add_argument('--host', default=False)
+	parser.add_argument('--host', default=get_payment_db_ip())
 	parser.add_argument('--username','-u', default='ethproxy')
 	parser.add_argument('--password','-p', default='password')
 	parser.add_argument('--db','-d', default='eth')
@@ -210,45 +212,38 @@ if __name__ == '__main__':
 	CMD = args.cmd
 	NEW = args.new
 
-	if HOST:
-		print('[bold cyan]Enterprise[/bold cyan] [bold green]XRouter[/bold green] [bold cyan]Environment[/bold cyan] [bold yellow]Projects[/bold yellow] [bold magenta]CLI[/bold magenta]')
-		if ALL and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE and not CMD:
-			render_table('project', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
-		elif BAL and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE and not CMD:
-			render_table('payment', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
-		elif PROJECT and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE and not CMD:
-			render_table('project', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
-			render_table('payment', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
-		elif PROJECT and ARCHIVE or ACTIVE or APICOUNT or DATE and not CMD:
-			if DATE:
-				if is_date(DATE):
-					string = is_date(DATE).strftime("%Y-%m-%d")
-					exec_psql(f"update project set expires = COALESCE(expires, '{string}'::date) where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
-					exec_psql(f"update project set expires='{string}'::date + expires::time where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
-			if APICOUNT:
-				exec_psql(f"update project set api_token_count='{APICOUNT}' where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
-			if ARCHIVE:
-				exec_psql(f"update project set archive_mode = COALESCE(archive_mode, False) where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
-				exec_psql(f"update project set archive_mode = NOT archive_mode where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
-			if ACTIVE:
-				exec_psql(f"update project set active = NOT active where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
-			render_table('project', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
-		elif CMD:
-			result = exec_psql(CMD, HOST, DB, USERNAME, PASSWORD)
-			if result:
-				print(result)
-			else:
-				print(f'[bold red]Error occured when executing:\n{CMD}[/bold red]')
-		elif NEW:
-			newproject = request_project()
-			if newproject:
-				render_table('project', newproject, ID, HOST, DB, USERNAME, PASSWORD)
-				render_table('payment', newproject, ID, HOST, DB, USERNAME, PASSWORD)
+	print('[bold cyan]Enterprise[/bold cyan] [bold green]XRouter[/bold green] [bold cyan]Environment[/bold cyan] [bold yellow]Projects[/bold yellow] [bold magenta]CLI[/bold magenta]')
+	if ALL and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE and not CMD:
+		render_table('project', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
+	elif BAL and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE and not CMD:
+		render_table('payment', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
+	elif PROJECT and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE and not CMD:
+		render_table('project', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
+		render_table('payment', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
+	elif PROJECT and ARCHIVE or ACTIVE or APICOUNT or DATE and not CMD:
+		if DATE:
+			if is_date(DATE):
+				string = is_date(DATE).strftime("%Y-%m-%d")
+				exec_psql(f"update project set expires = COALESCE(expires, '{string}'::date) where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
+				exec_psql(f"update project set expires='{string}'::date + expires::time where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
+		if APICOUNT:
+			exec_psql(f"update project set api_token_count='{APICOUNT}' where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
+		if ARCHIVE:
+			exec_psql(f"update project set archive_mode = COALESCE(archive_mode, False) where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
+			exec_psql(f"update project set archive_mode = NOT archive_mode where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
+		if ACTIVE:
+			exec_psql(f"update project set active = NOT active where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
+		render_table('project', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
+	elif CMD:
+		result = exec_psql(CMD, HOST, DB, USERNAME, PASSWORD)
+		if result:
+			print(result)
 		else:
-			help()
-	elif HELP:
-		help()
+			print(f'[bold red]Error occured when executing:\n{CMD}[/bold red]')
+	elif NEW:
+		newproject = request_project()
+		if newproject:
+			render_table('project', newproject, ID, HOST, DB, USERNAME, PASSWORD)
+			render_table('payment', newproject, ID, HOST, DB, USERNAME, PASSWORD)
 	else:
-		print('[bold red]--host is missing[/bold red]')
-		help()
-
+		help(HOST)
