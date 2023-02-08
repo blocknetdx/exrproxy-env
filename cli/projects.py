@@ -11,6 +11,23 @@ import os
 import requests
 from dateutil.parser import parse
 
+# The following coin_names nested dictionary is copied from https://raw.githubusercontent.com/blocknetdx/eth-payment-processor/master/util/eth_payments.py
+# create nested dict of names of EVM native coins (coin_names[evm][True]) and block token names (coin_names[evm][False])
+coin_names = {
+        'eth': {
+            True:'eth',
+            False:'ablock'
+            },
+        'avax': {
+            True:'avax',
+            False:'aablock'
+            },
+        'nevm': {
+            True:'sys',
+            False:'sysblock'
+            }
+        }
+
 def get_payment_db_ip():
 	inspect_out = subprocess.check_output(f'docker inspect exrproxy-env-payment_db-1',stdin=subprocess.PIPE, shell=True) 
 	lines = inspect_out.decode("UTF-8").split("\n")
@@ -63,6 +80,18 @@ def column_names(table, host, database, user, password):
 	else:
 		return result
 
+def nonzero_data(host, database, user, password, headers):
+	cmd = f"select {', '.join(headers)} from payment where {headers[0]} > 0 and not pending"
+	not_pending_result = exec_psql(cmd, host, database, user, password)
+	not_pending_result = [[str(x) for x in y] for y in not_pending_result]
+	cmd = f"select {', '.join(headers)} from payment where {headers[0]} > 0 and pending"
+	pending_result = exec_psql(cmd, host, database, user, password)
+	pending_result = [[str(x) for x in y] for y in pending_result]
+	if not_pending_result or pending_result:
+		return [not_pending_result, pending_result]
+	else:
+		return False
+
 def all_data(table, project, host, database, user, password):
 	cmd = f"select * from {table}"
 	if project:
@@ -96,6 +125,41 @@ def get_table(table, project, id, host, database, user, password):
 		return data
 	else:
 		return False
+
+def get_nonzero_balances(host, database, user, password, evm, coin_name):
+	headers = [f'amount_{coin_name}', f'{evm}_address', f'{evm}_privkey', 'project']
+	data = nonzero_data(host, database, user, password, headers)
+	if not data: return False
+	data.insert(0,headers)
+	return data
+
+def render_nonzero_balances(host, database, user, password):
+	one_result_found = False
+	for evm in coin_names:
+		for evm_coin_block_token_ in [True, False]:
+			result = get_nonzero_balances(host, database, user, password, evm, coin_names[evm][evm_coin_block_token_])
+			if result:
+				one_result_found = True
+				if result[1]:
+					table = Table(title=coin_names[evm][evm_coin_block_token_]+" available for withdrawal",title_justify='left',title_style='bold cyan', box=None, expand=True)
+					for header in result[0]:
+						table.add_column(header, justify='left', style='yellow',no_wrap=True)
+					for data in result[1]:
+						table.add_row(*data)
+					print()
+					print(table)
+					print()
+				if result[2]:
+					table = Table(title=coin_names[evm][evm_coin_block_token_]+" NOT currently available for withdrawal due to client currently purchasing tokens for these projects. (Wait 1 hour then check balances again.)",title_justify='left',title_style='red', box=None, expand=True)
+					for header in result[0]:
+						table.add_column(header, justify='left', style='red',no_wrap=True)
+					for data in result[2]:
+						table.add_row(*data)
+					print()
+					print(table)
+					print()
+	if not one_result_found:
+		print("[bold red]No non-zero balances found.[/bold red]")
 
 def render_table(table, project, id, host, database, user, password):
 	result = get_table(table, project, id, host, database, user, password)
@@ -133,10 +197,10 @@ def help(host_ip):
 		['--password | -p', 'Password for [bold cyan]payment_db[/bold cyan]', 'password'],
 		['--db | -d', 'Database from [bold cyan]payment_db[/bold cyan]', 'eth'],
 		['--all', 'Show all projects and their details'],
-		['--balances', 'Show all payments and their details'],
+		['--payments', 'Show payment table details'],
+		['--balances', 'Show all non-zero balances and their details'],
 		['--id', 'Select line from table to show details for'],
 		['--project', 'Show details for project'],
-		['--date', 'Format: [bold yellow]Y/M/D or M/D/Y[/bold yellow]. Change expiration date of a project in the [bold yellow]Project[/bold yellow] table'],
 		['--apicount', 'Change apicount number of a project in the [bold yellow]Project[/bold yellow] table'],
 		['--archive', 'Toggle the archive boolean of a project in [bold yellow]Project[/bold yellow] table'],
 		['--active', 'Toggle the active boolean of a project in [bold yellow]Project[/bold yellow] table '],
@@ -161,11 +225,11 @@ def help(host_ip):
 		['--password [bold yellow]PASSWORD[/bold yellow]', 'Password for [bold cyan]payment_db[/bold cyan]', 'password'],
 		['--db [bold yellow]DB[/bold yellow]', 'Database from [bold cyan]payment_db[/bold cyan]', 'eth'],
 		['--all', 'Show all projects and their details'],
-		['--balances','Show all payments and their details'],
+		['--payments', 'Show payment table details'],
+		['--balances','Show all non-zero balances and their details'],
 		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow]', 'Show details for [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow]'],
 		['--all --id [bold yellow]1[/bold yellow]','Show line [bold yellow]1[/bold yellow] of [bold yellow]Project[/bold yellow] table'],
-		['--balances --id [bold yellow]1[/bold yellow]','Show line [bold yellow]1[/bold yellow] of [bold yellow]Payment[/bold yellow] table'],
-		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --date [bold yellow]2022/4/8[/bold yellow]', 'Change [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] expiration date to [bold yellow]2022/4/8[/bold yellow]'],
+		['--payments --id [bold yellow]1[/bold yellow]','Show line [bold yellow]1[/bold yellow] of [bold yellow]Payment[/bold yellow] table'],
 		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --apicount [bold yellow]100[/bold yellow]', 'Change [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] api count to [bold yellow]100[/bold yellow]'],
 		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --archive', 'Toggle [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] [bold yellow]ARCHIVE MODE BOOLEAN[/bold yellow]'],
 		['--project [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] --active', 'Toggle [bold yellow]f8cc8cfc-e34a-4c66-86ae-2fef9d29da64[/bold yellow] [bold yellow]ACTIVE BOOLEAN[/bold yellow]'],
@@ -185,10 +249,10 @@ if __name__ == '__main__':
 	parser.add_argument('--password','-p', default='password')
 	parser.add_argument('--db','-d', default='eth')
 	parser.add_argument('--all', action='store_true')
+	parser.add_argument('--payments', action='store_true')
 	parser.add_argument('--balances', action='store_true')
 	parser.add_argument('--id', default=0, type=int)
 	parser.add_argument('--project', default=False)
-	parser.add_argument('--date', default=False)
 	parser.add_argument('--apicount', default=False)
 	parser.add_argument('--archive', action='store_true')
 	parser.add_argument('--active', action='store_true')
@@ -202,10 +266,10 @@ if __name__ == '__main__':
 	PASSWORD = args.password
 	DB = args.db
 	ALL = args.all
+	PYMT = args.payments
 	BAL = args.balances
 	ID = args.id
 	PROJECT = args.project
-	DATE = args.date
 	APICOUNT = args.apicount
 	ARCHIVE = args.archive
 	ACTIVE = args.active
@@ -213,19 +277,16 @@ if __name__ == '__main__':
 	NEW = args.new
 
 	print('[bold cyan]Enterprise[/bold cyan] [bold green]XRouter[/bold green] [bold cyan]Environment[/bold cyan] [bold yellow]Projects[/bold yellow] [bold magenta]CLI[/bold magenta]')
-	if ALL and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE and not CMD:
+	if ALL and not ARCHIVE and not ACTIVE and not APICOUNT and not CMD:
 		render_table('project', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
-	elif BAL and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE and not CMD:
+	elif PYMT and not ARCHIVE and not ACTIVE and not APICOUNT and not CMD:
 		render_table('payment', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
-	elif PROJECT and not ARCHIVE and not ACTIVE and not APICOUNT and not DATE and not CMD:
+	elif BAL and not ARCHIVE and not ACTIVE and not APICOUNT and not CMD:
+		render_nonzero_balances(HOST, DB, USERNAME, PASSWORD)
+	elif PROJECT and not ARCHIVE and not ACTIVE and not APICOUNT and not CMD:
 		render_table('project', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
 		render_table('payment', PROJECT, ID, HOST, DB, USERNAME, PASSWORD)
-	elif PROJECT and ARCHIVE or ACTIVE or APICOUNT or DATE and not CMD:
-		if DATE:
-			if is_date(DATE):
-				string = is_date(DATE).strftime("%Y-%m-%d")
-				exec_psql(f"update project set expires = COALESCE(expires, '{string}'::date) where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
-				exec_psql(f"update project set expires='{string}'::date + expires::time where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
+	elif PROJECT and ARCHIVE or ACTIVE or APICOUNT:
 		if APICOUNT:
 			exec_psql(f"update project set api_token_count='{APICOUNT}' where name='{PROJECT}'", HOST, DB, USERNAME, PASSWORD)
 		if ARCHIVE:
