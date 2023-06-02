@@ -2,7 +2,7 @@
 
   utxo-plugin-{{ chain.name.upper() }}:
     image: {{ utxo_plugin_image }}
-    restart: unless-stopped 
+    restart: 'no' 
     environment:
       PLUGIN_COIN: {{ chain.name.upper() }}
       PLUGIN_PORT: 8000
