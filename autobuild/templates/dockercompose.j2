@@ -4,7 +4,7 @@ services:
 {% for daemon in daemons %}
   {{ daemon.name }}:
     image: {{ daemon.image }}
-    restart: unless-stopped
+    restart: 'no'
     expose:
       - {{ daemon.rpcPort }}
       - {{ daemon.p2pPort }}
@@ -49,7 +49,7 @@ services:
   {{ blocknet_node }}:
     image: {{ blocknet_image }}
     entrypoint: /opt/blockchain/start-{{ blocknet_node }}.sh
-    restart: unless-stopped
+    restart: 'no'
     environment:
       PUBLIC_IP: "${PUBLIC_IP}"
       RPC_USER: "${RPC_USER}"
