@@ -128,7 +128,7 @@
 
 - name: PIVX 
   type: chain
-  image: blocknetdx/pivx:v5.5.0
+  image: blocknetdx/pivx:v5.5.0-staging
   volume: /snode
   disk: 21
   ram: 5
