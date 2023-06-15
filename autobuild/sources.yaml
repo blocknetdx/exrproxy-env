@@ -56,7 +56,7 @@
 
 - name: DASH 
   type: chain
-  image: blocknetdx/dash:latest
+  image: blocknetdx/dash:v19.1.0
   volume: /snode
   disk: 38
   ram: 6
