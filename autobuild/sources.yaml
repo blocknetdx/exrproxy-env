@@ -152,7 +152,7 @@
 
 - name: SYS 
   type: hybrid
-  image: blocknetdx/syscoin4:v4.3.0
+  image: blocknetdx/syscoin:v4.4.2
   volume: /snode
   disk: 11
   ram: 5
