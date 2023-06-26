@@ -42,7 +42,7 @@
   type: evm_chain 
   image: avaplatform/avalanchego:latest
   volume: /snode
-  disk: 620
+  disk: 1100
   ram: 16
   cpu: 6
 
