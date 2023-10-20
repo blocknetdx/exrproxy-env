@@ -10,7 +10,7 @@
 
 - name: SNODE 
   type: base
-  image: blocknetdx/servicenode:latest 
+  image: blocknetdx/blocknet:latest
   volume: /snode
   disk: 5
   ram: 2
