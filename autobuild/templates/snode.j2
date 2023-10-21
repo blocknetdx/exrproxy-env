@@ -51,4 +51,4 @@ cat > /opt/blockchain/data/xbridge.conf << EOL
 EOL
 
 # ensure docker runs daemon as pid1
-exec blocknetd
+exec blocknetd -conf=/opt/blockchain/config/blocknet.conf
