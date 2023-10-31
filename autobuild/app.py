@@ -337,7 +337,6 @@ def processconfigs(datalist, BRANCHPATH):
 				else:
 					template_wc = Template(autoconfig.load_template(autoconfig.wallet_config(BRANCHPATH))).render(
                        				p2pPort=daemon['p2pPort'], rpcPort=daemon['rpcPort'], legacy=daemon['legacy'],deprecatedrpc=daemon['deprecatedrpc'], )
-				template_wc = Template(autoconfig.load_template(autoconfig.wallet_config(BRANCHPATH))).render(p2pPort=daemon['p2pPort'],rpcPort=daemon['rpcPort'],legacy=daemon['legacy'],deprecatedrpc=daemon['deprecatedrpc'],)
 				if name == 'SYS' and datalist[0]['deploy_nevm'] is True:
 					write_nevm = True
 					nevm_ip = datalist[0]['nevm_ip']
