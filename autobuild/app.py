@@ -69,6 +69,8 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 					if tag != 'latest':
 						c['daemons'][i]['deprecatedrpc'] = xbridge_json[name]['versions'][tag]['deprecatedrpc']
 						c['daemons'][i]['legacy'] = xbridge_json[name]['versions'][tag]['legacy']
+						if 'rpcserialversion' in xbridge_json[name]['versions'][tag]:
+							c['daemons'][i]['rpcserialversion'] = xbridge_json[name]['versions'][tag]['rpcserialversion']						
 						if 'testnet' in xbridge_json[name]['versions'][tag]: 
 							c['daemons'][i]['testnet'] = xbridge_json[name]['versions'][tag]['testnet']
 						else:
@@ -79,6 +81,8 @@ def processcustom(customlist, SUBNET, BRANCHPATH):
 						tag = version_list[-1]
 						c['daemons'][i]['deprecatedrpc'] = xbridge_json[name]['versions'][tag]['deprecatedrpc']
 						c['daemons'][i]['legacy'] = xbridge_json[name]['versions'][tag]['legacy']
+						if 'rpcserialversion' in xbridge_json[name]['versions'][tag]:
+							c['daemons'][i]['rpcserialversion'] = xbridge_json[name]['versions'][tag]['rpcserialversion']
 						if 'testnet' in xbridge_json[name]['versions'][tag]: 
 							c['daemons'][i]['testnet'] = xbridge_json[name]['versions'][tag]['testnet']
 						else:
@@ -326,7 +330,13 @@ def processconfigs(datalist, BRANCHPATH):
 			name = daemon['name']
 			if name.upper() not in ['TNODE', 'SNODE', 'TESTSNODE', 'TESTTNODE', 'ETH', 'XR_PROXY']:
 				XBRIDGE_CONF += "{},".format(name)
-				template_wc = Template(autoconfig.load_template(autoconfig.wallet_config(BRANCHPATH))).render(p2pPort=daemon['p2pPort'],rpcPort=daemon['rpcPort'],legacy=daemon['legacy'],deprecatedrpc=daemon['deprecatedrpc'],)
+				if 'rpcserialversion' in daemon:
+					template_wc = Template(autoconfig.load_template(autoconfig.wallet_config(BRANCHPATH))).render(
+                        			p2pPort=daemon['p2pPort'], rpcPort=daemon['rpcPort'], legacy=daemon['legacy'],
+                       				deprecatedrpc=daemon['deprecatedrpc'], rpcserialversion=daemon['rpcserialversion'], )
+				else:
+					template_wc = Template(autoconfig.load_template(autoconfig.wallet_config(BRANCHPATH))).render(
+                       				p2pPort=daemon['p2pPort'], rpcPort=daemon['rpcPort'], legacy=daemon['legacy'],deprecatedrpc=daemon['deprecatedrpc'], )
 				if name == 'SYS' and datalist[0]['deploy_nevm'] is True:
 					write_nevm = True
 					nevm_ip = datalist[0]['nevm_ip']
