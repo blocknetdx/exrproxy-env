@@ -2,6 +2,10 @@
 
 cat > /opt/blockchain/config/{{ configName }}.conf << EOL
 datadir=/opt/blockchain/data
+{% if configName == 'unobtanium' %}
+# uno daemon need '-reindex' launch option for first launch.
+rpcthreads=8
+{% endif %}
 rpcbind=0.0.0.0
 rpcuser=${RPC_USER}
 rpcpassword=${RPC_PASSWORD}
