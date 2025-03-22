@@ -166,6 +166,14 @@
   ram: 5
   cpu: 4
 
+- name: PKOIN 
+  type: chain
+  image: blocknetdx/pocketnet:0.22.13-staging
+  volume: /snode
+  disk: 5
+  ram: 5
+  cpu: 4  
+
 - name: NEVM
   type: evm_chain
   image: blocknetdx/syscoin:latest
